@@ -3,7 +3,7 @@ include('function.php');
 
 echo "<section>\n";
 echo "<table>\n";
-$answer = $bdd->query('SELECT * FROM odl');
+$answer = $bdd->query('SELECT * FROM odl ORDER BY id DESC');
 $i=0;
 while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
     // echo "=============[ligne $i]=============\n";
@@ -18,13 +18,11 @@ while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
 }
 echo "</table>\n";
 echo "</section>\n";
-function displayHeader(){
 
+// if (isset($_GET['new_id'])) // Si on demande une modif de position
+// {
+// $position = $_GET['position-agenda'];
+ 
+// mysql_query("UPDATE agenda SET ordre='" . $newposition . "', WHERE ordre ='".$position['ordre']."'");
 }
-
-function displayLine($line){
- echo "
-    <td>
-        <tr>".$line['arc']."</tr>
-    </td>";
-}
+?>
