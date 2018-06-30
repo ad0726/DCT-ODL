@@ -4,15 +4,6 @@ include('function.php');
 <section>
 <?php
     if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        // if ($_REQUEST['id'] == 0 || NULL) { // isset or empty ?
-        //     $_REQUEST['id'] = NULL;
-        //     $id = $bdd->query('SELECT id FROM odl WHERE id = (SELECT MAX(id) FROM odl)')->fetch(PDO::FETCH_ASSOC);
-        //     $id = ++$id['id'];
-        // }
-        // else {
-        //     $id = $bdd->query('SELECT id FROM odl WHERE id = (SELECT MAX(id) FROM odl)')->fetch(PDO::FETCH_ASSOC);
-        //     $id = ++$id['id'];
-        // }
         $maxid = $bdd->query('SELECT id FROM odl WHERE id = (SELECT MAX(id) FROM odl)')->fetch(PDO::FETCH_ASSOC);
         $id = ++$maxid['id'];
         $req = $bdd->prepare('INSERT INTO odl(id, arc, cover, contenu, urban, dctrad, topic) 
@@ -26,16 +17,22 @@ include('function.php');
             'new_dctrad'  => $_REQUEST['dctrad'],
             'new_topic'   => $_REQUEST['topic'],
             ));
-        echo "L'ODL a bien été mis à jour.";
+        echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
+
         if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
-            // echo $_REQUEST['id']."blop";
-            $maxid = $bdd->query('SELECT id FROM odl WHERE id = (SELECT MAX(id) FROM odl)')->fetch(PDO::FETCH_ASSOC);
-            // echo $maxid['id'];
-            $oldid = $maxid['id'];
             $newid = $_REQUEST['id'];
-            // echo $newid;
-            $bdd->exec('UPDATE odl SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\''); // mets bien à jour mais ne range pas le reste de la table
+            $bdd->query('UPDATE odl SET id=id + 1 WHERE id>='.$newid.' ORDER BY id ASC');
+            $maxid = $bdd->query('SELECT id FROM odl WHERE id = (SELECT MAX(id) FROM odl)')->fetch(PDO::FETCH_ASSOC);
+            $oldid = $maxid['id'];
+            $bdd->exec('UPDATE odl SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\'');
+            $bdd->exec('ALTER TABLE odl ORDER BY id ASC');
+            echo " en position ".$newid;
         }
+        echo ".";
+?>
+        <button type="button" ><a href="interface.php">Retour au formulaire</a></button>
+        <button type="button" ><a href="odldc.php" target="_blank">Voir l'ODL</a></button>
+<?php
     } else {
 ?>
     <form action="?" method="post">
