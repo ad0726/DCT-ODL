@@ -1,3 +1,8 @@
 input:invalid {
     background-color: pink;
-  }
+}
+table td {
+  background-color: beige;
+  border: black 1px solid;
+  border-radius: 20px;
+}

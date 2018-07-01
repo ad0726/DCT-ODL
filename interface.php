@@ -1,9 +1,10 @@
 <?php
+include('header.php');
 include('function.php');
 ?>
 <section>
 <?php
-    if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+    if (isset($_SESSION['pseudo']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         $maxid = $bdd->query('SELECT id FROM odl WHERE id = (SELECT MAX(id) FROM odl)')->fetch(PDO::FETCH_ASSOC);
         $id = ++$maxid['id'];
         $req = $bdd->prepare('INSERT INTO odl(id, arc, cover, contenu, urban, dctrad, topic) 
@@ -21,7 +22,7 @@ include('function.php');
 
         if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
             $newid = $_REQUEST['id'];
-            $bdd->query('UPDATE odl SET id=id + 1 WHERE id>='.$newid.' ORDER BY id ASC');
+            $bdd->query('UPDATE odl SET id=id + 1 WHERE id>='.$newid);
             $maxid = $bdd->query('SELECT id FROM odl WHERE id = (SELECT MAX(id) FROM odl)')->fetch(PDO::FETCH_ASSOC);
             $oldid = $maxid['id'];
             $bdd->exec('UPDATE odl SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\'');
@@ -33,11 +34,13 @@ include('function.php');
         <button type="button" ><a href="interface.php">Retour au formulaire</a></button>
         <button type="button" ><a href="odldc.php" target="_blank">Voir l'ODL</a></button>
 <?php
-    } else {
+    } elseif (isset($_SESSION['pseudo'])) {
+        echo "<button type='button' ><a href='?login-out'>Déconnexion</a></button>";
+        logout()
 ?>
     <form action="?" method="post">
         <input type="hidden" name="formfilled" value="42" />
-        <label for="titre">Titre de l'arc</label><br />
+        <label for="titre_arc">Titre de l'arc</label><br />
         <input type="text" name="titre_arc" placeholder="Titre de l'arc"><br />
         <label for="cover">URL de la cover</label><br />
         <input type="url" name="cover" placeholder="http://xooimage.com/image"><br />
@@ -54,5 +57,8 @@ include('function.php');
         <input type="number" min="0" name="id"><br />
         <input type="submit" value="Envoyer">
     </form>
-    <?php } ?>
+    <?php } else {
+        echo "<button class='login' type='button' ><a href='?login'>Connexion</a></button>";
+        displayLogin();
+    } ?>
 </section>
