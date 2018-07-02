@@ -1,8 +1,36 @@
+
+body {
+  margin: 0;
+  background: lightblue;
+}
+
+header {
+  width: 100%;
+  height: 100px;
+  background: #0079f0;
+}
+
+
 input:invalid {
     background-color: pink;
 }
-table td {
-  background-color: beige;
-  border: black 1px solid;
-  border-radius: 20px;
+table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin: 0 auto;
+  width: 90%;
+}
+table tr.line {
+  height: 200px;
+  background-color: white;
+}
+.modify {
+  margin-left: 10px;
+}
+.modify a, .delete a {
+  color: grey;
+}
+
+.modify_form {
+  display: none;
 }

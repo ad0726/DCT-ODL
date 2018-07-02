@@ -11,7 +11,12 @@ catch(Exception $e)
 function displayHeader() {
     if (!isset($_SESSION['pseudo']))
     {
-        echo "<button class='login' type='button' ><a href='?login'>Connexion</a></button>";
+        echo "<button class='log' type='button' ><a href='?login'>Connexion</a></button>";
+        echo "<style>
+                .nolog {
+                    display: none;
+                }
+              </style>";
     }
     if (isset($_SESSION['pseudo']))
     {
@@ -24,7 +29,7 @@ function displayLogin() {
     global $bdd;
     if($_SERVER['QUERY_STRING'] == "login") {
         echo "<style>
-                button.login {
+                button.log {
                     display: none;
                 }
               </style>";
@@ -68,22 +73,39 @@ function logout() {
 }
 
 
-
 function displayLine($line) {
  echo "
-    <tr>
-        <td><img src=\"".$line['cover']."\" ></td>
-        <td>".$line['arc'];
+    <tr class='line' id='".$line['id']."'>
+        <td class='nolog'>".$line['id'];
         if (isset($_SESSION['pseudo']))
         {
-            button(1, 0, $line);
+            echo "<form action=\"#".$line['id']."\" method=\"post\">
+                <input type=\"hidden\" name=\"formfilled\" value=\"42\" />
+                <br /><input class='modify_form' type=\"number\" name=\"new_id\">";
         }
         echo "</td>
-        <td>".nl2br($line['contenu'])."</td>
-        <td>";
+        <td><img src=\"".$line['cover']."\" >";
         if (isset($_SESSION['pseudo']))
         {
-            button(0, 1, $line);
+            echo "<br /><input class='modify_form' type=\"text\" name=\"new_cover\" placeholder=\"URL\">";
+        }
+        echo "</td>
+        <td><h3>".$line['arc']."</h3>";
+        if (isset($_SESSION['pseudo']))
+        {
+            echo "<br /><input class='modify_form' type=\"text\" name=\"new_title\" placeholder=\"Nouveau titre\">";
+        }
+        echo "</td>
+        <td><p>".nl2br($line['contenu'])."</p>";
+        if (isset($_SESSION['pseudo']))
+        {
+            echo "<textarea class='modify_form' type=\"text\" name=\"new_contenu\" placeholder=\"Nouveau contenu\"></textarea>";
+        }
+        echo "</td>
+        <td class='nolog'>";
+        if (isset($_SESSION['pseudo']))
+        {
+            button(1, 1, $line);
         }
     echo "</td>
     </tr>";
@@ -92,22 +114,38 @@ function displayLine($line) {
 function button($modify, $delete, $line) {
     global $bdd;
     if (!empty($modify)) {
-        echo "<button type='button' ><a href=\"?modify".$line['id'];
-        echo"\">modifier</a></button>";
-        if ($_SERVER['QUERY_STRING'] == "modify".$line['id']) {
-            echo "<form action=\"?modify".$line['id']."\" method=\"post\">
-                <br /><input type=\"text\" name=\"new_title\" placeholder=\"Nouveau titre\">
-                <input type=\"submit\" value=\"Envoyer\">
+        echo "<button class='modify' type='button' ><i class=\"fas fa-wrench\"></i></button>";
+        if ($_SERVER['QUERY_STRING'] == $line['id']) {
+            echo "<input class='modify_form' type=\"submit\" value=\"Envoyer\">
                 </form>";
+                if (!empty($_REQUEST['new_id'])) {
+                    $bdd->exec('UPDATE rebirth SET id = \'-1\' WHERE id = \''.$line['id'].'\'');
+                    $bdd->query('UPDATE rebirth SET id = id - 1 WHERE id BETWEEN '.$line['id'].' AND '.$_REQUEST['new_id']);
+                    $bdd->exec('UPDATE rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
+                    $bdd->exec('ALTER TABLE rebirth ORDER BY id ASC');
+                } elseif (!empty($_REQUEST['new_id'])) {
+                    $bdd->exec('UPDATE rebirth SET id = \'-1\' WHERE id = '.$line['id']);
+                    $bdd->query('UPDATE rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$line['id']);
+                    $bdd->exec('UPDATE rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
+                    $bdd->exec('ALTER TABLE rebirth ORDER BY id ASC');
+                }
+                if (!empty($_REQUEST['new_cover'])) {
+                    $bdd->exec('UPDATE rebirth SET cover = \''.$_REQUEST['new_cover'].'\' WHERE id = \''.$line['id'].'\'');
+                }
                 if (!empty($_REQUEST['new_title'])) {
-                    $bdd->exec('UPDATE odl SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$line['id'].'\'');
+                    $bdd->exec('UPDATE rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$line['id'].'\'');
+                }
+                if (!empty($_REQUEST['new_contenu'])) {
+                    $bdd->exec('UPDATE rebirth SET contenu = \''.$_REQUEST['new_contenu'].'\' WHERE id = \''.$line['id'].'\'');
+                }
+                if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
                     header('Location: '.$_SERVER['HTTP_HOST']);
                 }
         }
     }
     if (!empty($delete)) {
-        echo "<button type='button' ><a href=\"?delete".$line['id'];
-        echo"\">X</a></button>";
+        echo "<button class='delete' type='button' ><a href=\"?delete".$line['id'];
+        echo"\"><i class=\"fas fa-trash-alt\"></i></a></button>";
         if ($_SERVER['QUERY_STRING'] == "delete".$line['id']) {
             echo "<form action=\"?delete".$line['id']."\" method=\"post\">
             <input type=\"hidden\" name=\"delete\" value=\"0\">Sûr ?<br />
@@ -118,8 +156,8 @@ function button($modify, $delete, $line) {
                 </form>";
                 if (isset($_REQUEST['delete'])) {
                     $newid = $line['id'];
-                    $bdd->exec('DELETE FROM odl WHERE id = \''.$line['id'].'\'');
-                    $bdd->query('UPDATE odl SET id=id - 1 WHERE id>'.$newid);
+                    $bdd->exec('DELETE FROM rebirth WHERE id = \''.$line['id'].'\'');
+                    $bdd->query('UPDATE rebirth SET id=id - 1 WHERE id>'.$newid);
                     header('Location: '.$_SERVER['HTTP_HOST']);
                 } elseif (isset($_REQUEST['cancel'])) {
                     header('Location: '.$_SERVER['HTTP_HOST']);
