@@ -3,7 +3,7 @@ include('header.php');
 ?>
 <section>
 <?php
-    if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+    if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         uploadCover();
         if (!empty($_REQUEST['new_title'])) {
             $bdd->exec('UPDATE rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
@@ -41,19 +41,18 @@ include('header.php');
     } elseif (isset($_SESSION['pseudo'])) {
 ?>
     <div class="form">
+        <h2>Modifier un arc</h2>
         <form action="?" method="post" enctype="multipart/form-data">
             <input type="hidden" name="formfilled" value="42" />
-            <label for="new_id">Position actuelle dans l'ODL</label><br />
-            <input type="number" class="pos" min="0" name="id"><br />
-            <label for="new_title">Titre de l'arc</label><br />
+            <label for="id">Position actuelle dans l'ODL</label>
+            <input type="number" class="pos" min="0" name="id"> *<br />
             <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"><br />
-            <label for="cover">Cover</label><br />
+            <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
-            <input type="file" class="input" name="cover"><br />
-            <label for="new_content">Contenu</label><br />
+            <input type="file" class="file" name="cover"><br />
             <textarea class="content" name="new_content" placeholder="Liste des issues de l'arc"></textarea><br />
-            <label for="publication">Publié chez :</label><br />
             <div>
+                <label for="publication">Publié chez :</label>
                 <select name="new_urban">
                     <option value="">Urban</option>
                     <option value="1">Oui</option>
@@ -65,9 +64,8 @@ include('header.php');
                     <option value="0">Non</option>
                 </select><br />
             </div>
-            <label for="new_topic">URL du topic</label><br />
             <input type="url" class="input" name="new_topic" placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234"><br />
-            <label for="new_id">Position voulue dans l'ODL</label><br />
+            <label for="new_id">Position voulue dans l'ODL</label>
             <input type="number" class="pos" min="0" name="new_id"><br />
             <input type="submit" class="btn_send" value="Envoyer">
         </form>
@@ -76,3 +74,4 @@ include('header.php');
     echo "Veuillez vous connecter pour poursuivre.";
 }?>
 </section>
+<?php include("footer.php"); ?>

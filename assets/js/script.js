@@ -1,5 +1,5 @@
-$(function () {
-    $('.modify').click(function() {
-        $('.modify_form').toggle()
-    });
-});
+// $(function () {
+//     $('.btn_show').click(function() {
+//         $('.content_period').toggle()
+//     });
+// });

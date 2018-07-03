@@ -9,12 +9,39 @@ header {
 }
 
 .title_header {
+  position: relative;
+  height: 100%;
   width: 100%;
   text-align: center;
   color: lightgrey;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.title_header div {
+  position: relative;
+  text-align: center;
+  color: lightgrey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title_header img {
+  width: 150px;
+  height: 150px;
+  float: left;
 }
 
 .title_header h1 {
+  width: 200px;
+  margin: 0;
+}
+
+.title_header h2 {
+  width: 100%;
   margin: 0;
 }
 
@@ -31,6 +58,7 @@ header {
 }
 
 .btn_head {
+  width: 100%;
   margin-bottom: 5px;
   border-radius: 5px;
   border: transparent;
@@ -48,7 +76,7 @@ table {
 }
 table tr.line {
   height: 200px;
-  background-color: white;
+  background: white;
 }
 .modify {
   margin-left: 10px;
@@ -76,10 +104,15 @@ table tr.line {
   font-size: 12px;
 }
 
-.form form input,
+.form h2,
+.form label {
+  color: #0079f0;
+}
+
+form input,
 .form form textarea,
 .form form select {
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   border-radius: 5px;
   border: transparent;
   background: lightgrey;
@@ -90,9 +123,20 @@ table tr.line {
   width: 250px;
 }
 
+.form form .file {
+  width: 210px;
+}
+
 .form form .content {
   width: 250px;
   height: 100px;
+}
+
+.form p {
+  margin: 0;
+  font-size: 9px;
+  color: darkgrey;
+  width: 50%;
 }
 
 .form form .pos {
@@ -101,4 +145,115 @@ table tr.line {
 
 .form form .btn_send {
   width: 100%;
+}
+
+div.period {
+  display: flex;
+  flex-direction: column;
+  border-bottom: solid 1px white;
+  border-top: solid 1px white;
+  border-radius: 20px;
+  margin: 0 auto;
+  margin-bottom: 10px;
+  width: 90%;
+  background: lightgrey;
+}
+
+.title_period {
+  width: 100%;
+  text-align: center;
+  color: #0079f0;
+}
+
+.btn_show,
+.btn_hide {
+  position: absolute;
+  background: white;
+  border: none;
+  border-radius: 5px;
+  margin-left: 15px;
+  margin-top: 10px;
+}
+
+.btn_hide.down {
+  margin-top: -25px;
+}
+
+.content_period {
+  display: none;
+}
+
+.btn_show:focus + .content_period {
+  display: block;
+}
+
+.btn_hide:focus + .content_period {
+  display: none;
+}
+
+.content_period table .cel_title {
+  width: 30%;
+  color: #0079f0;
+}
+
+.content_period table .cel_content {
+  width: 50%;
+  font-size: 12px;
+  font-weight: normal;
+  color: #0079f0;
+}
+
+footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  height: 75px;
+  background: #0079f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+footer p {
+  font-size: 10px;
+  color: lightgrey;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgba(0, 121, 240, 0.7);
+  color: black;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 121, 240, 0.7) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
