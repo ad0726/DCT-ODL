@@ -6,9 +6,9 @@ include('header.php');
 //    
     if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
         uploadCover();
-        $maxid = $bdd->query('SELECT id FROM rebirth WHERE id = (SELECT MAX(id) FROM rebirth)')->fetch(PDO::FETCH_ASSOC);
+        $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
         $id = ++$maxid['id'];
-        $req = $bdd->prepare('INSERT INTO rebirth(id, name_period, arc, cover, contenu, urban, dctrad, topic) 
+        $req = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, topic) 
                             VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :topic)');
         $req->execute(array(
             'id' => $id,
@@ -24,11 +24,11 @@ include('header.php');
 
         if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
             $newid = $_REQUEST['id'];
-            $bdd->query('UPDATE rebirth SET id=id + 1 WHERE id>='.$newid);
-            $maxid = $bdd->query('SELECT id FROM rebirth WHERE id = (SELECT MAX(id) FROM rebirth)')->fetch(PDO::FETCH_ASSOC);
+            $bdd->query('UPDATE odldc_rebirth SET id=id + 1 WHERE id>='.$newid);
+            $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
             $oldid = $maxid['id'];
-            $bdd->exec('UPDATE rebirth SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\'');
-            $bdd->exec('ALTER TABLE rebirth ORDER BY id ASC');
+            $bdd->exec('UPDATE odldc_rebirth SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\'');
+            $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
             echo " en position ".$newid;
         }
         echo ".";

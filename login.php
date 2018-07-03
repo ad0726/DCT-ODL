@@ -9,12 +9,12 @@ if($_SERVER['QUERY_STRING'] == "login") {
             $login = strtolower($_REQUEST['login']);
             $password = md5($_REQUEST['password']);
             //On vérifie que le login existe dans la table
-            $verif_login = $bdd->query('SELECT COUNT(user_name_clean) FROM users WHERE user_name_clean = \''.$login.'\'');
+            $verif_login = $bdd->query('SELECT COUNT(user_name_clean) FROM odldc_users WHERE user_name_clean = \''.$login.'\'');
             if($verif_login->fetchColumn() == 0) {
                 echo "Mauvais identifiant ou mot de passe !";
             } else {
                 //Séléction du password pour le login saisi
-                $user_password = $bdd->query('SELECT user_password FROM users WHERE user_name_clean = \''.$login.'\' LIMIT 1')->fetch();
+                $user_password = $bdd->query('SELECT user_password FROM odldc_users WHERE user_name_clean = \''.$login.'\' LIMIT 1')->fetch();
                 if ($password == $user_password['user_password']) { // Vérification que le mot de passe correspond
                     echo "Bonjour ".$_REQUEST['login']."\n";
                     $_SESSION['pseudo'] = $_REQUEST['login'];

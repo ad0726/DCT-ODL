@@ -1,5 +1,7 @@
 <?php
 include('header.php');
+// echo md5("30031939");
+// die;
 echo "
         <section>";
 $answer = $bdd->query('SELECT * FROM rebirth ORDER BY id DESC');
