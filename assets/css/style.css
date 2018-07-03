@@ -1,0 +1,104 @@
+header {
+  width: 100%;
+  height: 200px;
+  background: #0079f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title_header {
+  width: 100%;
+  text-align: center;
+  color: lightgrey;
+}
+
+.title_header h1 {
+  margin: 0;
+}
+
+.admin {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  color: lightblue;
+}
+
+.div_btn_head {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn_head {
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border: transparent;
+  background: lightgrey;
+}
+
+input:invalid {
+    background-color: pink;
+}
+table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  margin: 0 auto;
+  width: 90%;
+}
+table tr.line {
+  height: 200px;
+  background-color: white;
+}
+.modify {
+  margin-left: 10px;
+}
+.modify a, .delete a {
+  color: grey;
+}
+
+.modify_form {
+  display: none;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  margin: 0 auto;
+  width: 50%;
+  height: 450px;
+  background: white;
+  border: lightgrey 1px solid;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.form form input,
+.form form textarea,
+.form form select {
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border: transparent;
+  background: lightgrey;
+  color: #0079f0;
+}
+
+.form form .input {
+  width: 250px;
+}
+
+.form form .content {
+  width: 250px;
+  height: 100px;
+}
+
+.form form .pos {
+  width: 50px;
+}
+
+.form form .btn_send {
+  width: 100%;
+}

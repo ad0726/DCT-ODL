@@ -1,7 +1,5 @@
 <?php
 include('header.php');
-displayLogin();
-logout();
 echo "<section>\n";
 echo "<table>\n";
 $answer = $bdd->query('SELECT * FROM rebirth ORDER BY id DESC');

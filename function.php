@@ -1,74 +1,34 @@
 <?php
-try
-{
-	$bdd = new PDO('mysql:host=localhost;dbname=odldc;charset=utf8', 'root', '');
-}
-catch(Exception $e)
-{
-        die('Erreur : '.$e->getMessage());
-}
-
+include("config.php");
 function displayHeader() {
-    if (!isset($_SESSION['pseudo']))
-    {
-        echo "<button class='log' type='button' ><a href='?login'>Connexion</a></button>";
-        echo "<style>
-                .nolog {
-                    display: none;
-                }
-              </style>";
+        echo "<div class='admin'>";
+    if (!isset($_SESSION['pseudo'])) {
+        echo " 
+                <button class='log btn_head' type='button' ><a href='?login'><i class='fas fa-sign-in-alt'></i></a></button>
+                <style>
+                    .nolog {
+                        display: none;
+                    }
+                </style>";
+    } else {
+        echo "
+                <div class='div_btn_head'>
+                <p>Hello ".$_SESSION['pseudo']."</p>
+                <button type='button' class='btn_head' ><a href='?login-out'><i class='fas fa-sign-out-alt'></i></a></button>
+                <button type='button' class='btn_head' ><a href='rebirth.php' target='_blank'><i class='fas fa-glasses'></i></a></button>
+                <button type='button' class='btn_head' ><a href='add.php' target='_blank'><i class='fas fa-plus-circle'></i></a></button>
+                <button type='button' class='btn_head' ><a href='modify.php' target='_blank'><i class='fas fa-exchange-alt'></i></a></button>
+                </div>";
     }
-    if (isset($_SESSION['pseudo']))
-    {
-        echo "<button type='button' ><a href='?login-out'>Déconnexion</a></button>";
-        echo "<button type='button' ><a href='interface.php' target='_blank'>Ajouter un arc</a></button>";
-    }
-}
-
-function displayLogin() {
-    global $bdd;
-    if($_SERVER['QUERY_STRING'] == "login") {
-        echo "<style>
-                button.log {
-                    display: none;
-                }
-              </style>";
-        if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-            $login = strtolower($_REQUEST['login']);
-            $password = md5($_REQUEST['password']);
-            //On vérifie que le login existe dans la table
-            $verif_login = $bdd->query('SELECT COUNT(user_name_clean) FROM users WHERE user_name_clean = \''.$login.'\'');
-            if($verif_login->fetchColumn() == 0) {
-                echo "Mauvais identifiant ou mot de passe !";
-            } else {
-                //Séléction du password pour le login saisi
-                $user_password = $bdd->query('SELECT user_password FROM users WHERE user_name_clean = \''.$login.'\' LIMIT 1')->fetch();
-                if ($password == $user_password['user_password']) { // Vérification que le mot de passe correspond
-                    echo "Bonjour ".$_REQUEST['login']."\n";
-                    $_SESSION['pseudo'] = $_REQUEST['login'];
-                    header('Location: '.$_SERVER['HTTP_HOST']);
-                } else {
-                    echo "Mauvais identifiant ou mot de passe !";
-                }
-            }
-        } else {
-        ?>
-        <form action="?login" method="post">
-            <input type="hidden" name="formfilled" value="42" />
-            <label for="login">Identifiant</label><br />
-            <input type="text" name="login" placeholder="Identifiant"><br />
-            <label for="password">Mot de passe</label><br />
-            <input type="password" name="password"><br />
-            <input type="submit" value="Envoyer">
-        </form>
-    <?php }}
+    echo "
+            </div>\n";
 }
 
 function logout() {
     if($_SERVER['QUERY_STRING'] == "login-out") {
         echo "blop";
         session_destroy();
-        header('Location: '.$_SERVER['HTTP_HOST']);
+        header('Location: '.$_SERVER['SCRIPT_NAME']);
     }
 }
 
@@ -163,6 +123,38 @@ function button($modify, $delete, $line) {
                     header('Location: '.$_SERVER['HTTP_HOST']);
                 }
         }
+    }
+}
+
+function uploadCover() {
+    global $name_ext;
+    $error = FALSE;
+// VERIF UPLOAD
+    if ($_FILES['cover']['error'] > 0) $error[1] = "error lors du transfert";
+// VERIF WEIGHT
+    $maxsize = 1048576;
+    if ($_FILES['cover']['size'] > $maxsize) $error[2] = "Le fichier est trop gros";
+// VERIF EXTENSION
+    $img_ext_ok = array( 'jpg' , 'jpeg' , 'png' );
+    $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
+    if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte";
+// VERIF SIZE
+    $maxwidth = 150;
+    $maxheight = 250;
+    $image_sizes = getimagesize($_FILES['cover']['tmp_name']);
+    if ($image_sizes[0] > $maxwidth OR $image_sizes[1] > $maxheight) $error[4] = "Image trop grande";
+// AFFICHAGE DE L'ERREUR OU ENVOI
+    if (!empty($error)) {
+        echo @$error[1];
+        echo @$error[2];
+        echo @$error[3];
+        echo @$error[4];
+    } else {
+        $name = md5(uniqid(rand(), true));
+        $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
+        $name_ext = "assets/img/covers/{$name}.{$ext_upload}";
+        $resultat = move_uploaded_file($_FILES['cover']['tmp_name'],$name_ext);
+        if (!$resultat) echo "Transfert échoué\n";
     }
 }
 ?>
