@@ -1,2 +1,3 @@
 # DCT-ODL
-ODL for DCTrad
+Create a reading order DC Comics.
+http://odldc.dctrad.fr/
