@@ -2,23 +2,22 @@
 include('header.php');
 ?>
 <section>
-<?php
-//    
+<?php    
     if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
         uploadCover();
         $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
-        $id = ++$maxid['id'];
-        $req = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, topic) 
+        $id    = ++$maxid['id'];
+        $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, topic) 
                             VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :topic)');
         $req->execute(array(
-            'id' => $id,
-            'name_period'     => $_REQUEST['name_period'],
-            'arc'     => $_REQUEST['titre_arc'],
-            'cover'   => $name_ext,
-            'contenu' => $_REQUEST['contenu'],
-            'urban'   => $_REQUEST['urban'],
-            'dctrad'  => $_REQUEST['dctrad'],
-            'topic'   => $_REQUEST['topic'],
+            'id'          => $id,
+            'name_period' => $_REQUEST['name_period'],
+            'arc'         => $_REQUEST['titre_arc'],
+            'cover'       => $name_ext,
+            'contenu'     => $_REQUEST['contenu'],
+            'urban'       => $_REQUEST['urban'],
+            'dctrad'      => $_REQUEST['dctrad'],
+            'topic'       => $_REQUEST['topic'],
             ));
         echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
 

@@ -1,19 +1,17 @@
 <?php
 include('header.php');
-// echo md5("30031939");
-// die;
 echo "
         <section>";
-$answer = $bdd->query('SELECT * FROM rebirth ORDER BY id DESC');
+$answer = $bdd->query('SELECT * FROM odldc_rebirth ORDER BY id DESC');
 while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
     $comics[$line['name_period']][$line['id']] = array (
-        "id" => $line['id'],
-        "arc" => $line['arc'],
-        "cover" => $line['cover'], 
-        "contenu" => $line['contenu'], 
-        "urban" => $line['urban'], 
-        "dctrad" => $line['dctrad'], 
-        "topic" => $line['topic']
+        "id"      => $line['id'],
+        "arc"     => $line['arc'],
+        "cover"   => $line['cover'],
+        "contenu" => $line['contenu'],
+        "urban"   => $line['urban'],
+        "dctrad"  => $line['dctrad'],
+        "topic"   => $line['topic']
     );
 }
 foreach ($comics as $period=>$ARlineID) {
