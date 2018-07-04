@@ -6,11 +6,11 @@ if($_SERVER['QUERY_STRING'] == "login") {
                 }
               </style>";
         if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-            $login = strtolower($_REQUEST['login']);
+            $login    = strtolower($_REQUEST['login']);
             $password = md5($_REQUEST['password']);
             //On vérifie que le login existe dans la table
             $verif_login = $bdd->query('SELECT COUNT(user_name_clean) FROM odldc_users WHERE user_name_clean = \''.$login.'\'');
-            if($verif_login->fetchColumn() == 0) {
+            if($verif_login->fetchColumn() == 0 ) {
                 echo "Mauvais identifiant ou mot de passe !";
             } else {
                 //Séléction du password pour le login saisi

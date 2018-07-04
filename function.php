@@ -94,8 +94,8 @@ function uploadCover() {
     $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
     if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.";
 // VERIF SIZE
-    $maxwidth = 150;
-    $maxheight = 250;
+    $maxwidth    = 150;
+    $maxheight   = 250;
     $image_sizes = @getimagesize($_FILES['cover']['tmp_name']);
     if ($image_sizes[0] > $maxwidth OR $image_sizes[1] > $maxheight) $error[4] = "Image trop grande.";
 // AFFICHAGE DE L'ERREUR OU ENVOI
@@ -106,10 +106,10 @@ function uploadCover() {
         echo @$error[3]."<br />";
         echo @$error[4]."<br />";
     } else {
-        $name = md5(uniqid(rand(), true));
+        $name       = md5(uniqid(rand(), true));
         $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-        $name_ext = "assets/img/covers/{$name}.{$ext_upload}";
-        $resultat = move_uploaded_file($_FILES['cover']['tmp_name'],$name_ext);
+        $name_ext   = "assets/img/covers/{$name}.{$ext_upload}";
+        $resultat   = move_uploaded_file($_FILES['cover']['tmp_name'],$name_ext);
         if (!$resultat) echo "Transfert échoué\n";
     }
 }
