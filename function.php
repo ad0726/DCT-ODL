@@ -28,7 +28,6 @@ function displayHeader() {
 
 function logout() {
     if($_SERVER['QUERY_STRING'] == "login-out") {
-        echo "blop";
         session_destroy();
         header('Location: '.$_SERVER['SCRIPT_NAME']);
     }
