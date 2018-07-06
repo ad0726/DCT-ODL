@@ -70,10 +70,10 @@ function displayLine($ARinfo) {
                                 <div class='img_publi'>";
     if ($ARinfo['urban'] == 1) {
         echo "
-            <img src='assets/img/logo_urban_mini.png'>";
+        <a href='".$ARinfo['link_urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
     } else {
         echo "
-            <a href='".$ARinfo['link_urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png' style='opacity: 0.5;'></a>";
+            <img src='assets/img/logo_urban_mini.png' style='opacity: 0.5;'>";
     }
     if ($ARinfo['dctrad'] == 1) {
         echo "
