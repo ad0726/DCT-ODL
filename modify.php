@@ -21,6 +21,9 @@ include('header.php');
             $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
         }
         if (!empty($_REQUEST['new_topic'])) {
+            $bdd->exec('UPDATE odldc_rebirth SET link_urban = \''.$_REQUEST['new_link_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+        }
+        if (!empty($_REQUEST['new_topic'])) {
             $bdd->exec('UPDATE odldc_rebirth SET topic = \''.$_REQUEST['new_topic'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
         }
         if (!empty($_REQUEST['new_id'])) {
@@ -64,6 +67,7 @@ include('header.php');
                     <option value="0">Non</option>
                 </select><br />
             </div>
+            <input type="url" class="input" name="new_link_urban" placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779"><br />
             <input type="url" class="input" name="new_topic" placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234"><br />
             <label for="new_id">Position voulue dans l'ODL</label>
             <input type="number" class="pos" min="0" name="new_id"><br />

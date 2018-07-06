@@ -2,21 +2,23 @@
 include('header.php');
 ?>
 <section>
-<?php    
+<?php
+$blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
     if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
         uploadCover();
         $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
         $id    = ++$maxid['id'];
-        $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, topic) 
-                            VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :topic)');
+        $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :link_urban, :topic)');
         $req->execute(array(
             'id'          => $id,
-            'name_period' => $_REQUEST['name_period'],
-            'arc'         => $_REQUEST['titre_arc'],
+            'name_period' => htmlentities($_REQUEST['name_period']),
+            'arc'         => htmlentities($_REQUEST['titre_arc']),
             'cover'       => $name_ext,
-            'contenu'     => $_REQUEST['contenu'],
+            'contenu'     => htmlentities($_REQUEST['contenu']),
             'urban'       => $_REQUEST['urban'],
             'dctrad'      => $_REQUEST['dctrad'],
+            'link_urban'  => $_REQUEST['link_urban'],
             'topic'       => $_REQUEST['topic'],
             ));
         echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
@@ -66,6 +68,7 @@ include('header.php');
                     <option value="0">Non</option>
                 </select> *<br />
             </div>
+            <input type="url" class="input" name="link_urban" placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779" value="<?= @$_REQUEST['link_urban'] ?>"><br />
             <input type="url" class="input" name="topic" placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234" value="<?= @$_REQUEST['topic'] ?>"><br />
             <div class="tooltip">
                 <span class="tooltiptext">À utiliser pour rajouter entre deux arcs déjà présents. Sinon ne pas remplir.</span>

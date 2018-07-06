@@ -14,12 +14,12 @@ function displayHeader() {
         include("login.php");
     } else {
         echo "
-                <div class='div_btn_head'>
                 <p>Hello ".$_SESSION['pseudo']."</p>
+                <div class='div_btn_head'>
                 <a href='?login-out' title='Déconnexion'><button type='button' class='btn_head' ><i class='fas fa-sign-out-alt'></i></button></a>
-                <a href='rebirth.php' target='_blank' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
-                <a href='add.php' target='_blank' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
-                <a href='modify.php' target='_blank' title='Modifier un arc'><button type='button' class='btn_head' ><i class='fas fa-exchange-alt'></i></button></a>
+                <a href='rebirth.php' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
+                <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
+                <a href='modify.php' title='Modifier un arc'><button type='button' class='btn_head' ><i class='fas fa-exchange-alt'></i></button></a>
                 </div>";
     }
     echo "
@@ -34,18 +34,25 @@ function logout() {
 }
 
 function displayPeriod($period, $ARlineID) {
+    $period_format = strtolower(str_replace(" ", "_", $period));
     echo "
-            <div class='period ".$period."'>
+            <script>
+            $(document).ready(function(){
+     
+                $('.btn_$period_format').click(function() {
+                    $('#$period_format').toggle()
+                });
+            });            
+            </script>
+            <div class='period'>
                 <h2 class='title_period'>".$period."</h2>
-                <button class='btn_show' name='show'>Ouvrir</button>
-                <div class='content_period'>
-                    <button class='btn_hide' name='hide'>Fermer</button><br />";
+                <button class='btn_show btn_$period_format' name='show'>Ouvrir</button>
+                <div class='content_period' id='$period_format'>";
                 foreach ($ARlineID as $lineID=>$ARinfo) {
                     displayLine($ARinfo);
                 }
     echo "
-    
-                    <br /><button class='btn_hide down' name='hide'>Fermer</button>
+                <br /><button class='btn_hide down btn_$period_format' name='hide'>Fermer</button>
                 </div>
             </div>";
 }
@@ -56,26 +63,28 @@ function displayLine($ARinfo) {
                         <tr class='line' id='".$ARinfo['id']."'>
                             <td class='nolog'>".$ARinfo['id']."</td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
-                            <td class='cel_title'><h3>".$ARinfo['arc']."</h3></td>
+                            <td class='cel_title'><span><h3>".$ARinfo['arc']."</h3></span></td>
                             <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
-                            <td class='cel_publi'>";
+                            <td class='cel_publi'>
+                                <h4>Disponible chez</h4>
+                                <div class='img_publi'>";
     if ($ARinfo['urban'] == 1) {
         echo "
-        <img src='assets/img/logo_urban_mini.png'>";
+            <img src='assets/img/logo_urban_mini.png'>";
     } else {
         echo "
-        <img src='assets/img/logo_urban_mini.png' style='opacity: 0.5;'>";
+            <a href='".$ARinfo['link_urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png' style='opacity: 0.5;'></a>";
     }
     if ($ARinfo['dctrad'] == 1) {
         echo "
-        <a href='".$ARinfo['topic']."'><img src='assets/img/logo_dct_mini.png'></a>";
+            <a href='".$ARinfo['topic']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
     } else {
         echo "
-        <img src='assets/img/logo_dct_mini.png' style='opacity: 0.5;'>";
+            <img src='assets/img/logo_dct_mini.png' style='opacity: 0.1;'>";
     }
     echo"
+                                </div>
                             </td>
-                            <td class='nolog'>
                         </tr>
                     </table>";
 }
