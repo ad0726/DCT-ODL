@@ -6,12 +6,14 @@ include('header.php');
     if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         uploadCover();
         if (!empty($_REQUEST['new_title'])) {
+            $_REQUEST['new_title'] = htmlentities($_REQUEST['new_title'], ENT_QUOTES);
             $bdd->exec('UPDATE odldc_rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
         }
         if (!empty($name_ext)) {
             $bdd->exec('UPDATE odldc_rebirth SET cover = \''.$name_ext.'\' WHERE id = \''.$_REQUEST['id'].'\'');
         }
         if (!empty($_REQUEST['new_content'])) {
+            $_REQUEST['new_content'] = htmlentities($_REQUEST['new_content'], ENT_QUOTES);
             $bdd->exec('UPDATE odldc_rebirth SET contenu = \''.$_REQUEST['new_content'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
         }
         if ($_REQUEST['new_urban'] != "") {
@@ -20,7 +22,7 @@ include('header.php');
         if ($_REQUEST['new_dctrad'] != "") {
             $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
         }
-        if (!empty($_REQUEST['new_topic'])) {
+        if (!empty($_REQUEST['new_link_urban'])) {
             $bdd->exec('UPDATE odldc_rebirth SET link_urban = \''.$_REQUEST['new_link_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
         }
         if (!empty($_REQUEST['new_topic'])) {
