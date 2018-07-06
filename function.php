@@ -73,14 +73,14 @@ function displayLine($ARinfo) {
         <a href='".$ARinfo['link_urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
     } else {
         echo "
-            <img src='assets/img/logo_urban_mini.png' style='opacity: 0.5;'>";
+            <img src='assets/img/logo_urban_mini.png' class='logo_opacity'>";
     }
     if ($ARinfo['dctrad'] == 1) {
         echo "
             <a href='".$ARinfo['topic']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
     } else {
         echo "
-            <img src='assets/img/logo_dct_mini.png' style='opacity: 0.1;'>";
+            <img src='assets/img/logo_dct_mini.png' class='logo_opacity'>";
     }
     echo"
                                 </div>
