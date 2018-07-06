@@ -1,11 +1,11 @@
 header {
   width: 100%;
   height: 200px;
-  background: #0079f0;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
+  background: url("../img/banniere_header.png") center;
 }
 
 .title_header {
@@ -49,12 +49,18 @@ header {
   position: absolute;
   top: 10px;
   right: 30px;
-  color: lightblue;
+  color: white;
+  font-weight: bold;
 }
 
 .div_btn_head {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
+}
+
+.div_btn_head .btn_head {
+  width: 60px;
 }
 
 .btn_head {
@@ -75,8 +81,10 @@ table {
   width: 90%;
 }
 table tr.line {
-  height: 200px;
-  background: white;
+  height: 240px;
+  background: rgba(240, 240, 240);
+  display: flex;
+  justify-content: space-between;
 }
 .modify {
   margin-left: 10px;
@@ -104,11 +112,6 @@ table tr.line {
   font-size: 12px;
 }
 
-.form h2,
-.form label {
-  color: #0079f0;
-}
-
 form input,
 .form form textarea,
 .form form select {
@@ -116,7 +119,6 @@ form input,
   border-radius: 5px;
   border: transparent;
   background: lightgrey;
-  color: #0079f0;
 }
 
 .form form .input {
@@ -150,19 +152,17 @@ form input,
 div.period {
   display: flex;
   flex-direction: column;
-  border-bottom: solid 1px white;
-  border-top: solid 1px white;
+  border-bottom: solid 1px black;
+  border-top: solid 1px black;
   border-radius: 20px;
   margin: 0 auto;
   margin-bottom: 10px;
   width: 90%;
-  background: lightgrey;
 }
 
 .title_period {
   width: 100%;
   text-align: center;
-  color: #0079f0;
 }
 
 .btn_show,
@@ -175,7 +175,7 @@ div.period {
   margin-top: 10px;
 }
 
-.btn_hide.down {
+ .btn_hide.down {
   margin-top: -25px;
 }
 
@@ -183,24 +183,32 @@ div.period {
   display: none;
 }
 
-.btn_show:focus + .content_period {
-  display: block;
-}
-
-.btn_hide:focus + .content_period {
-  display: none;
+.content_period table .cel_img {
+  display: flex;
+  align-items: center;
 }
 
 .content_period table .cel_title {
+  text-align: center;
   width: 30%;
-  color: #0079f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .content_period table .cel_content {
-  width: 50%;
+  width: 40%;
   font-size: 12px;
   font-weight: normal;
-  color: #0079f0;
+  display: flex;
+  align-items: center;
+}
+
+.content_period table .cel_publi {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 footer {
@@ -208,7 +216,7 @@ footer {
   bottom: 0;
   width: 100%;
   height: 75px;
-  background: #0079f0;
+  background: #7ccded;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -217,7 +225,6 @@ footer {
 
 footer p {
   font-size: 10px;
-  color: lightgrey;
 }
 
 .tooltip {
