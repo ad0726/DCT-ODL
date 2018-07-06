@@ -170,6 +170,7 @@ div.period {
 .title_period {
   width: 100%;
   text-align: center;
+  cursor: pointer;
 }
 
 .btn_show,
