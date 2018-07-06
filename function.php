@@ -45,8 +45,7 @@ function displayPeriod($period, $ARlineID) {
             });            
             </script>
             <div class='period'>
-                <h2 class='title_period'>".$period."</h2>
-                <button class='btn_show btn_$period_format' name='show'>Ouvrir</button>
+                <h2 class='title_period btn_$period_format'>".$period."</h2>
                 <div class='content_period' id='$period_format'>";
                 foreach ($ARlineID as $lineID=>$ARinfo) {
                     displayLine($ARinfo);
