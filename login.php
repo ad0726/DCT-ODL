@@ -16,9 +16,10 @@ include('header.php');
                 //Séléction du password pour le login saisi
                 $user_password = $bdd->query('SELECT user_password FROM odldc_users WHERE user_name_clean = \''.$login.'\' LIMIT 1')->fetch();
                 if ($password == $user_password['user_password']) { // Vérification que le mot de passe correspond
-                    echo "Bonjour ".$_REQUEST['login']."\n";
                     $_SESSION['pseudo'] = $_REQUEST['login'];
-                    header('Location: index.php');
+                    echo "<script>
+                    location.href='index.php';
+                    </script>";
                 } else {
                     echo "Mauvais identifiant ou mot de passe !";
                 }
