@@ -50,7 +50,7 @@ include('header.php');
         <form action="?" method="post" enctype="multipart/form-data">
             <input type="hidden" name="formfilled" value="42" />
             <label for="id">Position actuelle dans l'ODL</label>
-            <input type="number" class="pos" min="0" name="id"> *<br />
+            <input type="number" class="pos" min="0" name="id" value="<?= $_GET["id"] ?>"> *<br />
             <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
