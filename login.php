@@ -1,5 +1,5 @@
 <?php
-if($_SERVER['QUERY_STRING'] == "login") {
+include('header.php');
         echo "<style>
                 button.log {
                     display: none;
@@ -18,19 +18,22 @@ if($_SERVER['QUERY_STRING'] == "login") {
                 if ($password == $user_password['user_password']) { // Vérification que le mot de passe correspond
                     echo "Bonjour ".$_REQUEST['login']."\n";
                     $_SESSION['pseudo'] = $_REQUEST['login'];
-                    header('Location: '.$_SERVER['SCRIPT_NAME']);
+                    header('Location: index.php');
                 } else {
                     echo "Mauvais identifiant ou mot de passe !";
                 }
             }
         } else {
         ?>
-        <form action="?login" method="post">
-            <input type="hidden" name="formfilled" value="42" />
-            <label for="login">Identifiant</label><br />
-            <input type="text" name="login" placeholder="Identifiant"><br />
-            <label for="password">Mot de passe</label><br />
-            <input type="password" name="password"><br />
-            <input type="submit" value="Envoyer">
-        </form>
-<?php }} ?>
+        <div class="form login">
+            <form action="?login" method="post">
+                <input type="hidden" name="formfilled" value="42" />
+                <label for="login">Identifiant</label><br />
+                <input type="text" name="login" placeholder="Identifiant"><br />
+                <label for="password">Mot de passe</label><br />
+                <input type="password" name="password"><br />
+                <input type="submit" value="Envoyer">
+            </form>
+        </div>
+<?php } 
+include('footer.php');?>
