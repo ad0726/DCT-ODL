@@ -119,6 +119,12 @@ table tr.line {
   margin-bottom: 20px;
 }
 
+.form.login {
+  margin-top: 20px;
+  height: 200px;
+  width: 200px;
+}
+
 form input,
 .form form textarea,
 .form form select {
