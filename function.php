@@ -5,18 +5,19 @@ function displayHeader() {
         echo "<div class='admin'>";
     if (!isset($_SESSION['pseudo'])) {
         echo " 
-                <a href='?login' title='Connexion'><button class='log btn_head' type='button' ><i class='fas fa-sign-in-alt'></i></button></a>
+                <a href='login.php' title='Connexion'><button class='log btn_head' type='button' ><i class='fas fa-sign-in-alt'></i></button></a>
                 <style>
                     .nolog {
                         display: none;
                     }
-                </style>";        
-        include("login.php");
+                </style>";
     } else {
         echo "
                 <p>Hello ".$_SESSION['pseudo']."</p>
                 <div class='div_btn_head'>
-                <a href='?login-out' title='Déconnexion'><button type='button' class='btn_head' ><i class='fas fa-sign-out-alt'></i></button></a>
+                <a href='?logout' title='Déconnexion'>
+                <button type='button' class='btn_head'><i class='fas fa-sign-out-alt'></i></button>
+                </a>
                 <a href='rebirth.php' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
                 <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
                 <a href='modify.php' title='Modifier un arc'><button type='button' class='btn_head' ><i class='fas fa-exchange-alt'></i></button></a>
@@ -27,9 +28,12 @@ function displayHeader() {
 }
 
 function logout() {
-    if($_SERVER['QUERY_STRING'] == "login-out") {
+    if($_SERVER['QUERY_STRING'] == "logout") {
         session_destroy();
-        header('Location: '.$_SERVER['SCRIPT_NAME']);
+        echo "<script>
+            alert('Vous avez bien été déconnecté.');
+            location.href='index.php';
+        </script>";
     }
 }
 
