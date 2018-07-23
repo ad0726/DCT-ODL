@@ -6,7 +6,7 @@ include('header.php');
                 }
               </style>";
         if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-            $login    = $bdd->escape_string(strtolower($_REQUEST['login']));
+            $login    = htmlentities(strtolower($_REQUEST['login']));
             $password = md5($_REQUEST['password']);
             //On vérifie que le login existe dans la table
             $verif_login = $bdd->query('SELECT COUNT(user_name_clean) FROM odldc_users WHERE user_name_clean = \''.$login.'\'');

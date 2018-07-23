@@ -61,10 +61,11 @@ function displayPeriod($period, $ARlineID) {
 }
 
 function displayLine($ARinfo) {
+    $id = $ARinfo['id'];
     echo "
                     <table>
-                        <tr class='line' id='".$ARinfo['id']."'>
-                            <td class='nolog'>".$ARinfo['id']."</td>
+                        <tr class='line' id='".$id."'>
+                            <td class='nolog'>".$id."</td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
                             <td class='cel_title'><span><h3>".$ARinfo['arc']."</h3></span></td>
                             <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
@@ -87,6 +88,11 @@ function displayLine($ARinfo) {
     }
     echo"
                                 </div>
+                            </td>
+                            <td class='nolog'>
+                                <a href='modify.php?id=$id' title='Modifier'>
+                                    <button type='button' class='btn_head'><i class='fas fa-pencil-alt'></i></button>
+                                </a>
                             </td>
                         </tr>
                     </table>";
