@@ -84,12 +84,16 @@ include('header.php');
             'content'      => $backlog['content'],
             'urban'        => $backlog['urban'],
             'dctrad'       => $backlog['dctrad'],
-            'link_urban'   => $backlog['links']['old'],
-            'topic'        => $backlog['links']['new']
+            'link_urban'   => $backlog['links']['urban'],
+            'topic'        => $backlog['links']['dctrad']
         ));
-        echo "L'ODL a bien été mis à jour.";
+        echo "<div class='form'>
+        L'ODL a bien été mis à jour.";
 ?>
-        <button type="button" ><a href="modify.php">Retour au formulaire</a></button>
+        <br />
+        <a href="modify.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
+        <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
+    </div>
 <?php
     } elseif (isset($_SESSION['pseudo'])) {
 ?>

@@ -32,6 +32,26 @@ $blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
             $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
             echo " en position ".$newid;
         }
+        $date = new DateTime();
+        if (!isset($newid)) {
+            $pos = $id;
+        } else {
+            $pos = $newid;
+        }
+        $backlog = array(
+            'id'          => $date->format('Y-m-d_H:i:s'),
+            'name_period' => $_REQUEST['name_period'],
+            'position'    => $pos,
+            'title'       => $_REQUEST['titre_arc'],
+        );
+        $req_bl   = $bdd->prepare('INSERT INTO odldc_backlog(id, name_period, new_position, title) 
+                            VALUES(:id, :name_period, :new_position, :title)');
+        $req_bl->execute(array(
+            'id'           => $backlog['id'],
+            'name_period'  => $backlog['name_period'],
+            'new_position' => $backlog['position'],
+            'title'        => $backlog['title']
+        ));
         echo ".";
 ?>
         <button type="button" ><a href="add.php">Retour au formulaire</a></button>
