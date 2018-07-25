@@ -3,9 +3,9 @@ include('header.php');
 ?>
 <section>
 <?php
-$blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
     if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
-        uploadCover();
+        echo "<div class='form'>";
+            uploadCover();
         $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
         $id    = ++$maxid['id'];
         $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic) 
@@ -45,13 +45,12 @@ $blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
             'position'    => $pos,
             'title'       => htmlentities($_REQUEST['titre_arc']),
         );
-        print_r($backlog);
-        // die;
-        $query   = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :bl_type, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+        $query = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :bl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
         $query->execute(array(
             'id'           => $backlog['id'],
             'bl_type'      => 'add',
+            'name_era'     => $_REQUEST["name_era"],
             'name_period'  => $backlog['name_period'],
             'old_position' => '',
             'new_position' => $backlog['position'],
@@ -66,7 +65,9 @@ $blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
         ));
         echo ".";
 ?>
-        <button type="button" ><a href="add.php">Retour au formulaire</a></button>
+            <a href="add.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
+            <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
+        </div>
 <?php
     } elseif (isset($_SESSION['pseudo'])) {
 ?>
@@ -74,6 +75,9 @@ $blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
         <h2>Ajouter un arc</h2>
         <form action="?" method="post" enctype="multipart/form-data">
             <input type="hidden" name="formfilled" value="42" />
+            <select name="name_era">
+                <option value="Rebirth">Rebirth</option>
+            </select> *<br />
             <select name="name_period">
                 <option value="">Période</option>
                 <option value="Road to Rebirth">Road to Rebirth</option>

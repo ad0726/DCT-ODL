@@ -4,8 +4,10 @@ include('header.php');
 <section>
 <?php
     if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        $title = $bdd->exec('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'');
-        uploadCover();
+        echo "<div class='form'>";
+        if (!empty($_REQUEST['cover'])) {
+            uploadCover();
+        }
         if (!empty($_REQUEST['new_title'])) {
             $_REQUEST['new_title'] = htmlentities($_REQUEST['new_title'], ENT_QUOTES);
             $bdd->exec('UPDATE odldc_rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
@@ -37,27 +39,29 @@ include('header.php');
             $bdd->exec('UPDATE odldc_rebirth SET topic = \''.$_REQUEST['new_topic'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
             $update_topic = TRUE;
         }
-        if (!empty($_REQUEST['new_id'])) {
+        if (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] > $_REQUEST['id'])) {
             $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = \''.$_REQUEST['id'].'\'');
-            $bdd->query('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$_REQUEST['id'].' AND '.$_REQUEST['new_id']);
+            $bdd->exec('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$_REQUEST['id'].' AND '.$_REQUEST['new_id']);
             $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
-            $bdd->exec('ALTER TABLE rebirth ORDER BY id ASC');
-        } elseif (!empty($_REQUEST['new_id'])) {
+            $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
+        } elseif (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] < $_REQUEST['id'])) {
             $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = '.$_REQUEST['id']);
-            $bdd->query('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$_REQUEST['id']);
+            $bdd->exec('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$_REQUEST['id']);
             $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
             $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
         }
-        $date = new DateTime();
+        
+        $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+        $date    = new DateTime();
         $backlog = array(
-            'id'          => $date->format('Y-m-d_H:i:s'),
-            'name_period' => $_REQUEST['name_period'],
-            'position'    => array(
+            'id'       => $date->format('Y-m-d_H:i:s'),
+            'era'      => $_REQUEST['name_era'],
+            'position' => array(
                 'old' => $_REQUEST['id'],
                 'new' => $_REQUEST['new_id']
             ),
             'title' => array(
-                'old' => $title,
+                'old' => $title['arc'],
                 'new' => $_REQUEST['new_title']
             ),
             'cover'   => $update_img,
@@ -69,15 +73,14 @@ include('header.php');
                 'dctrad' => $update_topic
             ),
         );
-        // print_r($backlog);
-        // die;
         
-        $query   = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :bl_type, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+        $query = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :bl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
         $query->execute(array(
         'id'           => $backlog['id'],
         'bl_type'      => 'modify',
-        'name_period'  => $backlog['name_period'],
+        'name_era'     => $backlog['era'],
+        'name_period'  => '',
         'old_position' => $backlog['position']['old'],
         'new_position' => $backlog['position']['new'],
         'title'        => $backlog['title']['old'],
@@ -90,8 +93,7 @@ include('header.php');
         'topic'        => $backlog['links']['dctrad']
         ));
 
-        echo "<div class='form'>
-        L'ODL a bien été mis à jour.";
+        echo "L'ODL a bien été mis à jour.";
 ?>
         <br />
         <a href="modify.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
@@ -104,16 +106,9 @@ include('header.php');
         <h2>Modifier un arc</h2>
         <form action="?" method="post" enctype="multipart/form-data">
             <input type="hidden" name="formfilled" value="42" />
-            <select name="name_period">
-                <option value="">Période</option>
-                <option value="Road to Rebirth">Road to Rebirth</option>
-                <option value="Rebirth">Rebirth</option>
-                <option value="Metal">Metal</option>
-                <option value="Post-Metal">Post-Metal</option>
-                <option value="New Justice">New Justice</option>
-            </select> *<br />
+            <input type="hidden" name="name_era" value="<?= @$_GET["era"] ?>" />
             <label for="id">Position actuelle dans l'ODL</label>
-            <input type="number" class="pos" min="0" name="id" value="<?= $_GET["id"] ?>"> *<br />
+            <input type="number" class="pos" min="0" name="id" value="<?= @$_GET["id"] ?>"> *<br />
             <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
