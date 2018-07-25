@@ -33,6 +33,7 @@ $blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
             echo " en position ".$newid;
         }
         $date = new DateTime();
+        $date->setTimezone(new DateTimeZone('+0200'));
         if (!isset($newid)) {
             $pos = $id;
         } else {
@@ -40,17 +41,28 @@ $blop = "Urban Comics (Librairie) : Superman - L'homme de Demain #01.";
         }
         $backlog = array(
             'id'          => $date->format('Y-m-d_H:i:s'),
-            'name_period' => $_REQUEST['name_period'],
+            'name_period' => htmlentities($_REQUEST['name_period']),
             'position'    => $pos,
-            'title'       => $_REQUEST['titre_arc'],
+            'title'       => htmlentities($_REQUEST['titre_arc']),
         );
-        $req_bl   = $bdd->prepare('INSERT INTO odldc_backlog(id, name_period, new_position, title) 
-                            VALUES(:id, :name_period, :new_position, :title)');
-        $req_bl->execute(array(
+        print_r($backlog);
+        // die;
+        $query   = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :bl_type, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+        $query->execute(array(
             'id'           => $backlog['id'],
+            'bl_type'      => 'add',
             'name_period'  => $backlog['name_period'],
+            'old_position' => '',
             'new_position' => $backlog['position'],
-            'title'        => $backlog['title']
+            'title'        => $backlog['title'],
+            'new_title'    => '',
+            'cover'        => '',
+            'content'      => '',
+            'urban'        => '',
+            'dctrad'       => '',
+            'link_urban'   => '',
+            'topic'        => '',
         ));
         echo ".";
 ?>

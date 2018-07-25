@@ -71,22 +71,25 @@ include('header.php');
         );
         // print_r($backlog);
         // die;
-        $req_bl   = $bdd->prepare('INSERT INTO odldc_backlog(id, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
-        $req_bl->execute(array(
-            'id'           => $backlog['id'],
-            'name_period'  => $backlog['name_period'],
-            'old_position' => $backlog['position']['old'],
-            'new_position' => $backlog['position']['new'],
-            'title'        => $backlog['title']['old'],
-            'new_title'    => $backlog['title']['new'],
-            'cover'        => $backlog['cover'],
-            'content'      => $backlog['content'],
-            'urban'        => $backlog['urban'],
-            'dctrad'       => $backlog['dctrad'],
-            'link_urban'   => $backlog['links']['urban'],
-            'topic'        => $backlog['links']['dctrad']
+        
+        $query   = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :bl_type, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+        $query->execute(array(
+        'id'           => $backlog['id'],
+        'bl_type'      => 'modify',
+        'name_period'  => $backlog['name_period'],
+        'old_position' => $backlog['position']['old'],
+        'new_position' => $backlog['position']['new'],
+        'title'        => $backlog['title']['old'],
+        'new_title'    => $backlog['title']['new'],
+        'cover'        => $backlog['cover'],
+        'content'      => $backlog['content'],
+        'urban'        => $backlog['urban'],
+        'dctrad'       => $backlog['dctrad'],
+        'link_urban'   => $backlog['links']['urban'],
+        'topic'        => $backlog['links']['dctrad']
         ));
+
         echo "<div class='form'>
         L'ODL a bien été mis à jour.";
 ?>
