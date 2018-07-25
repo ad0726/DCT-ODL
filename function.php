@@ -62,6 +62,7 @@ function displayPeriod($period, $ARlineID) {
 
 function displayLine($ARinfo) {
     $id = $ARinfo['id'];
+    $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     echo "
                     <table>
                         <tr class='line' id='".$id."'>
@@ -90,7 +91,7 @@ function displayLine($ARinfo) {
                                 </div>
                             </td>
                             <td class='nolog'>
-                                <a href='modify.php?id=$id' title='Modifier'>
+                                <a href='modify.php?era=$era_current&id=$id' title='Modifier'>
                                     <button type='button' class='btn_head'><i class='fas fa-pencil-alt'></i></button>
                                 </a>
                             </td>
