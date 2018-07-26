@@ -5,7 +5,7 @@ include('header.php');
 <?php
     if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
         echo "<div class='form'>";
-            uploadCover();
+        uploadCover();
         $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
         $id    = ++$maxid['id'];
         $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic) 
