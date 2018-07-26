@@ -21,6 +21,7 @@ function displayHeader() {
                 <a href='rebirth.php' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
                 <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
                 <a href='modify.php' title='Modifier un arc'><button type='button' class='btn_head' ><i class='fas fa-exchange-alt'></i></button></a>
+                <a href='backlog.php' title='Voir le backlog'><button type='button' class='btn_head' ><i class='fas fa-list-ul'></i></button></a>
                 </div>";
     }
     echo "
@@ -130,5 +131,56 @@ function uploadCover() {
         $resultat   = move_uploaded_file($_FILES['cover']['tmp_name'],$name_ext);
         if (!$resultat) echo "Transfert échoué\n";
     }
+}
+
+function displayBacklog($val) {
+    if ($val['bl_type'] == "add") {
+        $type = "ajouté à ".$val['name_era']." dans ".$val['name_period']." en position ".$val['new_position'].".";
+    } else {
+        $type = "modifié dans ".$val['name_era'].".";
+    }
+    echo "<div class='bl_line'>
+    <div class='bl_date'>
+        <p>Le ".str_replace('_', ' à ', $val['id'])."</p>
+    </div>
+    <div class='bl_content'>
+    <p>".ucfirst($val['title'])." a été $type";
+    if ($val['bl_type'] == "modify") {
+        echo "<ul class='bl_list'>";
+        if (!empty($val['new_title'])) {
+            echo "<li>le titre a été modifié pour : ".$val['new_title'].".</li>";
+        }
+        if (!empty($val['new_position'])) {
+            echo "<li>a été replacé en position : ".$val['new_position'].".</li>";
+        }
+        if ($val['cover'] == 1) {
+            echo "<li>la cover a été mise à jour.</li>";
+        }
+        if ($val['content'] == 1) {
+            echo "<li>le contenu de l'arc a été mis à jour.</li>";
+        }
+        if (!empty($val['urban'])) {
+            if ($val['urban'] == 1) {
+                echo "<li>l'option Urban a été sélectionnée.</li>";
+            } else {
+                echo "<li>l'option Urban a été désélectionnée.</li>";
+            }
+        }
+        if (!empty($val['dctrad'])) {
+            if ($val['dctrad'] == 1) {
+                echo "<li>l'option DCtrad a été sélectionnée.</li>";
+            } else {
+                echo "<li>l'option DCtrad a été désélectionnée.</li>";
+            }
+        }
+        if ($val['link_urban'] == 1) {
+            echo "<li>le lien Urban a été mis à jour.</li>";
+        }
+        if ($val['topic'] == 1) {
+            echo "<li>le lien DCTrad a été mis à jour.</li>";
+        }
+        echo "</ul>";
+    }
+    echo "</div>\n</p>\n</div>\n";
 }
 ?>

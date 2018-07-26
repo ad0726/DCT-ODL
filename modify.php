@@ -5,9 +5,7 @@ include('header.php');
 <?php
     if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         echo "<div class='form'>";
-        if (!empty($_REQUEST['cover'])) {
-            uploadCover();
-        }
+        uploadCover();
         if (!empty($_REQUEST['new_title'])) {
             $_REQUEST['new_title'] = htmlentities($_REQUEST['new_title'], ENT_QUOTES);
             $bdd->exec('UPDATE odldc_rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
