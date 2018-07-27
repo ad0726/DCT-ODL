@@ -1,7 +1,7 @@
 <?php
 include('header.php');
 ?>
-<section>
+<section class="backlog">
 <h1>Les derniers ajouts / modifications de l'ODL</h1>
 <?php
 if (isset($_SESSION['pseudo'])) {
