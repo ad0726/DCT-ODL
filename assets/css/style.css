@@ -243,6 +243,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 footer p {
@@ -288,6 +289,11 @@ footer p {
 }
 
 /* BACKLOG */
+.backlog h1 {
+  font-size: 20px;
+  margin: 5px;
+  text-align: center;
+}
 .bl_line {
   background: #e6e6e6;
   line-height: 20px;

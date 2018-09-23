@@ -1,10 +1,11 @@
 <?php
 include('header.php');
 ?>
-<section>
+<section class="backlog">
+<h1>Les derniers ajouts / modifications de l'ODL</h1>
 <?php
 if (isset($_SESSION['pseudo'])) {
-    $query = $bdd->query('SELECT * FROM odldc_backlog');
+    $query = $bdd->query('SELECT * FROM odldc_backlog ORDER BY id DESC LIMIT 20');
 
     while ($bl = $query->fetch(PDO::FETCH_ASSOC)) {
         $backlog[$bl['id']] = $bl;
