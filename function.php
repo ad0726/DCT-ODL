@@ -183,4 +183,8 @@ function displayBacklog($val) {
     }
     echo "</div>\n</p>\n</div>\n";
 }
+
+function displayBtnUp() {
+    echo "<a href='#up'><div class='btnup'><i class='fas fa-arrow-circle-up'></i></div></a>";
+}
 ?>

@@ -18,6 +18,7 @@ while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
 foreach ($comics as $period=>$ARlineID) {
     displayPeriod($period, $ARlineID);
 }
+displayBtnUp();
 echo "
         </section>\n";
 include("footer.php");
