@@ -21,7 +21,7 @@ function displayHeader() {
                 <a href='rebirth.php' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
                 <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
                 <a href='modify.php' title='Modifier un arc'><button type='button' class='btn_head' ><i class='fas fa-exchange-alt'></i></button></a>
-                <a href='backlog.php' title='Voir le backlog'><button type='button' class='btn_head' ><i class='fas fa-list-ul'></i></button></a>
+                <a href='changelog.php' title='Voir le changelog'><button type='button' class='btn_head' ><i class='fas fa-list-ul'></i></button></a>
                 </div>";
     }
     echo "
@@ -133,20 +133,20 @@ function uploadCover() {
     }
 }
 
-function displayBacklog($val) {
-    if ($val['bl_type'] == "add") {
+function displayChangelog($val) {
+    if ($val['cl_type'] == "add") {
         $type = "ajouté à ".$val['name_era']." dans ".$val['name_period']." en position ".$val['new_position'].".";
     } else {
         $type = "modifié dans ".$val['name_era'].".";
     }
-    echo "<div class='bl_line'>
-    <div class='bl_date'>
+    echo "<div class='cl_line'>
+    <div class='cl_date'>
         <p>Le ".str_replace('_', ' à ', $val['id'])."</p>
     </div>
-    <div class='bl_content'>
+    <div class='cl_content'>
     <p>".ucfirst($val['title'])." a été $type";
-    if ($val['bl_type'] == "modify") {
-        echo "<ul class='bl_list'>";
+    if ($val['cl_type'] == "modify") {
+        echo "<ul class='cl_list'>";
         if (!empty($val['new_title'])) {
             echo "<li>le titre a été modifié pour : ".$val['new_title'].".</li>";
         }
