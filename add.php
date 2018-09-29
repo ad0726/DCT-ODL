@@ -39,22 +39,22 @@ include('header.php');
         } else {
             $pos = $newid;
         }
-        $backlog = array(
+        $changelog = array(
             'id'          => $date->format('Y-m-d_H:i:s'),
             'name_period' => htmlentities($_REQUEST['name_period']),
             'position'    => $pos,
             'title'       => htmlentities($_REQUEST['titre_arc']),
         );
-        $query = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :bl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+        $query = $bdd->prepare('INSERT INTO odldc_changelog(id, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
         $query->execute(array(
-            'id'           => $backlog['id'],
-            'bl_type'      => 'add',
+            'id'           => $changelog['id'],
+            'cl_type'      => 'add',
             'name_era'     => $_REQUEST["name_era"],
-            'name_period'  => $backlog['name_period'],
+            'name_period'  => $changelog['name_period'],
             'old_position' => '',
-            'new_position' => $backlog['position'],
-            'title'        => $backlog['title'],
+            'new_position' => $changelog['position'],
+            'title'        => $changelog['title'],
             'new_title'    => '',
             'cover'        => '',
             'content'      => '',

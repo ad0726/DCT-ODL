@@ -288,13 +288,13 @@ footer p {
   opacity: 1;
 }
 
-/* BACKLOG */
-.backlog h1 {
+/* CHANGELOG */
+.changelog h1 {
   font-size: 20px;
   margin: 5px;
   text-align: center;
 }
-.bl_line {
+.cl_line {
   background: #e6e6e6;
   line-height: 20px;
   margin-bottom: 5px;
@@ -303,11 +303,11 @@ footer p {
   padding: 5px;
 }
 
-.bl_line p, .bl_line ul {
+.cl_line p, .cl_line ul {
   margin: 0;
 }
 
-.bl_line .bl_date {
+.cl_line .cl_date {
   font-size: 10px;
   min-height: 50px;
   max-height: 100%;
@@ -318,7 +318,7 @@ footer p {
   justify-content: center;
 }
 
-.bl_line .bl_content {
+.cl_line .cl_content {
   font-size: 16px;
   display: flex;
   flex-direction: column;
@@ -326,6 +326,6 @@ footer p {
   padding-left: 5px;
 }
 
-.bl_line .bl_list {
+.cl_line .cl_list {
   font-size: 12px;
 }

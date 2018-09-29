@@ -63,10 +63,10 @@ include('header.php');
             $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
         }
         
-        // Backlog
+        // Changelog
         $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
         $date    = new DateTime();
-        $backlog = array(
+        $changelog = array(
             'id'       => $date->format('Y-m-d_H:i:s'),
             'era'      => $_REQUEST['name_era'],
             'position' => array(
@@ -87,23 +87,23 @@ include('header.php');
             ),
         );
 
-        $query = $bdd->prepare('INSERT INTO odldc_backlog(id, bl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :bl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+        $query = $bdd->prepare('INSERT INTO odldc_changelog(id, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
         $query->execute(array(
-        'id'           => $backlog['id'],
-        'bl_type'      => 'modify',
-        'name_era'     => $backlog['era'],
+        'id'           => $changelog['id'],
+        'cl_type'      => 'modify',
+        'name_era'     => $changelog['era'],
         'name_period'  => '',
-        'old_position' => $backlog['position']['old'],
-        'new_position' => $backlog['position']['new'],
-        'title'        => $backlog['title']['old'],
-        'new_title'    => $backlog['title']['new'],
-        'cover'        => $backlog['cover'],
-        'content'      => $backlog['content'],
-        'urban'        => $backlog['urban'],
-        'dctrad'       => $backlog['dctrad'],
-        'link_urban'   => $backlog['links']['urban'],
-        'topic'        => $backlog['links']['dctrad']
+        'old_position' => $changelog['position']['old'],
+        'new_position' => $changelog['position']['new'],
+        'title'        => $changelog['title']['old'],
+        'new_title'    => $changelog['title']['new'],
+        'cover'        => $changelog['cover'],
+        'content'      => $changelog['content'],
+        'urban'        => $changelog['urban'],
+        'dctrad'       => $changelog['dctrad'],
+        'link_urban'   => $changelog['links']['urban'],
+        'topic'        => $changelog['links']['dctrad']
         ));
 
         echo "L'ODL a bien été mis à jour.";
