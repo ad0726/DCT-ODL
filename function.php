@@ -47,25 +47,49 @@ function displayPeriod($period, $ARlineID) {
                 $('.btn_$period_format').click(function() {
                     $('#$period_format').toggle()
                 });
-            });            
+            });           
             </script>
             <div class='period'>
                 <h2 class='title_period btn_$period_format'>".$period."</h2>
                 <div class='content_period' id='$period_format'>";
+                $i = 1;
+                $p = 1;
                 foreach ($ARlineID as $lineID=>$ARinfo) {
-                    displayLine($ARinfo);
+                    if ($i % 20 == 0) {
+                        displayLine($ARinfo, $p);
+                        $i++;
+                        $p++;
+                    } else {
+                        displayLine($ARinfo, $p);
+                        $i++;
+                    }
                 }
-    echo "
-                <br /><button class='btn_hide down btn_$period_format' name='hide'>Fermer</button>
+                pagination($p, $period_format);
+    echo "<br />
+                <div class='btn_pagination'>
+                    <button class='btn_prev' name='pagination'></button>
+                    <button class='btn_next' name='pagination'>Page 2 ></button>
+                </div>
+                <button class='btn_hide down btn_$period_format' name='hide'>Fermer</button>
                 </div>
             </div>";
 }
 
-function displayLine($ARinfo) {
+function pagination($p, $period_format) {
+    echo "\n<style>\n";
+    for ($i=$p;$i>1;$i--) {
+        $class = "page_$i";
+        echo ".$class,";
+    }
+    echo "#page_x{display:none;}";
+    echo "\n</style>";
+}
+
+function displayLine($ARinfo, $p = FALSE) {
     $id = $ARinfo['id'];
     $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     echo "
-                    <table>
+                    <table class='page_$p'>
                         <tr class='line' id='".$id."'>
                             <td class='nolog'>".$id."</td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
