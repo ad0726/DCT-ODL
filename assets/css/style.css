@@ -193,12 +193,27 @@ div.period {
   margin-top: 10px;
 }
 
- .btn_hide.down {
-  margin-top: -25px;
+.btn_hide.down {
+  bottom: 15px;
+}
+
+.btn_next,
+.btn_prev {
+  background: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn_pagination {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  display: flex;
 }
 
 .content_period {
   display: none;
+  position: relative;
 }
 
 .content_period table .cel_img {
