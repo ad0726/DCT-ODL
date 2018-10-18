@@ -10,7 +10,7 @@ $(document).ready(function(){
         $('html,body').animate( {
             scrollTop: $("#" + id).offset().top
         }, 'slow');
-        $(".btn_prev").html("< Page " + Hp);
+        $(".btn_prev").html("< Page " + Hp + " | ");
         Sp++;
         Hp++;
         $(".btn_next").html("Page " + Sp + " >");
@@ -38,5 +38,9 @@ $(document).ready(function(){
             $(".btn_prev").html(prev);
             $(".btn_next").html("Page " + Sp + " >");
         }
+    });
+    
+    $('.btn_page').click(function() {
+        $('.btn_prev').html('< Page ' + Hp + ' | ');
     });
 });

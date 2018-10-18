@@ -65,14 +65,56 @@ function displayPeriod($period, $ARlineID) {
                     }
                 }
                 pagination($p, $period_format);
-    echo "<br />
+    echo "<br />";
+    if ($i > 20) {
+    echo "
                 <div class='btn_pagination'>
-                    <button class='btn_prev' name='pagination'></button>
-                    <button class='btn_next' name='pagination'>Page 2 ></button>
-                </div>
+                    <button class='btn_prev' name='pagination'></button>";
+                    displayBTNpagination($i);
+    echo "          <button class='btn_next' name='pagination'> | Page 2 ></button>
+                </div>";
+    }
+    echo "
                 <button class='btn_hide down btn_$period_format' name='hide'>Fermer</button>
                 </div>
             </div>";
+}
+
+function displayBTNpagination($p) {
+    $nbrP = ceil($p/20);
+    for ($i=1;$i<=$nbrP;$i++) {
+        echo "<button class='btn_page' id='btn_page_$i' name='pagination'>$i</button>";
+        
+        echo "<script>
+        $('#btn_page_$i').click(function() {
+            var ShowPage = 'page_$i';
+            var id = $(this).parent('div').parent('div').attr('id');
+            for(a=1;a<=$nbrP;a++) {
+                var search = $('.page_'+a).css('display') == 'table';
+                if(search === true) { 
+                    var HidePage = 'page_'+a;
+                    break;
+                }
+            }
+            $('.'+HidePage).toggle();
+            $('.'+ShowPage).toggle();
+            $('html,body').animate( {
+                scrollTop: $('#' + id).offset().top
+            }, 'slow');
+            var styles = {
+                color : 'red',
+                border: 'solid 1px grey',
+                borderRadius: '10px'
+              };
+            var NoStyles = {
+                color : 'lightgrey',
+                border: 'none'
+            };
+            $('.btn_page').css(NoStyles);
+            $(this).css(styles);
+        });
+        </script>";
+    }
 }
 
 function pagination($p, $period_format) {
