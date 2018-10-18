@@ -198,10 +198,21 @@ div.period {
 }
 
 .btn_next,
-.btn_prev {
+.btn_prev,
+.btn_page {
   background: white;
   border: none;
   border-radius: 5px;
+}
+
+.btn_page {
+  color: lightgrey;
+}
+
+#btn_page_1 {
+  color: red;
+  border: solid 1px grey;
+  border-radius: 10px;
 }
 
 .btn_pagination {
