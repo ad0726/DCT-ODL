@@ -1,6 +1,15 @@
 $(document).ready(function(){
     var Sp = 2;
     var Hp = 1;
+    var styles = {
+        color : 'red',
+        border: 'solid 1px grey',
+        borderRadius: '10px'
+      };
+    var NoStyles = {
+        color : 'lightgrey',
+        border: 'none'
+    };
     $('.btn_next').click(function() {
         var id = $(this).parent('div').parent('div').attr('id');
         var ShowPage = "page_" + Sp;
@@ -11,9 +20,11 @@ $(document).ready(function(){
             scrollTop: $("#" + id).offset().top
         }, 'slow');
         $(".btn_prev").html("< Page " + Hp + " | ");
+        $('.btn_page').css(NoStyles);
+        $('#btn_page_' + Sp).css(styles);
         Sp++;
         Hp++;
-        $(".btn_next").html("Page " + Sp + " >");
+        $(".btn_next").html(" | Page " + Sp + " >");
     });
 
     $('.btn_prev').click(function() {
@@ -36,11 +47,9 @@ $(document).ready(function(){
                 prev = "";
             }
             $(".btn_prev").html(prev);
-            $(".btn_next").html("Page " + Sp + " >");
+            $(".btn_next").html(" | Page " + Sp + " >");
+            $('.btn_page').css(NoStyles);
+            $('#btn_page_' + show).css(styles);
         }
-    });
-    
-    $('.btn_page').click(function() {
-        $('.btn_prev').html('< Page ' + Hp + ' | ');
     });
 });

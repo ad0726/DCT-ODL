@@ -112,6 +112,8 @@ function displayBTNpagination($p) {
             };
             $('.btn_page').css(NoStyles);
             $(this).css(styles);
+            $('.btn_prev').html('< Page ".($i-1)." | ');
+            $('.btn_next').html(' | Page ".($i+1)." >');
         });
         </script>";
     }
