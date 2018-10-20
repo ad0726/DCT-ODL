@@ -41,14 +41,6 @@ function logout() {
 function displayPeriod($period, $ARlineID) {
     $period_format = strtolower(str_replace(" ", "_", $period));
     echo "
-            <script>
-            $(document).ready(function(){
-     
-                $('.btn_$period_format').click(function() {
-                    $('#$period_format').toggle()
-                });
-            });           
-            </script>
             <div class='period'>
                 <h2 class='title_period btn_$period_format'>".$period."</h2>
                 <div class='content_period' id='$period_format'>";
@@ -69,9 +61,9 @@ function displayPeriod($period, $ARlineID) {
     if ($i > 20) {
     echo "
                 <div class='btn_pagination'>
-                    <button class='btn_prev' name='pagination'></button>";
+                    <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
                     displayBTNpagination($i);
-    echo "          <button class='btn_next' name='pagination'> | Page 2 ></button>
+    echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
                 </div>";
     }
     echo "
@@ -84,38 +76,6 @@ function displayBTNpagination($p) {
     $nbrP = ceil($p/20);
     for ($i=1;$i<=$nbrP;$i++) {
         echo "<button class='btn_page' id='btn_page_$i' name='pagination'>$i</button>";
-        
-        echo "<script>
-        $('#btn_page_$i').click(function() {
-            var ShowPage = 'page_$i';
-            var id = $(this).parent('div').parent('div').attr('id');
-            for(a=1;a<=$nbrP;a++) {
-                var search = $('.page_'+a).css('display') == 'table';
-                if(search === true) { 
-                    var HidePage = 'page_'+a;
-                    break;
-                }
-            }
-            $('.'+HidePage).toggle();
-            $('.'+ShowPage).toggle();
-            $('html,body').animate( {
-                scrollTop: $('#' + id).offset().top
-            }, 'slow');
-            var styles = {
-                color : 'red',
-                border: 'solid 1px grey',
-                borderRadius: '10px'
-              };
-            var NoStyles = {
-                color : 'lightgrey',
-                border: 'none'
-            };
-            $('.btn_page').css(NoStyles);
-            $(this).css(styles);
-            $('.btn_prev').html('< Page ".($i-1)." | ');
-            $('.btn_next').html(' | Page ".($i+1)." >');
-        });
-        </script>";
     }
 }
 
