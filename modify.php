@@ -87,10 +87,11 @@ include('header.php');
             ),
         );
 
-        $query = $bdd->prepare('INSERT INTO odldc_changelog(id, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+        $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                            VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
         $query->execute(array(
         'id'           => $changelog['id'],
+        'author'       => $_SESSION['pseudo'],
         'cl_type'      => 'modify',
         'name_era'     => $changelog['era'],
         'name_period'  => '',
