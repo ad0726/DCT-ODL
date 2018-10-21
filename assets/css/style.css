@@ -325,6 +325,7 @@ footer p {
   line-height: 20px;
   margin-bottom: 5px;
   display: flex;
+  justify-content: space-between;
   border-radius: 5px;
   padding: 5px;
 }
@@ -337,14 +338,16 @@ footer p {
   font-size: 10px;
   min-height: 50px;
   max-height: 100%;
-  width: 80px;
   border-right: solid 5px white;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 5%;
+  padding-right: 2px;
 }
 
 .cl_line .cl_content {
+  width: 90%;
   font-size: 16px;
   display: flex;
   flex-direction: column;
@@ -354,4 +357,38 @@ footer p {
 
 .cl_line .cl_list {
   font-size: 12px;
+}
+
+.cl_line .cl_author {
+  font-size: 10px;
+  min-height: 50px;
+  max-height: 100%;
+  width: 80px;
+  border-left: solid 5px white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 5%;
+  padding-left: 2px;
+}
+
+@media (max-width: 992px) {
+  .cl_line .cl_date {
+    font-size: 8px;
+    width: 10%;
+  }
+  
+  .cl_line .cl_content {
+    width: 80%;
+    font-size: 14px;
+  }
+  
+  .cl_line .cl_list {
+    font-size: 10px;
+  }
+  
+  .cl_line .cl_author {
+    font-size: 8px;
+    width: 10%;
+  }
 }

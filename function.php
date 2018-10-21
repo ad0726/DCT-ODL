@@ -167,12 +167,16 @@ function displayChangelog($val) {
     } else {
         $type = "modifié dans ".$val['name_era'].".";
     }
+    $date_time = explode('_', $val['id']);
+    $date = explode('-', $date_time[0]);
+    $date = implode('/', array_reverse($date));
+    $time = $date_time[1];
     echo "<div class='cl_line'>
     <div class='cl_date'>
-        <p>Le ".str_replace('_', ' à ', $val['id'])."</p>
+        <p>Le $date à $time</p>
     </div>
     <div class='cl_content'>
-    <p>".ucfirst($val['title'])." a été $type";
+    <p><strong>".ucfirst($val['title'])."</strong> a été $type";
     if ($val['cl_type'] == "modify") {
         echo "<ul class='cl_list'>";
         if (!empty($val['new_title'])) {
@@ -209,10 +213,28 @@ function displayChangelog($val) {
         }
         echo "</ul>";
     }
-    echo "</div>\n</p>\n</div>\n";
+    echo "</div>\n</p>
+    <div class='cl_author'>
+        <p>Par ".$val['author']."</p>
+    </div>\n</div>\n";
 }
 
 function displayBtnUp() {
     echo "<a href='#up'><div class='btnup'><i class='fas fa-arrow-circle-up'></i></div></a>";
 }
+
+/**
+ * d function
+ * debug tools : pretty print and die.
+ *
+ * @param [string] $msg : message to display usng print_r
+ * @param [string] $pre : string to add before the $msg, default '<pre>
+ * @param [boolean] $die : die after display if set to TRUE, default TRUE.
+ * @return void
+ */
+function d($msg, $pre='<pre>', $die=TRUE){
+	echo $pre.print_r($msg,1);
+	if ($die) die();
+}
+
 ?>
