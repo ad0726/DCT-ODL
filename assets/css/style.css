@@ -167,6 +167,7 @@ form input,
 }
 
 div.period {
+  position: relative;
   display: flex;
   flex-direction: column;
   border-bottom: solid 1px black;
@@ -181,6 +182,12 @@ div.period {
   width: 100%;
   text-align: center;
   cursor: pointer;
+}
+
+.arc_count {
+  position: absolute;
+  right: 10px;
+  font-size: 10px;
 }
 
 .btn_show,

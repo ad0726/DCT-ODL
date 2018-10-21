@@ -40,9 +40,11 @@ function logout() {
 
 function displayPeriod($period, $ARlineID) {
     $period_format = strtolower(str_replace(" ", "_", $period));
+    $arc_count = count($ARlineID);
     echo "
             <div class='period'>
                 <h2 class='title_period btn_$period_format'>".$period."</h2>
+                <span class='arc_count'>$arc_count arcs</span>
                 <div class='content_period' id='$period_format'>";
                 $i = 1;
                 $p = 1;
