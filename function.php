@@ -1,10 +1,16 @@
 <?php
 include("config.php");
+
+/**
+ * Display admin header
+ *
+ * @return display
+ */
 function displayHeader() {
     global $bdd;
         echo "<div class='admin'>";
     if (!isset($_SESSION['pseudo'])) {
-        echo " 
+        echo "
                 <a href='login.php' title='Connexion'><button class='log btn_head' type='button' ><i class='fas fa-sign-in-alt'></i></button></a>
                 <style>
                     .nolog {
@@ -28,6 +34,11 @@ function displayHeader() {
             </div>\n";
 }
 
+/**
+ * Logout function
+ *
+ * @return display javascript alerting
+ */
 function logout() {
     if($_SERVER['QUERY_STRING'] == "logout") {
         session_destroy();
@@ -38,6 +49,13 @@ function logout() {
     }
 }
 
+/**
+ * Display period tab
+ *
+ * @param string $period
+ * @param array $ARlineID
+ * @return display
+ */
 function displayPeriod($period, $ARlineID) {
     $period_format = strtolower(str_replace(" ", "_", $period));
     $arc_count = count($ARlineID);
@@ -58,13 +76,12 @@ function displayPeriod($period, $ARlineID) {
                         $i++;
                     }
                 }
-                pagination($p, $period_format);
+    if (isset($p)) {
     echo "<br />";
-    if ($i > 20) {
     echo "
                 <div class='btn_pagination'>
                     <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
-                    displayBTNpagination($i);
+                    displayBTNpagination($p);
     echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
                 </div>";
     }
@@ -74,23 +91,25 @@ function displayPeriod($period, $ARlineID) {
             </div>";
 }
 
+/**
+ * Display pagination button
+ *
+ * @param integer $p : number of pages
+ * @return display
+ */
 function displayBTNpagination($p) {
-    $nbrP = ceil($p/20);
-    for ($i=1;$i<=$nbrP;$i++) {
+    for ($i=1;$i<=$p;$i++) {
         echo "<button class='btn_page' id='btn_page_$i' name='pagination'>$i</button>";
     }
 }
 
-function pagination($p, $period_format) {
-    echo "\n<style>\n";
-    for ($i=$p;$i>1;$i--) {
-        $class = "page_$i";
-        echo ".$class,";
-    }
-    echo "#page_x{display:none;}";
-    echo "\n</style>";
-}
-
+/**
+ * Display each line for comics arc
+ *
+ * @param array $ARinfo
+ * @param integer $p : number of pages (optionnal)
+ * @return display
+ */
 function displayLine($ARinfo, $p = FALSE) {
     $id = $ARinfo['id'];
     $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
@@ -130,39 +149,12 @@ function displayLine($ARinfo, $p = FALSE) {
                     </table>";
 }
 
-function uploadCover() {
-    global $name_ext;
-    $error = FALSE;
-// VERIF UPLOAD
-    if ($_FILES['cover']['error'] > 0) $error[1] = "Pas de cover transférée.";
-// VERIF WEIGHT
-    $maxsize = 1048576;
-    if ($_FILES['cover']['size'] > $maxsize) $error[2] = "Le fichier est trop gros.";
-// VERIF EXTENSION
-    $img_ext_ok = array( 'jpg' , 'jpeg' , 'png' );
-    $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-    if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.";
-// VERIF SIZE
-    $maxwidth    = 150;
-    $maxheight   = 250;
-    $image_sizes = @getimagesize($_FILES['cover']['tmp_name']);
-    if ($image_sizes[0] > $maxwidth OR $image_sizes[1] > $maxheight) $error[4] = "Image trop grande.";
-// AFFICHAGE DE L'ERREUR OU ENVOI
-    if (!empty($error[1])) {
-        echo @$error[1]."<br />";
-    } elseif (!empty($error)) {
-        echo @$error[2]."<br />";
-        echo @$error[3]."<br />";
-        echo @$error[4]."<br />";
-    } else {
-        $name       = md5(uniqid(rand(), true));
-        $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-        $name_ext   = "assets/img/covers/{$name}.{$ext_upload}";
-        $resultat   = move_uploaded_file($_FILES['cover']['tmp_name'],$name_ext);
-        if (!$resultat) echo "Transfert échoué\n";
-    }
-}
-
+/**
+ * Display changelog page
+ *
+ * @param array $val = informations from db
+ * @return display
+ */
 function displayChangelog($val) {
     if ($val['cl_type'] == "add") {
         $type = "ajouté à ".$val['name_era']." dans ".$val['name_period']." en position ".$val['new_position'].".";
@@ -221,6 +213,11 @@ function displayChangelog($val) {
     </div>\n</div>\n";
 }
 
+/**
+ * Display back to top button
+ *
+ * @return display
+ */
 function displayBtnUp() {
     echo "<a href='#up'><div class='btnup'><i class='fas fa-arrow-circle-up'></i></div></a>";
 }
@@ -235,8 +232,84 @@ function displayBtnUp() {
  * @return void
  */
 function d($msg, $pre='<pre>', $die=TRUE){
-	echo $pre.print_r($msg,1);
+	echo $pre.print_r($msg,1)."</pre>";
 	if ($die) die();
 }
+
+/**
+ * Upload cover
+ *
+ * @return void : if return TRUE, return root of cover (string). Else return error.
+ */
+function uploadCover() {
+    // global $name_ext;
+    $error = FALSE;
+// VERIF UPLOAD
+    if ($_FILES['cover']['error'] > 0) $error[1] = "Pas de cover transférée.\n";
+// VERIF WEIGHT
+    $maxsize = 1048576;
+    if ($_FILES['cover']['size'] > $maxsize) $error[2] = "Le fichier est trop gros.\n";
+// VERIF EXTENSION
+    $img_ext_ok = array( 'jpg' , 'jpeg' , 'png' );
+    $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
+    if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.\n";
+// AFFICHAGE DE L'ERREUR OU ENVOI
+    if (!empty($error)) {
+        return [FALSE, @$error];
+    } else {
+// SAUVEGARDE DE L'IMAGE SUR LE FTP
+        $image = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
+        $name       = md5(uniqid(rand(), true));
+        $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
+        $name_ext   = "assets/img/covers/{$name}.{$ext_upload}";
+        $resultat   = imagejpeg($image, $name_ext, 70);
+        if (!$resultat) {
+            return [FALSE, "Transfert échoué.\n"];
+        } else {
+            imagedestroy($image);
+            return [TRUE, $name_ext];
+        }
+    }
+}
+
+/**
+ * Resize cover
+ * http://memo-web.fr/categorie-php-197.php
+ *
+ * @param resource $source
+ * @param string $type_value
+ * @param integer $new_value
+ * @return resource
+ */
+function ResizeCover($source, $type_value = "W", $new_value) {
+// Récupération des dimensions de l'image
+    if( !( list($source_largeur, $source_hauteur) = @getimagesize($source) ) ) {
+      return false;
+    }
+
+// Calcul de la valeur dynamique en fonction des dimensions actuelles
+// de l'image et de la dimension fixe que nous avons précisée en argument.
+    if( $type_value == "H" ) {
+      $nouv_hauteur = $new_value;
+      $nouv_largeur = ($new_value / $source_hauteur) * $source_largeur;
+    } else {
+      $nouv_largeur = $new_value;
+      $nouv_hauteur = ($new_value / $source_largeur) * $source_hauteur;
+    }
+
+// Création du conteneur.
+    $image = imagecreatetruecolor($nouv_largeur, $nouv_hauteur);
+
+// Importation de l'image source.
+    $source_image = imagecreatefromstring(file_get_contents($source));
+
+// Copie de l'image dans le nouveau conteneur en la rééchantillonant.
+    imagecopyresampled($image, $source_image, 0, 0, 0, 0, $nouv_largeur, $nouv_hauteur, $source_largeur, $source_hauteur);
+
+// Libération de la mémoire allouée aux deux images (sources et nouvelle).
+    imagedestroy($source_image);
+
+    return $image;
+  }
 
 ?>

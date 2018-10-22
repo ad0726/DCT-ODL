@@ -19,9 +19,9 @@ $(document).ready(function(){
             $('.content_period').css('display', 'none');
             $('#'+period).toggle();
         }
-        
+
         $('.btn_page').css(NoStyles);
-        $('#btn_page_1').css(styles);
+        $('button#btn_page_1').css(styles);
         $('.btn_prev').css('display', 'none');
         $('.btn_next').css('display', 'block');
     });

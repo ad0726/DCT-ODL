@@ -5,71 +5,76 @@ include('header.php');
 <?php
     if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
         echo "<div class='form'>";
-        uploadCover();
-        $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
-        $id    = ++$maxid['id'];
-        $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :link_urban, :topic)');
-        $req->execute(array(
-            'id'          => $id,
-            'name_period' => htmlentities($_REQUEST['name_period']),
-            'arc'         => htmlentities($_REQUEST['titre_arc']),
-            'cover'       => $name_ext,
-            'contenu'     => htmlentities($_REQUEST['contenu']),
-            'urban'       => $_REQUEST['urban'],
-            'dctrad'      => $_REQUEST['dctrad'],
-            'link_urban'  => $_REQUEST['link_urban'],
-            'topic'       => $_REQUEST['topic'],
-            ));
-        echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
-
-        if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
-            $newid = $_REQUEST['id'];
-            $bdd->query('UPDATE odldc_rebirth SET id=id + 1 WHERE id>='.$newid);
+        $upload = uploadCover();
+        if ($upload[0] === TRUE) {
             $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
-            $oldid = $maxid['id'];
-            $bdd->exec('UPDATE odldc_rebirth SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\'');
-            $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
-            echo " en position ".$newid;
-        }
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone('+0200'));
-        if (!isset($newid)) {
-            $pos = $id;
-        } else {
-            $pos = $newid;
-        }
-        $changelog = array(
-            'id'          => $date->format('Y-m-d_H:i:s'),
-            'name_period' => htmlentities($_REQUEST['name_period']),
-            'position'    => $pos,
-            'title'       => htmlentities($_REQUEST['titre_arc']),
-        );
-        $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
-        $query->execute(array(
-            'id'           => $changelog['id'],
-            'author'       => $_SESSION['pseudo'],
-            'cl_type'      => 'add',
-            'name_era'     => $_REQUEST["name_era"],
-            'name_period'  => $changelog['name_period'],
-            'old_position' => '',
-            'new_position' => $changelog['position'],
-            'title'        => $changelog['title'],
-            'new_title'    => '',
-            'cover'        => '',
-            'content'      => '',
-            'urban'        => '',
-            'dctrad'       => '',
-            'link_urban'   => '',
-            'topic'        => '',
-        ));
-        echo ".";
-?>
-            <a href="add.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
-            <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
-        </div>
+            $id    = ++$maxid['id'];
+            $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic) 
+                                VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :link_urban, :topic)');
+            $req->execute(array(
+                'id'          => $id,
+                'name_period' => htmlentities($_REQUEST['name_period']),
+                'arc'         => htmlentities($_REQUEST['titre_arc']),
+                'cover'       => $upload[1],
+                'contenu'     => htmlentities($_REQUEST['contenu']),
+                'urban'       => $_REQUEST['urban'],
+                'dctrad'      => $_REQUEST['dctrad'],
+                'link_urban'  => $_REQUEST['link_urban'],
+                'topic'       => $_REQUEST['topic'],
+                ));
+            echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
+
+            if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
+                $newid = $_REQUEST['id'];
+                $bdd->query('UPDATE odldc_rebirth SET id=id + 1 WHERE id>='.$newid);
+                $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
+                $oldid = $maxid['id'];
+                $bdd->exec('UPDATE odldc_rebirth SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\'');
+                $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
+                echo " en position ".$newid;
+            }
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone('+0200'));
+            if (!isset($newid)) {
+                $pos = $id;
+            } else {
+                $pos = $newid;
+            }
+            $changelog = array(
+                'id'          => $date->format('Y-m-d_H:i:s'),
+                'name_period' => htmlentities($_REQUEST['name_period']),
+                'position'    => $pos,
+                'title'       => htmlentities($_REQUEST['titre_arc']),
+            );
+            $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+            $query->execute(array(
+                'id'           => $changelog['id'],
+                'author'       => $_SESSION['pseudo'],
+                'cl_type'      => 'add',
+                'name_era'     => $_REQUEST["name_era"],
+                'name_period'  => $changelog['name_period'],
+                'old_position' => '',
+                'new_position' => $changelog['position'],
+                'title'        => $changelog['title'],
+                'new_title'    => '',
+                'cover'        => '',
+                'content'      => '',
+                'urban'        => '',
+                'dctrad'       => '',
+                'link_urban'   => '',
+                'topic'        => '',
+            ));
+            echo ".";
+    ?>
+                <a href="add.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
+                <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
+            </div>
 <?php
+        } else {
+            print_r($upload[1]);
+            echo "<a href='add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+        }
     } elseif (isset($_SESSION['pseudo'])) {
 ?>
     <div class="form">
