@@ -77,7 +77,7 @@ function displayPeriod($period, $ARlineID) {
                     }
                 }
                 $i--;
-    if (isset($p)) {
+    if ($p > 1) {
     echo "<br />";
     echo "
                 <div class='btn_pagination'>
@@ -114,6 +114,8 @@ function displayBTNpagination($i) {
  */
 function displayLine($ARinfo, $p = FALSE) {
     $id = $ARinfo['id'];
+    $_SESSION[$id] = $ARinfo;
+    // d($_SESSION);
     $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     echo "
                     <table class='page_$p'>
@@ -144,7 +146,7 @@ function displayLine($ARinfo, $p = FALSE) {
                             </td>
                             <td class='nolog'>
                                 <a href='modify.php?era=$era_current&id=$id' title='Modifier'>
-                                    <button type='button' class='btn_head'><i class='fas fa-pencil-alt'></i></button>
+                                    <button type='button' class='btn_head'><i class='fas fa-pen-fancy'></i></button>
                                 </a>
                             </td>
                         </tr>
