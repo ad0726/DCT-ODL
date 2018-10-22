@@ -119,6 +119,7 @@ include('header.php');
         </div>
 <?php
     } elseif (isset($_SESSION['pseudo'])) {
+        // if (isset($_SESSION[$_GET["id"]])) $id = $_GET["id"];
 ?>
     <div class="form">
         <h2>Modifier un arc</h2>
@@ -126,8 +127,8 @@ include('header.php');
             <input type="hidden" name="formfilled" value="42" />
             <input type="hidden" name="name_era" value="<?= @$_GET["era"] ?>" />
             <label for="id">Position actuelle dans l'ODL</label>
-            <input type="number" class="pos" min="0" name="id" value="<?= @$_GET["id"] ?>"> *<br />
-            <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"><br />
+            <input type="number" class="pos" min="0" name="id" value="<?= @$id ?>"> *<br />
+            <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"  value="<?= @$_SESSION[@$id]["arc"] ?>"><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
             <input type="file" class="file" name="cover"><br />
