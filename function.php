@@ -76,12 +76,13 @@ function displayPeriod($period, $ARlineID) {
                         $i++;
                     }
                 }
+                $i--;
     if (isset($p)) {
     echo "<br />";
     echo "
                 <div class='btn_pagination'>
                     <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
-                    displayBTNpagination($p);
+                    displayBTNpagination($i);
     echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
                 </div>";
     }
@@ -97,7 +98,8 @@ function displayPeriod($period, $ARlineID) {
  * @param integer $p : number of pages
  * @return display
  */
-function displayBTNpagination($p) {
+function displayBTNpagination($i) {
+    $p = ceil($i/20);
     for ($i=1;$i<=$p;$i++) {
         echo "<button class='btn_page' id='btn_page_$i' name='pagination'>$i</button>";
     }
