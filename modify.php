@@ -11,108 +11,112 @@ include('header.php');
             unlink($old_cover['cover']);
         }
         // Upload new image
-        uploadCover();
-        // Update image
+        $upload = uploadCover();
+            // Update image
         $update_img = FALSE;
-        if (!empty($name_ext)) {
-            $bdd->exec('UPDATE odldc_rebirth SET cover = \''.$name_ext.'\' WHERE id = \''.$_REQUEST['id'].'\'');
-            $update_img = TRUE;
+        if ($upload[0] === TRUE) {
+            if (!empty($upload[1])) {
+                $bdd->exec('UPDATE odldc_rebirth SET cover = \''.$upload[1].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $update_img = TRUE;
+            }
+        } else {
+            d($upload[1], "<pre>", FALSE);
         }
-        // Update title
-        if (!empty($_REQUEST['new_title'])) {
-            $_REQUEST['new_title'] = htmlentities($_REQUEST['new_title'], ENT_QUOTES);
-            $bdd->exec('UPDATE odldc_rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-        }
-        // Update content
-        $update_content = FALSE;
-        if (!empty($_REQUEST['new_content'])) {
-            $_REQUEST['new_content'] = htmlentities($_REQUEST['new_content'], ENT_QUOTES);
-            $bdd->exec('UPDATE odldc_rebirth SET contenu = \''.$_REQUEST['new_content'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-            $update_content = TRUE;
-        }
-        // Update "Urban" option
-        if ($_REQUEST['new_urban'] != "") {
-            $bdd->exec('UPDATE odldc_rebirth SET urban = \''.$_REQUEST['new_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-        }
-        // Update "DCTrad" option
-        if ($_REQUEST['new_dctrad'] != "") {
-            $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-        }
-        // Update Urban's link
-        $update_link_urban = FALSE;
-        if (!empty($_REQUEST['new_link_urban'])) {
-            $bdd->exec('UPDATE odldc_rebirth SET link_urban = \''.$_REQUEST['new_link_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-            $update_link_urban = TRUE;
-        }
-        // Update DCTrad's link
-        $update_topic = FALSE;
-        if (!empty($_REQUEST['new_topic'])) {
-            $bdd->exec('UPDATE odldc_rebirth SET topic = \''.$_REQUEST['new_topic'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-            $update_topic = TRUE;
-        }
-        // Update Id
-        if (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] > $_REQUEST['id'])) {
-            $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = \''.$_REQUEST['id'].'\'');
-            $bdd->exec('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$_REQUEST['id'].' AND '.$_REQUEST['new_id']);
-            $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
-            $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
-        } elseif (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] < $_REQUEST['id'])) {
-            $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = '.$_REQUEST['id']);
-            $bdd->exec('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$_REQUEST['id']);
-            $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
-            $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
-        }
-        
-        // Changelog
-        $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
-        $date    = new DateTime();
-        $changelog = array(
-            'id'       => $date->format('Y-m-d_H:i:s'),
-            'era'      => $_REQUEST['name_era'],
-            'position' => array(
-                'old' => $_REQUEST['id'],
-                'new' => $_REQUEST['new_id']
-            ),
-            'title' => array(
-                'old' => $title['arc'],
-                'new' => $_REQUEST['new_title']
-            ),
-            'cover'   => $update_img,
-            'content' => $update_content,
-            'urban'   => $_REQUEST['new_urban'],
-            'dctrad'  => $_REQUEST['new_dctrad'],
-            'links'   => array(
-                'urban'  => $update_link_urban,
-                'dctrad' => $update_topic
-            ),
-        );
+            // Update title
+            if (!empty($_REQUEST['new_title'])) {
+                $_REQUEST['new_title'] = htmlentities($_REQUEST['new_title'], ENT_QUOTES);
+                $bdd->exec('UPDATE odldc_rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+            }
+            // Update content
+            $update_content = FALSE;
+            if (!empty($_REQUEST['new_content'])) {
+                $_REQUEST['new_content'] = htmlentities($_REQUEST['new_content'], ENT_QUOTES);
+                $bdd->exec('UPDATE odldc_rebirth SET contenu = \''.$_REQUEST['new_content'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $update_content = TRUE;
+            }
+            // Update "Urban" option
+            if ($_REQUEST['new_urban'] != "") {
+                $bdd->exec('UPDATE odldc_rebirth SET urban = \''.$_REQUEST['new_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+            }
+            // Update "DCTrad" option
+            if ($_REQUEST['new_dctrad'] != "") {
+                $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+            }
+            // Update Urban's link
+            $update_link_urban = FALSE;
+            if (!empty($_REQUEST['new_link_urban'])) {
+                $bdd->exec('UPDATE odldc_rebirth SET link_urban = \''.$_REQUEST['new_link_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $update_link_urban = TRUE;
+            }
+            // Update DCTrad's link
+            $update_topic = FALSE;
+            if (!empty($_REQUEST['new_topic'])) {
+                $bdd->exec('UPDATE odldc_rebirth SET topic = \''.$_REQUEST['new_topic'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $update_topic = TRUE;
+            }
+            // Update Id
+            if (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] > $_REQUEST['id'])) {
+                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $bdd->exec('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$_REQUEST['id'].' AND '.$_REQUEST['new_id']);
+                $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
+                $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
+            } elseif (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] < $_REQUEST['id'])) {
+                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = '.$_REQUEST['id']);
+                $bdd->exec('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$_REQUEST['id']);
+                $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
+                $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
+            }
 
-        $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                            VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
-        $query->execute(array(
-        'id'           => $changelog['id'],
-        'author'       => $_SESSION['pseudo'],
-        'cl_type'      => 'modify',
-        'name_era'     => $changelog['era'],
-        'name_period'  => '',
-        'old_position' => $changelog['position']['old'],
-        'new_position' => $changelog['position']['new'],
-        'title'        => $changelog['title']['old'],
-        'new_title'    => $changelog['title']['new'],
-        'cover'        => $changelog['cover'],
-        'content'      => $changelog['content'],
-        'urban'        => $changelog['urban'],
-        'dctrad'       => $changelog['dctrad'],
-        'link_urban'   => $changelog['links']['urban'],
-        'topic'        => $changelog['links']['dctrad']
-        ));
+            // Changelog
+            $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+            $date    = new DateTime();
+            $changelog = array(
+                'id'       => $date->format('Y-m-d_H:i:s'),
+                'era'      => $_REQUEST['name_era'],
+                'position' => array(
+                    'old' => $_REQUEST['id'],
+                    'new' => $_REQUEST['new_id']
+                ),
+                'title' => array(
+                    'old' => $title['arc'],
+                    'new' => $_REQUEST['new_title']
+                ),
+                'cover'   => $update_img,
+                'content' => $update_content,
+                'urban'   => $_REQUEST['new_urban'],
+                'dctrad'  => $_REQUEST['new_dctrad'],
+                'links'   => array(
+                    'urban'  => $update_link_urban,
+                    'dctrad' => $update_topic
+                ),
+            );
 
-        echo "L'ODL a bien été mis à jour.";
-?>
-        <br />
-        <a href="modify.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
-        <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
-    </div>
+            $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
+                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+            $query->execute(array(
+            'id'           => $changelog['id'],
+            'author'       => $_SESSION['pseudo'],
+            'cl_type'      => 'modify',
+            'name_era'     => $changelog['era'],
+            'name_period'  => '',
+            'old_position' => $changelog['position']['old'],
+            'new_position' => $changelog['position']['new'],
+            'title'        => $changelog['title']['old'],
+            'new_title'    => $changelog['title']['new'],
+            'cover'        => $changelog['cover'],
+            'content'      => $changelog['content'],
+            'urban'        => $changelog['urban'],
+            'dctrad'       => $changelog['dctrad'],
+            'link_urban'   => $changelog['links']['urban'],
+            'topic'        => $changelog['links']['dctrad']
+            ));
+
+            echo "L'ODL a bien été mis à jour.";
+    ?>
+            <br />
+            <a href="modify.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
+            <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
+        </div>
 <?php
     } elseif (isset($_SESSION['pseudo'])) {
 ?>
