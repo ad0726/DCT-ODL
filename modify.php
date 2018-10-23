@@ -119,35 +119,39 @@ include('header.php');
         </div>
 <?php
     } elseif (isset($_SESSION['pseudo'])) {
-        // if (isset($_SESSION[$_GET["id"]])) $id = $_GET["id"];
+        if (isset($_GET["id"])) {
+            $id   = $_GET["id"];
+            $era  = $_GET["era"];
+            $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$id.'\'')->fetch(PDO::FETCH_ASSOC);
+        }
 ?>
     <div class="form">
         <h2>Modifier un arc</h2>
         <form action="?" method="post" enctype="multipart/form-data">
             <input type="hidden" name="formfilled" value="42" />
-            <input type="hidden" name="name_era" value="<?= @$_GET["era"] ?>" />
+            <input type="hidden" name="name_era" value="<?= @$era ?>" />
             <label for="id">Position actuelle dans l'ODL</label>
             <input type="number" class="pos" min="0" name="id" value="<?= @$id ?>"> *<br />
-            <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"  value="<?= @$_SESSION[@$id]["arc"] ?>"><br />
+            <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"  value="<?= @$info['arc'] ?>"><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
             <input type="file" class="file" name="cover"><br />
-            <textarea class="content" name="new_content" placeholder="Liste des issues de l'arc"></textarea><br />
+            <textarea class="content" name="new_content" placeholder="Liste des issues de l'arc"><?= @$info['contenu'] ?></textarea><br />
             <div>
                 <label for="publication">Publié chez :</label>
                 <select name="new_urban">
                     <option value="">Urban</option>
-                    <option value="1">Oui</option>
-                    <option value="0">Non</option>
+                    <option value="1" <?php if(@$info['urban'] === '1') echo "selected" ?>>Oui</option>
+                    <option value="0" <?php if(@$info['urban'] === '0') echo "selected" ?>>Non</option>
                 </select>
                 <select name="new_dctrad">
                     <option value="">DCTrad</option>
-                    <option value="1">Oui</option>
-                    <option value="0">Non</option>
+                    <option value="1" <?php if(@$info['dctrad'] === '1') echo "selected" ?>>Oui</option>
+                    <option value="0" <?php if(@$info['dctrad'] === '0') echo "selected" ?>>Non</option>
                 </select><br />
             </div>
-            <input type="url" class="input" name="new_link_urban" placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779"><br />
-            <input type="url" class="input" name="new_topic" placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234"><br />
+            <input type="url" class="input" name="new_link_urban" placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779"  <?php if(!empty(@$info['link_urban'])) echo "value='".$info['link_urban']."'" ?>><br />
+            <input type="url" class="input" name="new_topic" placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234" <?php if(!empty(@$info['topic'])) echo "value='".$info['topic']."'" ?>><br />
             <label for="new_id">Position voulue dans l'ODL</label>
             <input type="number" class="pos" min="0" name="new_id"><br />
             <input type="submit" class="btn_send" value="Envoyer">
