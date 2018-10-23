@@ -36,5 +36,5 @@ include('header.php');
                 <input type="submit" value="Envoyer">
             </form>
         </div>
-<?php } 
+<?php }
 include('footer.php');?>

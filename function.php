@@ -114,8 +114,6 @@ function displayBTNpagination($i) {
  */
 function displayLine($ARinfo, $p = FALSE) {
     $id = $ARinfo['id'];
-    $_SESSION[$id] = $ARinfo;
-    // d($_SESSION);
     $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     echo "
                     <table class='page_$p'>
@@ -231,11 +229,11 @@ function displayBtnUp() {
  * debug tools : pretty print and die.
  *
  * @param [string] $msg : message to display usng print_r
- * @param [string] $pre : string to add before the $msg, default '<pre>
  * @param [boolean] $die : die after display if set to TRUE, default TRUE.
+ * @param [string] $pre : string to add before the $msg, default '<pre>
  * @return void
  */
-function d($msg, $pre='<pre>', $die=TRUE){
+function d($msg, $die=TRUE, $pre='<pre>'){
 	echo $pre.print_r($msg,1)."</pre>";
 	if ($die) die();
 }
