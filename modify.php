@@ -20,7 +20,7 @@ include('header.php');
                 $update_img = TRUE;
             }
         } else {
-            d($upload[1], "<pre>", FALSE);
+            d($upload[1], FALSE);
         }
             // Update title
             if (!empty($_REQUEST['new_title'])) {
