@@ -89,7 +89,7 @@ $(document).ready(function(){
         var id = $(this).parent('div').parent('div').attr('id');
         for(a=1;a<=nbrP;a++) {
             var search = $('.page_'+a).css('display') == 'table';
-            if(search === true) { 
+            if(search === true) {
                 var HidePage = 'page_'+a;
                 break;
             }
@@ -117,6 +117,14 @@ $(document).ready(function(){
         }
         if (ShowPage == 'page_'+nbrP) {
             $('.btn_next').css('display', 'none');
+        }
+    });
+
+    $('.btn_trash').click(function() {
+        var id = $(this).parents('tr').attr('id');
+        var answer = confirm('Voulez-vous vraiment supprimer la ligne '+id+' ?');
+        if (answer === true) {
+            location.href='delete.php?rm='+id;
         }
     });
 });

@@ -146,6 +146,7 @@ function displayLine($ARinfo, $p = FALSE) {
                                 <a href='modify.php?era=$era_current&id=$id' title='Modifier'>
                                     <button type='button' class='btn_head'><i class='fas fa-pen-fancy'></i></button>
                                 </a>
+                                <button type='button' class='btn_head btn_trash'><i class='fas fa-trash-alt'></i></button>
                             </td>
                         </tr>
                     </table>";
