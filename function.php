@@ -8,7 +8,8 @@ include("config.php");
  */
 function displayHeader() {
     global $bdd;
-        echo "<div class='admin'>";
+    include('search.php');
+    echo "<div class='admin'>";
     if (!isset($_SESSION['pseudo'])) {
         echo "
                 <a href='login.php' title='Connexion'><button class='log btn_head' type='button' ><i class='fas fa-sign-in-alt'></i></button></a>
