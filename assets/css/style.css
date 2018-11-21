@@ -1,4 +1,5 @@
 header {
+  position: relative;
   width: 100%;
   height: 200px;
   display: flex;
@@ -8,7 +9,7 @@ header {
   background: url("../img/banniere_header.png") center;
 }
 
-.title_header {
+/* .title_header {
   position: relative;
   height: 100%;
   width: 100%;
@@ -43,6 +44,35 @@ header {
 .title_header h2 {
   width: 100%;
   margin: 0;
+} */
+
+input.prompt {
+  background: none;
+  border: none;
+  margin: 0;
+}
+
+form.search-bar {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  background: rgba(220, 220, 220, 0.7);
+  border-radius: 2px;
+  border: solid 1px aliceblue;
+  padding: 2px;
+}
+
+form.search-bar i {
+  color: rgb(90, 90, 90);
+}
+
+form.search-bar input.hide-input {
+  visibility: hidden;
+  position: absolute;
+  margin: 0;
+  border-radius: 0;
+  width: 0;
+  height: 0;
 }
 
 .admin {
@@ -70,9 +100,9 @@ header {
 .btn_head {
   width: 100%;
   margin-bottom: 5px;
-  border-radius: 5px;
+  border-radius: 2px;
   border: transparent;
-  background: lightgrey;
+  background: rgba(220, 220, 220, 0.7);
 }
 
 input:invalid {
@@ -398,4 +428,8 @@ footer p {
     font-size: 8px;
     width: 10%;
   }
+}
+
+p.text-result {
+  text-align: center;
 }
