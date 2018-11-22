@@ -127,4 +127,34 @@ $(document).ready(function(){
             location.href='delete.php?rm='+id;
         }
     });
+
+    $('input.prompt').keyup(function() {
+        var input = $('input.prompt').val();
+        var td = [];
+        $('td').each(function(){
+            var tmp = new RegExp(input, "ig");
+            var search = $(this).text();
+            if(search.match(tmp)) {
+                td.push(search);
+            }
+        });
+
+        $('div.autocompletion').css('display', 'block');
+        var n = td.length;
+        // console.log(n);
+        // $('div.autocompletion').empty();
+        if (n >= 3) {
+            $('div.autocompletion').html('<a href="toto.fr"><div>'+td[n-1]+'</div></a>\n<div>'+td[n-2]+'</div>\n<div>'+td[n-3]+'</div>');
+        } else if (n == 2) {
+            $('div.autocompletion').html('<div>'+td[n-1]+'</div>\n<div>'+td[n-2]+'</div>');
+        } else if (n == 1) {
+            $('div.autocompletion').html('<div>'+td[n-1]+'</div>');
+        }
+    });
+    plouf = function() {
+        $('div.autocompletion').css('display', 'none');
+    }
+    $('div.search').focusout(function() {
+        $('div.autocompletion').focusout(plouf());
+    });
 });

@@ -46,6 +46,12 @@ header {
   margin: 0;
 } */
 
+div.search {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
+
 input.prompt {
   background: none;
   border: none;
@@ -53,9 +59,7 @@ input.prompt {
 }
 
 form.search-bar {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
+  position: relative;
   background: rgba(220, 220, 220, 0.7);
   border-radius: 2px;
   border: solid 1px aliceblue;
@@ -73,6 +77,24 @@ form.search-bar input.hide-input {
   border-radius: 0;
   width: 0;
   height: 0;
+}
+
+.autocompletion {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  width: 160px;
+  min-height: 25px;
+  border: solid 1px lightgrey;
+  border-radius: 5px;
+  background: rgba(220, 220, 220, 0.9);
+  margin-top: 5px;
+  font-size: 10px;
+}
+
+.autocompletion div {
+  border-bottom: solid 1px rgb(121, 121, 121);
+  margin-bottom: 5px;
 }
 
 .admin {
@@ -414,16 +436,16 @@ footer p {
     font-size: 8px;
     width: 10%;
   }
-  
+
   .cl_line .cl_content {
     width: 80%;
     font-size: 14px;
   }
-  
+
   .cl_line .cl_list {
     font-size: 10px;
   }
-  
+
   .cl_line .cl_author {
     font-size: 8px;
     width: 10%;
