@@ -8,6 +8,9 @@ $(document).ready(function(){
         color : 'lightgrey',
         border: 'none'
     };
+    noDisplay = function() {
+        $('div.autocompletion').css('display', 'none');
+    }
 
     $('.title_period').click(function(){
         var period = $(this).attr('class');
@@ -129,32 +132,50 @@ $(document).ready(function(){
     });
 
     $('input.prompt').keyup(function() {
+        var isODL = $('section').attr('class');
+        if (isODL === "odl") {
+            var era = $('section.odl').attr('id');
+            $('div.autocompletion').css('display', 'block');
+
+        } else {
+            var era = $('section.odl').attr('id');
+
+            if (era === null) {
+                var era = "all";
+            }
+        }
         var input = $('input.prompt').val();
-        var td = [];
+        var td = {
+            'id'  : [],
+            'text': []
+        };
         $('td').each(function(){
-            var tmp = new RegExp(input, "ig");
+            var tmp    = new RegExp(input, "ig");
             var search = $(this).text();
+            var id     = $(this).parent('tr').attr('id');
             if(search.match(tmp)) {
-                td.push(search);
+                td['id'].push(id);
+                td['text'].push(search);
             }
         });
-
-        $('div.autocompletion').css('display', 'block');
-        var n = td.length;
-        // console.log(n);
-        // $('div.autocompletion').empty();
+        var n = td['text'].length;
+        autocompletion = function(era, ARtd, countARtd, n=1) {
+            var ret = "";
+            for (i=1;i<=n;i++) {
+                ret += '<a href="results.php?era='+era+'&search='+ARtd['id'][countARtd-i]+'"><div>'+ARtd['text'][countARtd-i]+'</div></a>\n';
+            }
+            return ret;
+        }
         if (n >= 3) {
-            $('div.autocompletion').html('<a href="toto.fr"><div>'+td[n-1]+'</div></a>\n<div>'+td[n-2]+'</div>\n<div>'+td[n-3]+'</div>');
+            $('div.autocompletion').html(autocompletion(era, td, n, 3));
         } else if (n == 2) {
-            $('div.autocompletion').html('<div>'+td[n-1]+'</div>\n<div>'+td[n-2]+'</div>');
+            $('div.autocompletion').html(autocompletion(era, td, n, 2));
         } else if (n == 1) {
-            $('div.autocompletion').html('<div>'+td[n-1]+'</div>');
+            $('div.autocompletion').html(autocompletion(era, td, n));
         }
     });
-    plouf = function() {
-        $('div.autocompletion').css('display', 'none');
-    }
+
     $('div.search').focusout(function() {
-        $('div.autocompletion').focusout(plouf());
+        $('div.autocompletion').slideUp(300).delay(800).noDisplay();
     });
 });

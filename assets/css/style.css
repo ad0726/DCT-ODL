@@ -97,6 +97,11 @@ form.search-bar input.hide-input {
   margin-bottom: 5px;
 }
 
+.autocompletion a {
+  text-decoration: none;
+  color: black;
+}
+
 .admin {
   position: absolute;
   top: 0;

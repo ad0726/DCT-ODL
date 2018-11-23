@@ -1,7 +1,7 @@
 <?php
 include('header.php');
 echo "
-        <section>";
+        <section class='odl' id='rebirth'>";
 $answer = $bdd->query('SELECT * FROM odldc_rebirth ORDER BY id ASC');
 while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
     $comics[$line['name_period']][$line['id']] = array (
