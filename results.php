@@ -25,7 +25,7 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
     if (isset($IDresults)) {
         array_multisort($IDresults, SORT_ASC);
         $n = count($IDresults);
-        echo "<section>";
+        echo "<section id='$era'>";
         echo "<p class='text-result'>$n résultats de la recherche.</p>";
         foreach ($IDresults as $k=>$line) {
             displayLine($line);
@@ -34,14 +34,14 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
     } elseif (isset($results)) {
         array_multisort($results, SORT_ASC);
         $n = count($results);
-        echo "<section>";
+        echo "<section id='$era'>";
         echo "<p class='text-result'>$n résultats pour :<br />".$_REQUEST['search']."</p>";
         foreach ($results as $k=>$line) {
             displayLine($line);
         }
         echo "</section>";
     } else {
-        echo "<section>";
+        echo "<section id='$era'>";
         echo "<p class='text-result'>Aucun résultat trouvé.</p>";
         echo "</section>";
     }

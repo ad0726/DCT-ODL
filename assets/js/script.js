@@ -133,24 +133,25 @@ $(document).ready(function(){
 
     $('input.prompt').keyup(function() {
         var isODL = $('section').attr('class');
+        var tmp   = "";
+        var era   = "";
         if (isODL === "odl") {
-            var era = $('section.odl').attr('id');
+            tmp = new RegExp(/([a-z]+)_page/, "i");
+            era = $('section.odl').attr('id').match(tmp)[1];
             $('div.autocompletion').css('display', 'block');
-
         } else {
-            var era = $('section.odl').attr('id');
-
-            if (era === null) {
-                var era = "all";
+            era = $('section').attr('id');
+            if (era === undefined) {
+                era = "all";
             }
         }
         var input = $('input.prompt').val();
-        var td = {
+        var td    = {
             'id'  : [],
             'text': []
         };
         $('td').each(function(){
-            var tmp    = new RegExp(input, "ig");
+                tmp    = new RegExp(input, "ig");
             var search = $(this).text();
             var id     = $(this).parent('tr').attr('id');
             if(search.match(tmp)) {
@@ -158,6 +159,7 @@ $(document).ready(function(){
                 td['text'].push(search);
             }
         });
+        $('input.hide-input.era').attr('value', era);
         var n = td['text'].length;
         autocompletion = function(era, ARtd, countARtd, n=1) {
             var ret = "";
