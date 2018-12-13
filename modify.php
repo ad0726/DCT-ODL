@@ -111,6 +111,12 @@ include('header.php');
             'topic'        => $changelog['links']['dctrad']
             ));
 
+            $count = $bdd->query('SELECT count(*) FROM odldc_changelog')->fetch(PDO::FETCH_ASSOC);
+
+            if ($count['count(*)'] > 100) {
+                $bdd->exec('DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1');
+            }
+
             echo "L'ODL a bien été mis à jour.";
     ?>
             <br />

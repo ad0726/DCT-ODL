@@ -33,6 +33,8 @@ include('header.php');
                 $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
                 echo " en position ".$newid;
             }
+
+            // Changelog
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone('+0200'));
             if (!isset($newid)) {
@@ -65,6 +67,13 @@ include('header.php');
                 'link_urban'   => '',
                 'topic'        => '',
             ));
+
+            $count = $bdd->query('SELECT count(*) FROM odldc_changelog')->fetch(PDO::FETCH_ASSOC);
+
+            if ($count['count(*)'] > 100) {
+                $bdd->exec('DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1');
+            }
+
             echo ".";
     ?>
                 <a href="add.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
