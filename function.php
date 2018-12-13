@@ -161,9 +161,11 @@ function displayLine($ARinfo, $p = FALSE) {
  */
 function displayChangelog($val) {
     if ($val['cl_type'] == "add") {
-        $type = "ajouté à ".$val['name_era']." dans ".$val['name_period']." en position ".$val['new_position'].".";
-    } else {
-        $type = "modifié dans ".$val['name_era'].".";
+        $type = "ajouté à ".ucfirst($val['name_era'])." dans ".$val['name_period']." en position ".$val['new_position'].".";
+    } elseif ($val['cl_type'] == "modify") {
+        $type = "modifié dans ".ucfirst($val['name_era']).".";
+    } elseif ($val['cl_type'] == "delete") {
+        $type = "supprimé de ".ucfirst($val['name_era']).".";
     }
     $date_time = explode('_', $val['id']);
     $date = explode('-', $date_time[0]);

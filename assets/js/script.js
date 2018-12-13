@@ -126,8 +126,10 @@ $(document).ready(function(){
     $('.btn_trash').click(function() {
         var id = $(this).parents('tr').attr('id');
         var answer = confirm('Voulez-vous vraiment supprimer la ligne '+id+' ?');
+        var tmp = new RegExp(/([a-z]+)_page/, "i");
+        var era = $('section.odl').attr('id').match(tmp)[1];
         if (answer === true) {
-            location.href='delete.php?rm='+id;
+            location.href='delete.php?rm='+id+'&from='+era;
         }
     });
 
