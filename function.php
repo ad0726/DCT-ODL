@@ -67,6 +67,15 @@ function displayPeriod($period, $ARlineID) {
                 <div class='content_period' id='$period_format'>";
                 $i = 1;
                 $p = 1;
+                if ($arc_count > 20) {
+                echo "<br />";
+                echo "
+                            <div class='btn_pagination top'>
+                                <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
+                                displayBTNpagination($arc_count);
+                echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
+                            </div>";
+                }
                 foreach ($ARlineID as $lineID=>$ARinfo) {
                     if ($i % 20 == 0) {
                         displayLine($ARinfo, $p);
@@ -78,12 +87,12 @@ function displayPeriod($period, $ARlineID) {
                     }
                 }
                 $i--;
-    if ($p > 1) {
+    if ($arc_count > 20) {
     echo "<br />";
     echo "
-                <div class='btn_pagination'>
+                <div class='btn_pagination bottom'>
                     <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
-                    displayBTNpagination($i);
+                    displayBTNpagination($arc_count);
     echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
                 </div>";
     }
@@ -102,7 +111,7 @@ function displayPeriod($period, $ARlineID) {
 function displayBTNpagination($i) {
     $p = ceil($i/20);
     for ($i=1;$i<=$p;$i++) {
-        echo "<button class='btn_page' id='btn_page_$i' name='pagination'>$i</button>";
+        echo "<button class='btn_page btn_page_$i' name='pagination'>$i</button>";
     }
 }
 
