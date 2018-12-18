@@ -279,7 +279,14 @@ div.period {
   border-radius: 10px;
 }
 
-.btn_pagination {
+.btn_pagination.top {
+  position: absolute;
+  right: 15px;
+  top: -15px;
+  display: flex;
+}
+
+.btn_pagination.bottom {
   position: absolute;
   right: 15px;
   bottom: 15px;
