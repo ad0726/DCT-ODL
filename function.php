@@ -170,6 +170,11 @@ function displayLine($ARinfo, $p = FALSE) {
  * @return display
  */
 function displayChangelog($val) {
+    $TranscoIsEvent = [
+        "+1" => "le tag <i>Event</i> a été ajouté.",
+        "-1" => "le tag <i>Event</i> a été retiré."
+    ];
+    if (isset($TranscoIsEvent[$val['isEvent']])) $isEvent = $TranscoIsEvent[$val['isEvent']];
     if ($val['cl_type'] == "add") {
         $type = "ajouté à ".ucfirst($val['name_era'])." dans ".$val['name_period']." en position ".$val['new_position'].".";
     } elseif ($val['cl_type'] == "modify") {
@@ -220,6 +225,9 @@ function displayChangelog($val) {
         }
         if ($val['topic'] == 1) {
             echo "<li>le lien DCTrad a été mis à jour.</li>";
+        }
+        if (isset($isEvent)) {
+            echo "<li>$isEvent</li>";
         }
         echo "</ul>";
     }
