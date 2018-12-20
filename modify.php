@@ -81,13 +81,13 @@ include('header.php');
             $date    = new DateTime();
             $date->setTimezone(new DateTimeZone('+0100'));
             
-            $clIsEvent = "0";                                           // Isn't event before submit
-            if ($_REQUEST['isEventReturn'] == "checked") {              // If is event before submit
+            $clIsEvent = "0";                                   // Isn't event before submit
+            if ($_REQUEST['isEventReturn'] == "checked") {      // If is event before submit
                 $clIsEvent = "1";
             }
-            if (($isEvent === TRUE) && ($clIsEvent == "0")) {           // If isn't event before submit and update to isEvent = TRUE
+            if (($isEvent == 1) && ($clIsEvent == "0")) {       // If isn't event before submit and update to isEvent = TRUE
                 $clIsEvent = "+1";
-            } elseif (($isEvent === FALSE) && ($clIsEvent == "1")) {    // If is event before submit and update to isEvent = FALSE
+            } elseif (($isEvent == 0) && ($clIsEvent == "1")) { // If is event before submit and update to isEvent = FALSE
                 $clIsEvent = "-1";
             }
             $changelog = array(
