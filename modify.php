@@ -4,6 +4,13 @@ include('header.php');
 <section>
 <?php
     if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+        // die(print_r($_REQUEST, 1));
+        $era = $_REQUEST['name_era'];
+        $isEvent = 0;
+        if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") {
+            $isEvent = 1;
+        }
+        // die($isEvent." ///");
         echo "<div class='form'>";
         // Delete image if new image uploaded
         if ($_FILES['cover']['error'] == 0) {
@@ -66,10 +73,23 @@ include('header.php');
                 $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
                 $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
             }
+            // Is Event
+            $bdd->exec('UPDATE odldc_rebirth SET isEvent = \''.$isEvent.'\' WHERE id = \''.$_REQUEST['id'].'\'');
 
             // Changelog
             $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
             $date    = new DateTime();
+            $date->setTimezone(new DateTimeZone('+0100'));
+            
+            $clIsEvent = "0";                                           // Isn't event before submit
+            if ($_REQUEST['isEventReturn'] == "checked") {              // If is event before submit
+                $clIsEvent = "1";
+            }
+            if (($isEvent === TRUE) && ($clIsEvent == "0")) {           // If isn't event before submit and update to isEvent = TRUE
+                $clIsEvent = "+1";
+            } elseif (($isEvent === FALSE) && ($clIsEvent == "1")) {    // If is event before submit and update to isEvent = FALSE
+                $clIsEvent = "-1";
+            }
             $changelog = array(
                 'id'       => $date->format('Y-m-d_H:i:s'),
                 'era'      => $_REQUEST['name_era'],
@@ -91,8 +111,8 @@ include('header.php');
                 ),
             );
 
-            $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+            $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic, isEvent) 
+                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic, :isEvent)');
             $query->execute(array(
             'id'           => $changelog['id'],
             'author'       => $_SESSION['pseudo'],
@@ -108,7 +128,8 @@ include('header.php');
             'urban'        => $changelog['urban'],
             'dctrad'       => $changelog['dctrad'],
             'link_urban'   => $changelog['links']['urban'],
-            'topic'        => $changelog['links']['dctrad']
+            'topic'        => $changelog['links']['dctrad'],
+            'isEvent'      => $clIsEvent
             ));
 
             $count = $bdd->query('SELECT count(*) FROM odldc_changelog')->fetch(PDO::FETCH_ASSOC);
@@ -129,6 +150,11 @@ include('header.php');
             $id   = $_GET["id"];
             $era  = $_GET["era"];
             $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$id.'\'')->fetch(PDO::FETCH_ASSOC);
+
+            $checkboxIsEvent = "";
+            if($info['isEvent'] == TRUE) {
+                $checkboxIsEvent = "checked";
+            }
         }
 ?>
     <div class="form">
@@ -136,8 +162,17 @@ include('header.php');
         <form action="?" method="post" enctype="multipart/form-data">
             <input type="hidden" name="formfilled" value="42" />
             <input type="hidden" name="name_era" value="<?= @$era ?>" />
-            <label for="id">Position actuelle dans l'ODL</label>
-            <input type="number" class="pos" min="0" name="id" value="<?= @$id ?>"> *<br />
+            <div class="head_form">
+                <div>
+                    <label for="id">Position actuelle<br />dans l'ODL</label>
+                    <input type="number" class="pos" min="0" name="id" value="<?= @$id ?>"> *<br />
+                </div>
+                <div class="info_isEvent">
+                    <label for="checkboxIsEvent">Event ?</label><br />
+                    <input type="checkbox" name="isEvent" id="checkboxIsEvent" <?= @$checkboxIsEvent ?>>
+                    <input type="hidden" name="isEventReturn" value="<?= @$checkboxIsEvent ?>">
+                </div>
+            </div>
             <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"  value="<?= @$info['arc'] ?>"><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />

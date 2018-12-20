@@ -4,13 +4,18 @@ include('header.php');
 <section>
 <?php
     if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
+        $era = $_REQUEST['name_era'];
+        $isEvent = 1;
+        if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") {
+            $isEvent = 1;
+        }
         echo "<div class='form'>";
         $upload = uploadCover();
         if ($upload[0] === TRUE) {
-            $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
+            $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
             $id    = ++$maxid['id'];
-            $req   = $bdd->prepare('INSERT INTO odldc_rebirth(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic) 
-                                VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :link_urban, :topic)');
+            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic, isEvent) 
+                                VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :link_urban, :topic, :isEvent)");
             $req->execute(array(
                 'id'          => $id,
                 'name_period' => htmlentities($_REQUEST['name_period']),
@@ -21,22 +26,23 @@ include('header.php');
                 'dctrad'      => $_REQUEST['dctrad'],
                 'link_urban'  => $_REQUEST['link_urban'],
                 'topic'       => $_REQUEST['topic'],
+                'isEvent'     => $isEvent
                 ));
             echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
 
             if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
                 $newid = $_REQUEST['id'];
-                $bdd->query('UPDATE odldc_rebirth SET id=id + 1 WHERE id>='.$newid);
-                $maxid = $bdd->query('SELECT id FROM odldc_rebirth WHERE id = (SELECT MAX(id) FROM odldc_rebirth)')->fetch(PDO::FETCH_ASSOC);
+                $bdd->query("UPDATE odldc_$era SET id=id + 1 WHERE id>=".$newid);
+                $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
                 $oldid = $maxid['id'];
-                $bdd->exec('UPDATE odldc_rebirth SET id = \''.$newid.'\' WHERE id = \''.$oldid.'\'');
-                $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
-                echo " en position ".$newid;
+                $bdd->exec("UPDATE odldc_$era SET id = $newid WHERE id = $oldid");
+                $bdd->exec("ALTER TABLE odldc_$era ORDER BY id ASC");
+                echo " en position $newid";
             }
 
             // Changelog
             $date = new DateTime();
-            $date->setTimezone(new DateTimeZone('+0200'));
+            $date->setTimezone(new DateTimeZone('+0100'));
             if (!isset($newid)) {
                 $pos = $id;
             } else {
@@ -48,8 +54,8 @@ include('header.php');
                 'position'    => $pos,
                 'title'       => htmlentities($_REQUEST['titre_arc']),
             );
-            $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+            $query = $bdd->prepare("INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic, isEvent) 
+                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic, :isEvent)");
             $query->execute(array(
                 'id'           => $changelog['id'],
                 'author'       => $_SESSION['pseudo'],
@@ -66,12 +72,13 @@ include('header.php');
                 'dctrad'       => '',
                 'link_urban'   => '',
                 'topic'        => '',
+                'isEvent'      => $isEvent
             ));
 
-            $count = $bdd->query('SELECT count(*) FROM odldc_changelog')->fetch(PDO::FETCH_ASSOC);
+            $count = $bdd->query("SELECT count(*) FROM odldc_changelog")->fetch(PDO::FETCH_ASSOC);
 
             if ($count['count(*)'] > 100) {
-                $bdd->exec('DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1');
+                $bdd->exec("DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1");
             }
 
             echo ".";
@@ -89,18 +96,26 @@ include('header.php');
     <div class="form">
         <h2>Ajouter un arc</h2>
         <form action="?" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="formfilled" value="42" />
-            <select name="name_era">
-                <option value="Rebirth">Rebirth</option>
-            </select> *<br />
-            <select name="name_period">
-                <option value="">Période</option>
-                <option value="Road to Rebirth">Road to Rebirth</option>
-                <option value="Rebirth">Rebirth</option>
-                <option value="Metal">Metal</option>
-                <option value="Post-Metal">Post-Metal</option>
-                <option value="New Justice">New Justice</option>
-            </select> *<br />
+            <div class="head_form">
+                <div class="info_sections">
+                    <input type="hidden" name="formfilled" value="42" />
+                    <select name="name_era">
+                        <option value="Rebirth">Rebirth</option>
+                    </select> *<br />
+                    <select name="name_period">
+                        <option value="">Période</option>
+                        <option value="Road to Rebirth">Road to Rebirth</option>
+                        <option value="Rebirth">Rebirth</option>
+                        <option value="Metal">Metal</option>
+                        <option value="Post-Metal">Post-Metal</option>
+                        <option value="New Justice">New Justice</option>
+                    </select> *
+                </div>
+                <div class="info_isEvent">
+                    <label for="checkboxIsEvent">Event ?</label><br />
+                    <input type="checkbox" name="isEvent" id="checkboxIsEvent" <?php if(isset($_REQUEST['isEvent'])) echo "checked"; ?>>
+                </div>
+            </div>
             <input type="text" class="input" name="titre_arc" placeholder="Titre de l'arc" value="<?= @$_REQUEST['titre_arc'] ?>"> *<br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
