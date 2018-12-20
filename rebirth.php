@@ -12,7 +12,8 @@ while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
         "urban"      => $line['urban'],
         "dctrad"     => $line['dctrad'],
         "link_urban" => $line['link_urban'],
-        "topic"      => $line['topic']
+        "topic"      => $line['topic'],
+        "isEvent"    => $line['isEvent']
     );
 }
 foreach ($comics as $period=>$ARlineID) {
