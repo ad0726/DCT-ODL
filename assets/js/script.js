@@ -85,7 +85,6 @@ $(document).ready(function(){
     });
 
     $('.btn_page').click(function() {
-        // $('.page_1').css('display', 'none');
         var nbrP     = $(this).parent('.btn_pagination.top').children('button').length;
             nbrP     = nbrP - 2;
         var Sp       = $(this).html();
@@ -125,10 +124,16 @@ $(document).ready(function(){
     });
 
     $('.btn_trash').click(function() {
-        var id = $(this).parents('tr').attr('id');
+        var id         = $(this).parents('tr').attr('id');
+        var sectionODL = $('section.odl').attr('id');
+        var era        = "";
+        if (sectionODL ===  undefined) {
+            era = $('section.results_page').attr('id');
+        } else {
+            var tmp = new RegExp(/([a-z]+)_page/, "i");
+                era = sectionODL.match(tmp)[1];
+        }
         var answer = confirm('Voulez-vous vraiment supprimer la ligne '+id+' ?');
-        var tmp = new RegExp(/([a-z]+)_page/, "i");
-        var era = $('section.odl').attr('id').match(tmp)[1];
         if (answer === true) {
             location.href='delete.php?rm='+id+'&from='+era;
         }

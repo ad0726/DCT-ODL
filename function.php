@@ -125,6 +125,7 @@ function displayBTNpagination($i) {
 function displayLine($ARinfo, $p = FALSE) {
     $id = $ARinfo['id'];
     $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
+    if ($era_current == "results") $era_current = $_REQUEST['era'];
     echo "
                     <table class='page_$p'>
                         <tr class='line' id='".$id."'>
