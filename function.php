@@ -123,12 +123,15 @@ function displayBTNpagination($i) {
  * @return display
  */
 function displayLine($ARinfo, $p = FALSE) {
-    $id = $ARinfo['id'];
-    $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
-    if ($era_current == "results") $era_current = $_REQUEST['era'];
+    $id           = $ARinfo['id'];
+    $era_current  = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
+    $classIsEvent = "";
+
+    if ($era_current == "results") $era_current   = $_REQUEST['era'];
+    if ($ARinfo['isEvent'] == TRUE) $classIsEvent = "isEvent";
     echo "
                     <table class='page_$p'>
-                        <tr class='line' id='".$id."'>
+                        <tr class='line $classIsEvent' id='".$id."'>
                             <td class='nolog'>".$id."</td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
                             <td class='cel_title'><span><h3>".$ARinfo['arc']."</h3></span></td>

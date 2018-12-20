@@ -153,6 +153,10 @@ table tr.line {
   display: flex;
   justify-content: space-between;
 }
+table tr.line.isEvent {
+  border: 5px solid rgb(124, 205, 237);
+  border-radius: 5px;
+}
 .modify {
   margin-left: 10px;
 }
