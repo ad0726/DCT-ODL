@@ -207,11 +207,24 @@ form input,
   display: flex;
 }
 
-.form form div.info_isEvent {
+.form form div.div_checkbox {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 40%;
+}
+
+.form form div.isUrban_DCT {
+  display: flex;
+  align-items: center;
+}
+
+.form form div.isUrban_DCT div.isUrban {
+  width: 50%;
+}
+
+.form form div.isUrban_DCT div.isDCT {
+  width: 50%;
 }
 
 .form form .file {

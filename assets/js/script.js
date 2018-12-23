@@ -188,4 +188,23 @@ $(document).ready(function(){
     $('div.search').focusout(function() {
         $('div.autocompletion').slideUp(300).delay(800).noDisplay();
     });
+
+    $('#CBisUrban').click(function() {
+        var isChecked = $('#CBisUrban').prop('checked');
+        if (isChecked === true) {
+            $('#LinkUrban').css('display', 'block');
+        } else {
+            $('#LinkUrban').css('display', 'none');
+            $('#LinkUrban').attr('value', "");
+        }
+    })
+    $('#CBisDCT').click(function() {
+        var isChecked = $('#CBisDCT').prop('checked');
+        if (isChecked === true) {
+            $('#LinkDCT').css('display', 'block');
+        } else {
+            $('#LinkDCT').css('display', 'none');
+            $('#LinkDCT').attr('value', "");
+        }
+    })
 });

@@ -3,19 +3,21 @@ include('header.php');
 ?>
 <section>
 <?php
-    if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && ($_REQUEST['urban'] != "") && ($_REQUEST['dctrad'] != "")) {
+    if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         $era = $_REQUEST['name_era'];
-        $isEvent = 1;
-        if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") {
-            $isEvent = 1;
-        }
+
+        $isEvent = 0;
+        if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") $isEvent = 1;
+
         echo "<div class='form'>";
+
         $upload = uploadCover();
+
         if ($upload[0] === TRUE) {
             $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
             $id    = ++$maxid['id'];
-            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, name_period, arc, cover, contenu, urban, dctrad, link_urban, topic, isEvent) 
-                                VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :link_urban, :topic, :isEvent)");
+            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, name_period, arc, cover, contenu, urban, dctrad, isEvent) 
+                                VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :isEvent)");
             $req->execute(array(
                 'id'          => $id,
                 'name_period' => htmlentities($_REQUEST['name_period']),
@@ -24,8 +26,6 @@ include('header.php');
                 'contenu'     => htmlentities($_REQUEST['contenu']),
                 'urban'       => $_REQUEST['urban'],
                 'dctrad'      => $_REQUEST['dctrad'],
-                'link_urban'  => $_REQUEST['link_urban'],
-                'topic'       => $_REQUEST['topic'],
                 'isEvent'     => $isEvent
                 ));
             echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
@@ -43,19 +43,18 @@ include('header.php');
             // Changelog
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone('+0100'));
-            if (!isset($newid)) {
-                $pos = $id;
-            } else {
-                $pos = $newid;
-            }
+
+            (!isset($newid)) ? $pos = $id : $pos = $newid;
+
             $changelog = array(
                 'id'          => $date->format('Y-m-d_H:i:s'),
                 'name_period' => htmlentities($_REQUEST['name_period']),
                 'position'    => $pos,
                 'title'       => htmlentities($_REQUEST['titre_arc']),
             );
-            $query = $bdd->prepare("INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic, isEvent) 
-                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic, :isEvent)");
+
+            $query = $bdd->prepare("INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
             $query->execute(array(
                 'id'           => $changelog['id'],
                 'author'       => $_SESSION['pseudo'],
@@ -70,13 +69,10 @@ include('header.php');
                 'content'      => '',
                 'urban'        => '',
                 'dctrad'       => '',
-                'link_urban'   => '',
-                'topic'        => '',
                 'isEvent'      => $isEvent
             ));
 
             $count = $bdd->query("SELECT count(*) FROM odldc_changelog")->fetch(PDO::FETCH_ASSOC);
-
             if ($count['count(*)'] > 100) {
                 $bdd->exec("DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1");
             }
@@ -111,7 +107,7 @@ include('header.php');
                         <option value="New Justice">New Justice</option>
                     </select> *
                 </div>
-                <div class="info_isEvent">
+                <div class="div_checkbox">
                     <label for="checkboxIsEvent">Event ?</label><br />
                     <input type="checkbox" name="isEvent" id="checkboxIsEvent" <?php if(isset($_REQUEST['isEvent'])) echo "checked"; ?>>
                 </div>
@@ -121,21 +117,34 @@ include('header.php');
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
             <input type="file" class="file" name="cover"> *<br />
             <textarea class="content" name="contenu" placeholder="Liste des issues de l'arc"><?= @$_REQUEST['contenu'] ?></textarea> *<br />
-            <div>
-                <label for="publication">Publié chez :</label>
-                <select name="urban">
-                    <option value="">Urban</option>
-                    <option value="1">Oui</option>
-                    <option value="0">Non</option>
-                </select>
-                <select name="dctrad">
-                    <option value="">DCTrad</option>
-                    <option value="1">Oui</option>
-                    <option value="0">Non</option>
-                </select> *<br />
+            <div class="isUrban_DCT">
+                <div class="isUrban">
+                    <label for="CBisUrban">Urban</label>
+                    <input type="checkbox" name="isUrban" id="CBisUrban" <?php if(isset($_REQUEST['urban']) && !empty($_REQUEST['urban'])) echo "checked"; ?>>
+                </div>
+                <div class="isDCT">
+                    <label for="CBisDCT">DCTrad</label>
+                    <input type="checkbox" name="isDCT" id="CBisDCT" <?php if(isset($_REQUEST['dctrad']) && !empty($_REQUEST['dctrad'])) echo "checked"; ?>>
+                </div>
             </div>
-            <input type="url" class="input" name="link_urban" placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779" value="<?= @$_REQUEST['link_urban'] ?>"><br />
-            <input type="url" class="input" name="topic" placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234" value="<?= @$_REQUEST['topic'] ?>"><br />
+            <input type="url" class="input" name="urban" id="LinkUrban"
+            <?php 
+            if (isset($_REQUEST['urban']) && !empty($_REQUEST['urban'])) {
+                echo "style='display: block;'";
+            } else { 
+                echo "style='display: none;'";
+            }
+            ?> 
+            placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779" value="<?= @$_REQUEST['urban'] ?>">
+            <input type="url" class="input" name="dctrad" id="LinkDCT"
+            <?php
+            if (isset($_REQUEST['dctrad']) && !empty($_REQUEST['dctrad'])) {
+                echo "style='display: block;'";
+            } else {
+                echo "style='display: none;'";
+            }
+            ?>
+            placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234" value="<?= @$_REQUEST['dctrad'] ?>">
             <div class="tooltip">
                 <span class="tooltiptext">À utiliser pour rajouter entre deux arcs déjà présents. Sinon ne pas remplir.</span>
                 <label for="id">Position dans l'ODL</label>
