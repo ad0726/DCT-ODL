@@ -100,28 +100,28 @@ include('header.php');
             <div class="head_form">
                 <div class="info_sections">
                     <input type="hidden" name="formfilled" value="42" />
-                    <select name="name_era">
+                    <select name="name_era" required>
                         <option value="Rebirth">Rebirth</option>
-                    </select> *<br />
-                    <select name="id_period">
+                    </select><br />
+                    <select name="id_period" required>
                         <option value="">Période</option>
                     <?php
                     while ($namePeriod = $periods->fetch(PDO::FETCH_ASSOC)) {
                         echo "<option value='".$namePeriod['id_period']."'>".$namePeriod['name']."</option>\n";
                     }
                     ?>
-                    </select> *
+                    </select>
                 </div>
                 <div class="div_checkbox">
                     <label for="checkboxIsEvent">Event ?</label><br />
                     <input type="checkbox" name="isEvent" id="checkboxIsEvent" <?php if(isset($_REQUEST['isEvent'])) echo "checked"; ?>>
                 </div>
             </div>
-            <input type="text" class="input" name="titre_arc" placeholder="Titre de l'arc" value="<?= @$_REQUEST['titre_arc'] ?>"> *<br />
+            <input type="text" class="input" name="titre_arc" placeholder="Titre de l'arc" value="<?= @$_REQUEST['titre_arc'] ?>" required><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
-            <input type="file" class="file" name="cover"> *<br />
-            <textarea class="content" name="contenu" placeholder="Liste des issues de l'arc"><?= @$_REQUEST['contenu'] ?></textarea> *<br />
+            <input type="file" class="file" name="cover" required><br />
+            <textarea class="content" name="contenu" placeholder="Liste des issues de l'arc" required><?= @$_REQUEST['contenu'] ?></textarea><br />
             <div class="isUrban_DCT">
                 <div class="isUrban">
                     <label for="CBisUrban">Urban</label>

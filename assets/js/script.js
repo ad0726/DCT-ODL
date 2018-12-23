@@ -193,18 +193,22 @@ $(document).ready(function(){
         var isChecked = $('#CBisUrban').prop('checked');
         if (isChecked === true) {
             $('#LinkUrban').css('display', 'block');
+            $('#LinkUrban').prop('required', true);
         } else {
             $('#LinkUrban').css('display', 'none');
             $('#LinkUrban').attr('value', "");
+            $('#LinkUrban').prop('required', false);
         }
     })
     $('#CBisDCT').click(function() {
         var isChecked = $('#CBisDCT').prop('checked');
         if (isChecked === true) {
             $('#LinkDCT').css('display', 'block');
+            $('#LinkDCT').prop('required', true);
         } else {
             $('#LinkDCT').css('display', 'none');
             $('#LinkDCT').attr('value', "");
+            $('#LinkDCT').prop('required', false);
         }
     })
 
