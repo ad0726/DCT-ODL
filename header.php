@@ -17,7 +17,9 @@ include('function.php');
     <body>
         <main>
             <header id="up">
+            <a href="index.php" id="header">
                 <?php displayHeader(); ?>
+            </a>
             </header>
 <?php
 logout();

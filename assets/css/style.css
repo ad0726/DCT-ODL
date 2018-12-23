@@ -9,6 +9,13 @@ header {
   background: url("../img/banniere_header.png") center;
 }
 
+header a#header {
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: white;
+}
+
 /* .title_header {
   position: relative;
   height: 100%;
