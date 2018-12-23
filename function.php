@@ -139,16 +139,16 @@ function displayLine($ARinfo, $p = FALSE) {
                             <td class='cel_publi'>
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
-    if ($ARinfo['urban'] == 1) {
+    if (!empty($ARinfo['urban'])) {
         echo "
-        <a href='".$ARinfo['link_urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
+        <a href='".$ARinfo['urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
     } else {
         echo "
             <img src='assets/img/logo_urban_mini.png' class='logo_opacity'>";
     }
-    if ($ARinfo['dctrad'] == 1) {
+    if (!empty($ARinfo['dctrad'])) {
         echo "
-            <a href='".$ARinfo['topic']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
+            <a href='".$ARinfo['dctrad']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
     } else {
         echo "
             <img src='assets/img/logo_dct_mini.png' class='logo_opacity'>";
