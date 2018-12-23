@@ -207,4 +207,21 @@ $(document).ready(function(){
             $('#LinkDCT').attr('value', "");
         }
     })
+
+    $('#selectCreate').click(function() {
+        var ChoiceCreate = $('.optionCreate:selected').attr('value');
+        if (ChoiceCreate === "era") {
+            $('#create_era').css('display', 'block');
+            $('#create_period').css('display', 'none');
+            $('.btn_send').css('display', 'block');
+        } else if (ChoiceCreate === "period") {
+            $('#create_era').css('display', 'none');
+            $('#create_period').css('display', 'block');
+            $('.btn_send').css('display', 'block');
+        } else if (ChoiceCreate === "") {
+            $('#create_era').css('display', 'none');
+            $('#create_period').css('display', 'none');
+            $('.btn_send').css('display', 'none');
+        }
+    })
 });

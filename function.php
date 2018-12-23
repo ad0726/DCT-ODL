@@ -337,6 +337,79 @@ function ResizeCover($source, $type_value = "W", $new_value) {
     imagedestroy($source_image);
 
     return $image;
-  }
+}
 
+function createSection($section) {
+    global $bdd;
+    $name      = htmlentities($_REQUEST["name_$section"]);
+    $nameClean = strtolower(str_replace(" ", "_", htmlentities($_REQUEST["name_$section"])));
+    $maxID     = $bdd->query("SELECT MAX(id) FROM odldc_$section")->fetch(PDO::FETCH_ASSOC);
+    $maxID     = $maxID['MAX(id)'];
+
+    if ($section == "era") {
+        $cols    = "id, name, clean_name, era_to_period";
+        $values  = ":id, :name, :clean_name, :era_to_period";
+        $execute = [
+            'id'            => 1,
+            'name'          => $name,
+            'clean_name'    => $nameClean,
+            'era_to_period' => uniqid(),
+        ];
+    } else {
+        $cols    = "id, name, clean_name, period_to_era";
+        $values  = ":id, :name, :clean_name, :period_to_era";
+        $nameEra = $_REQUEST['periodToEra'];
+        $query   = $bdd->query("SELECT era_to_period FROM odldc_era WHERE clean_name = '$nameEra'")->fetch(PDO::FETCH_ASSOC);
+        $eraID   = $query['era_to_period'];
+        $execute = [
+            'id'            => 1,
+            'name'          => $name,
+            'clean_name'    => $nameClean,
+            'period_to_era' => $eraID,
+        ];
+    }
+
+    if ($_REQUEST["where_$section"] == "first") {
+        // Insert into first place
+        $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN 1 AND $maxID");
+
+        $query = $bdd->prepare("INSERT INTO odldc_$section($cols) 
+            VALUES($values)");
+
+        $query->execute($execute);
+
+    } else {
+        $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
+        $query    = $bdd->query("SELECT clean_name FROM odldc_$section WHERE id = $maxID")->fetch(PDO::FETCH_ASSOC);
+        $lastEra  = $query['clean_name'];
+
+        if ($whereEra == $lastEra) {
+            // Insert into last place
+            $id = ++$maxID;
+
+            $query = $bdd->prepare("INSERT INTO odldc_$section($cols) 
+            VALUES($values)");
+
+            $execute['id'] = $id;
+            $query->execute($execute);
+
+        } else {
+            // Other insert
+            $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
+            $query    = $bdd->query("SELECT id FROM odldc_$section WHERE clean_name = '$whereEra'")->fetch(PDO::FETCH_ASSOC);
+            $id       = ++$query['id'];
+
+            $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN $id AND $maxID");
+            
+            $query = $bdd->prepare("INSERT INTO odldc_$section($cols) 
+            VALUES($values)");
+
+            $execute['id'] = $id;
+            $query->execute($execute);
+            $bdd->exec("ALTER TABLE odldc_$section ORDER BY id ASC");
+
+        }
+    }
+    echo "$name a bien été créé.";
+}
 ?>
