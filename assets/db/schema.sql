@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  jeu. 20 déc. 2018 à 23:58
+-- Généré le :  Dim 23 déc. 2018 à 17:15
 -- Version du serveur :  5.7.19
 -- Version de PHP :  5.6.31
 
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `odldc`
+-- Base de données :  `odldcbis`
 --
 
 -- --------------------------------------------------------
@@ -43,8 +43,6 @@ CREATE TABLE IF NOT EXISTS `odldc_changelog` (
   `content` text NOT NULL,
   `urban` text NOT NULL,
   `dctrad` text NOT NULL,
-  `link_urban` text NOT NULL,
-  `topic` text NOT NULL,
   `isEvent` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -57,7 +55,9 @@ CREATE TABLE IF NOT EXISTS `odldc_changelog` (
 DROP TABLE IF EXISTS `odldc_era`;
 CREATE TABLE IF NOT EXISTS `odldc_era` (
   `id` int(11) NOT NULL,
-  `name_era` varchar(100) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `clean_name` varchar(100) NOT NULL,
+  `id_era` varchar(60) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -69,8 +69,10 @@ CREATE TABLE IF NOT EXISTS `odldc_era` (
 DROP TABLE IF EXISTS `odldc_period`;
 CREATE TABLE IF NOT EXISTS `odldc_period` (
   `id` int(11) NOT NULL,
-  `name_period` varchar(100) NOT NULL,
-  `id_era` int(11) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `clean_name` varchar(100) NOT NULL,
+  `id_era` varchar(60) NOT NULL,
+  `id_period` varchar(60) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -82,14 +84,12 @@ CREATE TABLE IF NOT EXISTS `odldc_period` (
 DROP TABLE IF EXISTS `odldc_rebirth`;
 CREATE TABLE IF NOT EXISTS `odldc_rebirth` (
   `id` int(11) NOT NULL,
-  `name_period` text NOT NULL,
+  `id_period` varchar(60) NOT NULL,
   `arc` text NOT NULL,
   `cover` text NOT NULL,
   `contenu` text NOT NULL,
-  `urban` tinyint(1) NOT NULL,
-  `dctrad` tinyint(1) NOT NULL,
-  `link_urban` text NOT NULL,
-  `topic` text NOT NULL,
+  `urban` text NOT NULL,
+  `dctrad` text NOT NULL,
   `isEvent` tinyint(1) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

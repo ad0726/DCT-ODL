@@ -3,7 +3,7 @@ include('header.php');
 ?>
 <section>
 <?php
-    if (!empty($_REQUEST['name_period']) && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+    if (isset($_REQUEST['id_period']) && ($_REQUEST['id_period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         $era = $_REQUEST['name_era'];
 
         $isEvent = 0;
@@ -16,17 +16,17 @@ include('header.php');
         if ($upload[0] === TRUE) {
             $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
             $id    = ++$maxid['id'];
-            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, name_period, arc, cover, contenu, urban, dctrad, isEvent) 
-                                VALUES(:id, :name_period, :arc, :cover, :contenu, :urban, :dctrad, :isEvent)");
+            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, id_period, arc, cover, contenu, urban, dctrad, isEvent) 
+                                VALUES(:id, :id_period, :arc, :cover, :contenu, :urban, :dctrad, :isEvent)");
             $req->execute(array(
-                'id'          => $id,
-                'name_period' => htmlentities($_REQUEST['name_period']),
-                'arc'         => htmlentities($_REQUEST['titre_arc']),
-                'cover'       => $upload[1],
-                'contenu'     => htmlentities($_REQUEST['contenu']),
-                'urban'       => $_REQUEST['urban'],
-                'dctrad'      => $_REQUEST['dctrad'],
-                'isEvent'     => $isEvent
+                'id'        => $id,
+                'id_period' => $_REQUEST['id_period'],
+                'arc'       => htmlentities($_REQUEST['titre_arc']),
+                'cover'     => $upload[1],
+                'contenu'   => htmlentities($_REQUEST['contenu']),
+                'urban'     => $_REQUEST['urban'],
+                'dctrad'    => $_REQUEST['dctrad'],
+                'isEvent'   => $isEvent
                 ));
             echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
 
@@ -46,9 +46,12 @@ include('header.php');
 
             (!isset($newid)) ? $pos = $id : $pos = $newid;
 
+            $query    = $bdd->query("SELECT name FROM odldc_period WHERE id_period = \"".$_REQUEST['id_period']."\"")->fetch(PDO::FETCH_ASSOC);
+            $period   = $query['name'];
+
             $changelog = array(
                 'id'          => $date->format('Y-m-d_H:i:s'),
-                'name_period' => htmlentities($_REQUEST['name_period']),
+                'name_period' => $period,
                 'position'    => $pos,
                 'title'       => htmlentities($_REQUEST['titre_arc']),
             );
@@ -88,6 +91,8 @@ include('header.php');
             echo "<a href='add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
         }
     } elseif (isset($_SESSION['pseudo'])) {
+        $eras    = $bdd->query('SELECT * FROM odldc_era');
+        $periods = $bdd->query('SELECT * FROM odldc_period');
 ?>
     <div class="form">
         <h2>Ajouter un arc</h2>
@@ -98,13 +103,13 @@ include('header.php');
                     <select name="name_era">
                         <option value="Rebirth">Rebirth</option>
                     </select> *<br />
-                    <select name="name_period">
+                    <select name="id_period">
                         <option value="">Période</option>
-                        <option value="Road to Rebirth">Road to Rebirth</option>
-                        <option value="Rebirth">Rebirth</option>
-                        <option value="Metal">Metal</option>
-                        <option value="Post-Metal">Post-Metal</option>
-                        <option value="New Justice">New Justice</option>
+                    <?php
+                    while ($namePeriod = $periods->fetch(PDO::FETCH_ASSOC)) {
+                        echo "<option value='".$namePeriod['id_period']."'>".$namePeriod['name']."</option>\n";
+                    }
+                    ?>
                     </select> *
                 </div>
                 <div class="div_checkbox">
