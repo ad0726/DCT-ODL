@@ -206,6 +206,10 @@ form input,
   background: lightgrey;
 }
 
+form :required {
+  background: lightgrey;
+}
+
 .form form .input {
   width: 250px;
 }

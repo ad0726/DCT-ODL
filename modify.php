@@ -152,7 +152,7 @@ include('header.php');
             <div class="head_form">
                 <div>
                     <label for="id">Position actuelle<br />dans l'ODL</label>
-                    <input type="number" class="pos" min="0" name="id" value="<?= @$id ?>"> *<br />
+                    <input type="number" class="pos" min="0" name="id" value="<?= @$id ?>" required><br />
                 </div>
                 <div class="info_isEvent">
                     <label for="checkboxIsEvent">Event ?</label><br />
