@@ -4,13 +4,14 @@ include('header.php');
 <section>
 <?php
     if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        // die(print_r($_REQUEST, 1));
-        $era = $_REQUEST['name_era'];
+        $era  = $_REQUEST['name_era'];
+        $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+
         $isEvent = 0;
         if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") {
             $isEvent = 1;
         }
-        // die($isEvent." ///");
+
         echo "<div class='form'>";
         // Delete image if new image uploaded
         if ($_FILES['cover']['error'] == 0) {
@@ -41,25 +42,17 @@ include('header.php');
                 $bdd->exec('UPDATE odldc_rebirth SET contenu = \''.$_REQUEST['new_content'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
                 $update_content = TRUE;
             }
-            // Update "Urban" option
-            if ($_REQUEST['new_urban'] != "") {
-                $bdd->exec('UPDATE odldc_rebirth SET urban = \''.$_REQUEST['new_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-            }
-            // Update "DCTrad" option
-            if ($_REQUEST['new_dctrad'] != "") {
-                $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-            }
             // Update Urban's link
-            $update_link_urban = FALSE;
-            if (!empty($_REQUEST['new_link_urban'])) {
-                $bdd->exec('UPDATE odldc_rebirth SET link_urban = \''.$_REQUEST['new_link_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-                $update_link_urban = TRUE;
+            $update_urban = FALSE;
+            if ($_REQUEST['new_urban'] != $info['urban']) {
+                $bdd->exec('UPDATE odldc_rebirth SET urban = \''.$_REQUEST['new_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $update_urban = TRUE;
             }
             // Update DCTrad's link
-            $update_topic = FALSE;
-            if (!empty($_REQUEST['new_topic'])) {
-                $bdd->exec('UPDATE odldc_rebirth SET topic = \''.$_REQUEST['new_topic'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-                $update_topic = TRUE;
+            $update_dct = FALSE;
+            if ($_REQUEST['new_dctrad'] != $info['dctrad']) {
+                $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $update_dct = TRUE;
             }
             // Update Id
             if (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] > $_REQUEST['id'])) {
@@ -103,16 +96,12 @@ include('header.php');
                 ),
                 'cover'   => $update_img,
                 'content' => $update_content,
-                'urban'   => $_REQUEST['new_urban'],
-                'dctrad'  => $_REQUEST['new_dctrad'],
-                'links'   => array(
-                    'urban'  => $update_link_urban,
-                    'dctrad' => $update_topic
-                ),
+                'urban'   => $update_urban,
+                'dctrad'  => $update_dct
             );
 
-            $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic, isEvent) 
-                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic, :isEvent)');
+            $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
             $query->execute(array(
             'id'           => $changelog['id'],
             'author'       => $_SESSION['pseudo'],
@@ -127,8 +116,6 @@ include('header.php');
             'content'      => $changelog['content'],
             'urban'        => $changelog['urban'],
             'dctrad'       => $changelog['dctrad'],
-            'link_urban'   => $changelog['links']['urban'],
-            'topic'        => $changelog['links']['dctrad'],
             'isEvent'      => $clIsEvent
             ));
 
@@ -178,21 +165,34 @@ include('header.php');
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
             <input type="file" class="file" name="cover"><br />
             <textarea class="content" name="new_content" placeholder="Liste des issues de l'arc"><?= @$info['contenu'] ?></textarea><br />
-            <div>
-                <label for="publication">Publié chez :</label>
-                <select name="new_urban">
-                    <option value="">Urban</option>
-                    <option value="1" <?php if(@$info['urban'] === '1') echo "selected" ?>>Oui</option>
-                    <option value="0" <?php if(@$info['urban'] === '0') echo "selected" ?>>Non</option>
-                </select>
-                <select name="new_dctrad">
-                    <option value="">DCTrad</option>
-                    <option value="1" <?php if(@$info['dctrad'] === '1') echo "selected" ?>>Oui</option>
-                    <option value="0" <?php if(@$info['dctrad'] === '0') echo "selected" ?>>Non</option>
-                </select><br />
+            <div class="isUrban_DCT">
+                <div class="isUrban">
+                    <label for="CBisUrban">Urban</label>
+                    <input type="checkbox" name="isUrban" id="CBisUrban" <?php if(!empty($info['urban'])) echo "checked"; ?>>
+                </div>
+                <div class="isDCT">
+                    <label for="CBisDCT">DCTrad</label>
+                    <input type="checkbox" name="isDCT" id="CBisDCT" <?php if(!empty($info['dctrad'])) echo "checked"; ?>>
+                </div>
             </div>
-            <input type="url" class="input" name="new_link_urban" placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779"  <?php if(!empty(@$info['link_urban'])) echo "value='".$info['link_urban']."'" ?>><br />
-            <input type="url" class="input" name="new_topic" placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234" <?php if(!empty(@$info['topic'])) echo "value='".$info['topic']."'" ?>><br />
+            <input type="url" class="input" name="new_urban" id="LinkUrban"
+            <?php 
+            if (isset($info['urban']) && !empty($info['urban'])) {
+                echo "style='display: block;'";
+            } else { 
+                echo "style='display: none;'";
+            }
+            ?> 
+            placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779" value="<?= @$info['urban'] ?>">
+            <input type="url" class="input" name="new_dctrad" id="LinkDCT"
+            <?php
+            if (isset($info['dctrad']) && !empty($info['dctrad'])) {
+                echo "style='display: block;'";
+            } else {
+                echo "style='display: none;'";
+            }
+            ?>
+            placeholder="http://www.dctrad.fr/viewtopic.php?f=257&t=13234" value="<?= @$info['dctrad'] ?>">
             <label for="new_id">Position voulue dans l'ODL</label>
             <input type="number" class="pos" min="0" name="new_id"><br />
             <input type="submit" class="btn_send" value="Envoyer">
