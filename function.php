@@ -209,24 +209,10 @@ function displayChangelog($val) {
         if ($val['content'] == 1) {
             echo "<li>le contenu de l'arc a été mis à jour.</li>";
         }
-        if (!empty($val['urban'])) {
-            if ($val['urban'] == 1) {
-                echo "<li>l'option Urban a été sélectionnée.</li>";
-            } else {
-                echo "<li>l'option Urban a été désélectionnée.</li>";
-            }
-        }
-        if (!empty($val['dctrad'])) {
-            if ($val['dctrad'] == 1) {
-                echo "<li>l'option DCtrad a été sélectionnée.</li>";
-            } else {
-                echo "<li>l'option DCtrad a été désélectionnée.</li>";
-            }
-        }
-        if ($val['link_urban'] == 1) {
+        if ($val['urban'] == 1) {
             echo "<li>le lien Urban a été mis à jour.</li>";
         }
-        if ($val['topic'] == 1) {
+        if ($val['dctrad'] == 1) {
             echo "<li>le lien DCTrad a été mis à jour.</li>";
         }
         if (isset($isEvent)) {
@@ -347,25 +333,26 @@ function createSection($section) {
     $maxID     = $maxID['MAX(id)'];
 
     if ($section == "era") {
-        $cols    = "id, name, clean_name, era_to_period";
-        $values  = ":id, :name, :clean_name, :era_to_period";
+        $cols    = "id, name, clean_name, id_era";
+        $values  = ":id, :name, :clean_name, :id_era";
         $execute = [
-            'id'            => 1,
-            'name'          => $name,
-            'clean_name'    => $nameClean,
-            'era_to_period' => uniqid(),
+            'id'         => 1,
+            'name'       => $name,
+            'clean_name' => $nameClean,
+            'id_era'     => uniqid(),
         ];
     } else {
-        $cols    = "id, name, clean_name, period_to_era";
-        $values  = ":id, :name, :clean_name, :period_to_era";
+        $cols    = "id, name, clean_name, id_era, id_period";
+        $values  = ":id, :name, :clean_name, :id_era, :id_period";
         $nameEra = $_REQUEST['periodToEra'];
-        $query   = $bdd->query("SELECT era_to_period FROM odldc_era WHERE clean_name = '$nameEra'")->fetch(PDO::FETCH_ASSOC);
-        $eraID   = $query['era_to_period'];
+        $query   = $bdd->query("SELECT id_era FROM odldc_era WHERE clean_name = '$nameEra'")->fetch(PDO::FETCH_ASSOC);
+        $eraID   = $query['id_era'];
         $execute = [
-            'id'            => 1,
-            'name'          => $name,
-            'clean_name'    => $nameClean,
-            'period_to_era' => $eraID,
+            'id'         => 1,
+            'name'       => $name,
+            'clean_name' => $nameClean,
+            'id_era'     => $eraID,
+            'id_period'  => uniqid()
         ];
     }
 
