@@ -11,8 +11,6 @@ while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
         "contenu"    => $line['contenu'],
         "urban"      => $line['urban'],
         "dctrad"     => $line['dctrad'],
-        "link_urban" => $line['link_urban'],
-        "topic"      => $line['topic'],
         "isEvent"    => $line['isEvent']
     );
 }
