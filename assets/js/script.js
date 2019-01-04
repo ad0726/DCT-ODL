@@ -228,4 +228,9 @@ $(document).ready(function(){
             $('.btn_send').css('display', 'none');
         }
     })
+
+    $('.btn_hide.down').click(function() {
+        var div = $(this).parent('div.content_period').attr('id');
+        $('div.content_period#'+div).toggle();
+    })
 });
