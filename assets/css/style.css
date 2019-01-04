@@ -335,6 +335,7 @@ div.period {
 .content_period {
   display: none;
   position: relative;
+  padding-bottom: 25px;
 }
 
 .content_period table .cel_img {
