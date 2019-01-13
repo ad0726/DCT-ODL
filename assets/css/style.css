@@ -216,6 +216,19 @@ form :required {
 
 .form form div.head_form {
   display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.form form div.head_form select {
+  height: 20px;
+  width: 100px;
+  margin: 0 5px 0 5px;
+}
+
+.form form div.head_form .info_isEvent {
+  display: flex;
+  flex-direction: column;
 }
 
 .form form div.div_checkbox {
