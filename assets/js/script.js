@@ -228,4 +228,10 @@ $(document).ready(function(){
             $('.btn_send').css('display', 'none');
         }
     })
+
+    $('#btnup').click(function() {
+        $('html,body').animate( {
+            scrollTop: $('body').offset().top
+        }, 'slow');
+    })
 });

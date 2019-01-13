@@ -232,7 +232,7 @@ function displayChangelog($val) {
  * @return display
  */
 function displayBtnUp() {
-    echo "<a href='#up'><div class='btnup'><i class='fas fa-arrow-circle-up'></i></div></a>";
+    echo "<div id='btnup'><i class='fas fa-arrow-circle-up'></i></div>";
 }
 
 /**
