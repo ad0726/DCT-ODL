@@ -149,7 +149,7 @@ include('header.php');
             }
         }
 ?>
-    <div class="form">
+    <div class="form modify">
         <h2>Modifier un arc</h2>
         <form action="?" method="post" enctype="multipart/form-data">
             <input type="hidden" name="formfilled" value="42" />
