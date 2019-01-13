@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
     var styles = {
         color : 'red',
         border: 'solid 1px grey',
@@ -233,5 +233,10 @@ $(document).ready(function(){
         $('html,body').animate( {
             scrollTop: $('body').offset().top
         }, 'slow');
-    })
-});
+    });
+
+    $('.btn_hide.down').click(function() {
+        var div = $(this).parent('div.content_period').attr('id');
+        $('div.content_period#'+div).toggle();
+    });
+})
