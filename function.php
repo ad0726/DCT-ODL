@@ -268,7 +268,7 @@ function uploadCover() {
     if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.\n";
 // AFFICHAGE DE L'ERREUR OU ENVOI
     if (!empty($error)) {
-        return [FALSE, @$error];
+        return (isset($error[1])) ? [FALSE, $error[1]] : [FALSE, @$error];
     } else {
 // SAUVEGARDE DE L'IMAGE SUR LE FTP
         $image = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
