@@ -78,11 +78,11 @@ function displayPeriod($period, $ARlineID) {
                 }
                 foreach ($ARlineID as $lineID=>$ARinfo) {
                     if ($i % 20 == 0) {
-                        displayLine($ARinfo, $p);
+                        displayLine($ARinfo, $period, $p);
                         $i++;
                         $p++;
                     } else {
-                        displayLine($ARinfo, $p);
+                        displayLine($ARinfo, $period, $p);
                         $i++;
                     }
                 }
@@ -119,13 +119,15 @@ function displayBTNpagination($i) {
  * Display each line for comics arc
  *
  * @param array $ARinfo
+ * @param string $period : current period (optionnal)
  * @param integer $p : number of pages (optionnal)
  * @return display
  */
-function displayLine($ARinfo, $p = FALSE) {
-    $id           = $ARinfo['id'];
-    $era_current  = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
-    $classIsEvent = "";
+function displayLine($ARinfo, $period=FALSE, $p = FALSE) {
+    $id            = $ARinfo['id'];
+    $era_current   = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
+    $period_format = strtolower(str_replace(" ", "_", $period));
+    $classIsEvent  = "";
 
     if ($era_current == "results") $era_current   = $_REQUEST['era'];
     if ($ARinfo['isEvent'] == TRUE) $classIsEvent = "isEvent";
@@ -157,7 +159,7 @@ function displayLine($ARinfo, $p = FALSE) {
                                 </div>
                             </td>
                             <td class='nolog'>
-                                <a href='modify.php?era=$era_current&id=$id' title='Modifier'>
+                                <a href='modify.php?era=$era_current&period=$period_format&id=$id' title='Modifier'>
                                     <button type='button' class='btn_head'><i class='fas fa-pen-fancy'></i></button>
                                 </a>
                                 <button type='button' class='btn_head btn_trash'><i class='fas fa-trash-alt'></i></button>
