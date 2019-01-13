@@ -220,10 +220,10 @@ form :required {
   align-items: center;
 }
 
-.form form div.head_form select {
+.form.modify form div.head_form select {
   height: 20px;
   width: 100px;
-  margin: 0 5px 0 5px;
+  margin: 0 5px 5px 5px;
 }
 
 .form form div.head_form .info_isEvent {
