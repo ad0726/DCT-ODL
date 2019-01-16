@@ -91,8 +91,12 @@ include('header.php');
             echo "<a href='add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
         }
     } elseif (isset($_SESSION['pseudo'])) {
-        $eras    = $bdd->query('SELECT * FROM odldc_era');
-        $periods = $bdd->query('SELECT * FROM odldc_period');
+        $eras       = $bdd->query('SELECT * FROM odldc_era');
+        $periods    = $bdd->query('SELECT * FROM odldc_period');
+        $lastPeriod = $bdd->query('SELECT clean_name FROM odldc_period WHERE id_period IN 
+                                    (SELECT id_period FROM odldc_rebirth WHERE id IN 
+                                        (SELECT MAX(id) FROM odldc_rebirth))'
+                            )->fetch(PDO::FETCH_ASSOC)['clean_name'];
 ?>
     <div class="form">
         <h2>Ajouter un arc</h2>
@@ -107,7 +111,10 @@ include('header.php');
                         <option value="">Période</option>
                     <?php
                     while ($namePeriod = $periods->fetch(PDO::FETCH_ASSOC)) {
-                        echo "<option value='".$namePeriod['id_period']."'>".$namePeriod['name']."</option>\n";
+                        $namePeriodFormat = strtolower(str_replace(" ", "_", $namePeriod['name']));
+                        $selected         = ($namePeriodFormat == $lastPeriod) ? "selected" : "";
+
+                        echo "<option value='".$namePeriod['id_period']."' $selected >".$namePeriod['name']."</option>\n";
                     }
                     ?>
                     </select>
