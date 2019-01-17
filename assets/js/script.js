@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    /**
+     * Variables for Toggle content_period and Pagination
+     */
     var styles = {
         color : 'red',
         border: 'solid 1px grey',
@@ -8,10 +11,10 @@ $(document).ready(function() {
         color : 'lightgrey',
         border: 'none'
     };
-    noDisplay = function() {
-        $('div.autocompletion').css('display', 'none');
-    }
 
+    /**
+     * Toggle content_period
+     */
     $('.title_period').click(function(){
         var period = $(this).attr('class');
         period = period.replace('title_period btn_', '');
@@ -29,6 +32,9 @@ $(document).ready(function() {
         $('div.content_period#'+period).children('div').children('.btn_next').css('display', 'block');
     });
 
+    /**
+     * Pagination
+     */
     $('.btn_next').click(function() {
         var id     = $(this).parent('div').parent('div').attr('id');
         var length = $('div.content_period#'+id).children('div').children('.btn_pagination.top > button').length;
@@ -123,6 +129,9 @@ $(document).ready(function() {
         }
     });
 
+    /**
+     * Trash button
+     */
     $('.btn_trash').click(function() {
         var id         = $(this).parents('tr').attr('id');
         var sectionODL = $('section.odl').attr('id');
@@ -138,6 +147,13 @@ $(document).ready(function() {
             location.href='delete.php?rm='+id+'&from='+era;
         }
     });
+
+    /**
+     * Search bar
+     */
+    noDisplay = function() {
+        $('div.autocompletion').css('display', 'none');
+    }
 
     $('input.prompt').keyup(function() {
         var isODL = $('section').attr('class');
@@ -189,6 +205,9 @@ $(document).ready(function() {
         $('div.autocompletion').slideUp(300).delay(800).noDisplay();
     });
 
+    /**
+     * Checkbox behaviour
+     */
     $('#CBisUrban').click(function() {
         var isChecked = $('#CBisUrban').prop('checked');
         if (isChecked === true) {
@@ -229,14 +248,79 @@ $(document).ready(function() {
         }
     })
 
+    /**
+     * Back to top button
+     */
     $('#btnup').click(function() {
         $('html,body').animate( {
             scrollTop: $('body').offset().top
         }, 'slow');
     });
 
+    /**
+     * Button close on bottom of content_period
+     */
     $('.btn_hide.down').click(function() {
         var div = $(this).parent('div.content_period').attr('id');
         $('div.content_period#'+div).toggle();
+    });
+
+    /**
+     * Preview for 'add' form
+     */
+    var name = "";
+    $('input.input').keyup(function() {
+        name = $(this).attr('name');
+        if (name == "titre_arc") {
+            $('td.cel_title span h3').html($(this).val());
+        }
+    });
+    $('input.file').click(function() {
+        name = $(this).attr('name');
+        if (name == "titre_arc") {
+            $('td.cel_title span h3').html($(this).val());
+        }
+    });
+    $('textarea.content').keyup(function() {
+        name = $(this).attr('name');
+        if (name == "contenu") {
+            $('td.cel_content p').html($(this).val());
+        }
+    });
+    $('input#checkboxIsEvent').click(function() {
+        var isChecked = $(this).prop('checked');
+        if (isChecked === true) {
+            $('tr.line').addClass('isEvent');
+        } else {
+            $('tr.line').removeClass('isEvent');
+        }
+    });
+    $('input#CBisUrban').click(function() {
+        var isChecked = $(this).prop('checked');
+        if (isChecked === true) {
+            $('img#logoUrban').removeClass('logo_opacity');
+        } else {
+            $('img#logoUrban').addClass('logo_opacity');
+        }
+    });
+    $('input#CBisDCT').click(function() {
+        var isChecked = $(this).prop('checked');
+        if (isChecked === true) {
+            $('img#logoDCT').removeClass('logo_opacity');
+        } else {
+            $('img#logoDCT').addClass('logo_opacity');
+        }
+    });
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('td.cel_img img').attr('src', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $("input.file").change(function() {
+        readURL(this);
     });
 })

@@ -27,7 +27,6 @@ function displayHeader() {
                 </a>
                 <a href='rebirth.php' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
                 <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
-                <a href='modify.php' title='Modifier un arc'><button type='button' class='btn_head' ><i class='fas fa-exchange-alt'></i></button></a>
                 <a href='changelog.php' title='Voir le changelog'><button type='button' class='btn_head' ><i class='fas fa-list-ul'></i></button></a>
                 </div>";
     }

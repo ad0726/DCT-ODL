@@ -165,7 +165,24 @@ include('header.php');
             <input type="submit" class="btn_send" value="Envoyer">
         </form>
     </div>
-<?php } else {
+<?php 
+echo "<div id='preview' class='content_period' style='display: block;'>\n";
+echo "\t<table>\n";
+echo "\t\t<tr class='line'>\n";
+echo "\t\t\t<td class='cel_img'><img src=\"\" style='width: 150px;'></td>\n";
+echo "\t\t\t<td class='cel_title'><span><h3></h3></span></td>\n";
+echo "\t\t\t<td class='cel_content'><p></p></td>\n";
+echo "\t\t\t<td class='cel_publi'>\n";
+echo "\t\t\t\t<h4>Disponible chez</h4>\n";
+echo "\t\t\t\t<div class='img_publi'>\n";
+echo "\t\t\t\t\t<img src='assets/img/logo_urban_mini.png' id='logoUrban' class='logo_opacity'>\n";
+echo "\t\t\t\t\t<img src='assets/img/logo_dct_mini.png' id='logoDCT' class='logo_opacity'>\n";
+echo "\t\t\t\t</div>\n";
+echo "\t\t\t</td>\n";
+echo "\t\t</tr>\n";
+echo "\t</table>\n";
+echo "</div>\n";
+} else {
     echo "Veuillez vous connecter pour poursuivre.";
 }?>
 </section>
