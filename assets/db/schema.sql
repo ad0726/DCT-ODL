@@ -105,6 +105,18 @@ CREATE TABLE IF NOT EXISTS `odldc_users` (
   `user_name_clean` text NOT NULL,
   `user_password` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `odldc_rebirth`
+--
+
+DROP TABLE IF EXISTS `odldc_admin`;
+CREATE TABLE IF NOT EXISTS `odldc_admin` (
+  `param` varchar(60) NOT NULL
+  `value` tinyint(1) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
