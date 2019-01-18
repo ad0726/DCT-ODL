@@ -1,6 +1,11 @@
 <?php
 session_start();
 include('function.php');
+$query = $bdd->query("SELECT value FROM odldc_admin WHERE param = 'isMaintaining'")->fetch(PDO::FETCH_ASSOC);
+if ($query['value'] == TRUE) {
+    include('maintaining.php');
+    die();
+}
 ?>
 <!DOCTYPE html>
 <html>
