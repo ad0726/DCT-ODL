@@ -345,6 +345,13 @@ div.period {
   display: flex;
 }
 
+.btn_admin {
+  background: lightgrey;
+  border: none;
+  border-radius: 5px;
+  width: 100px;
+}
+
 .content_period {
   display: none;
   position: relative;
@@ -519,4 +526,15 @@ footer p {
 
 p.text-result {
   text-align: center;
+}
+
+div.flex.row {
+  display: flex;
+}
+
+div.last_element {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
