@@ -109,12 +109,12 @@ CREATE TABLE IF NOT EXISTS `odldc_users` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `odldc_rebirth`
+-- Structure de la table `odldc_admin`
 --
 
 DROP TABLE IF EXISTS `odldc_admin`;
 CREATE TABLE IF NOT EXISTS `odldc_admin` (
-  `param` varchar(60) NOT NULL
+  `param` varchar(60) NOT NULL,
   `value` tinyint(1) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 COMMIT;
