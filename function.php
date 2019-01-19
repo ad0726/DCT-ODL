@@ -25,9 +25,8 @@ function displayHeader() {
                 <a href='?logout' title='Déconnexion'>
                 <button type='button' class='btn_head'><i class='fas fa-sign-out-alt'></i></button>
                 </a>
-                <a href='rebirth.php' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
                 <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
-                <a href='changelog.php' title='Voir le changelog'><button type='button' class='btn_head' ><i class='fas fa-list-ul'></i></button></a>
+                <a href='admin.php' title=\"PCA\"><button type='button' class='btn_head' ><i class='fas fa-bars'></i></button></a>
                 </div>";
     }
     echo "
