@@ -342,7 +342,8 @@ $(document).ready(function() {
                     formfilled: 42,
                     id: id,
                     new_title: newText,
-                    name_era: "rebirth"
+                    name_era: "rebirth",
+                    cover: {error: 4}
                 };
                 console.log(datas);
                 $.ajax({
