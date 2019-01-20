@@ -323,4 +323,34 @@ $(document).ready(function() {
     $("input.file").change(function() {
         readURL(this);
     });
+
+    $('.btn_head.update_tr').click(function() {
+        var id = $(this).attr('id');
+        $('.btn.update_td.'+id).toggle();
+    })
+
+    $('.btn.update_td').click(function() {
+        var id   = $(this).attr('class').replace("btn update_td line_", "");
+        var text = $('tr#'+id+' .cel_title span h3').text();
+
+        $('tr#'+id+' .cel_title span').replaceWith("<input id='updating' type='text' value='"+text+"'>");
+
+        $('#updating').keypress(function(e) {
+            if(e.which == 13) {
+                var newText = $(this).val();
+                var datas = {
+                    formfilled: 42,
+                    id: id,
+                    new_title: newText,
+                    name_era: "rebirth"
+                };
+                console.log(datas);
+                $.ajax({
+                    method: "POST",
+                    url: "modify.php",
+                    data: datas
+                  })
+            }
+        });
+    }); 
 })
