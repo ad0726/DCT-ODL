@@ -538,3 +538,15 @@ div.last_element {
   flex-direction: column;
   align-items: center;
 }
+
+.content_period td {
+  position: relative;
+}
+
+.btn.update_td {
+  border: none;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  display: none;
+}

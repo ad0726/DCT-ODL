@@ -134,8 +134,8 @@ function displayLine($ARinfo, $period=FALSE, $p = FALSE) {
                         <tr class='line $classIsEvent' id='".$id."'>
                             <td class='nolog'>".$id."</td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
-                            <td class='cel_title'><span><h3>".$ARinfo['arc']."</h3></span></td>
-                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
+                            <td class='cel_title'><span><h3>".$ARinfo['arc']."</h3></span>".displayBtnUpdateTD("arc", $id)."</td>
+                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p>".displayBtnUpdateTD("content", $id)."</td>
                             <td class='cel_publi'>
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
@@ -157,14 +157,20 @@ function displayLine($ARinfo, $period=FALSE, $p = FALSE) {
                                 </div>
                             </td>
                             <td class='nolog'>
-                                <a href='modify.php?era=$era_current&period=$period_format&id=$id' title='Modifier'>
-                                    <button type='button' class='btn_head'><i class='fas fa-pen-fancy'></i></button>
-                                </a>
+                                    <button type='button' id='line_$id' class='btn_head update_tr'><i class='fas fa-pen-fancy'></i></button>
                                 <button type='button' class='btn_head btn_trash'><i class='fas fa-trash-alt'></i></button>
                             </td>
                         </tr>
                     </table>";
 }
+
+function displayBtnUpdateTD($TDname, $id) {
+    return "<button type='button' id='td_".$TDname."_$id' class='btn update_td line_$id'><i class='fas fa-pen-fancy'></i></button>";
+}
+
+// <a href='modify.php?era=$era_current&period=$period_format&id=$id' title='Modifier'>
+// <button type='button' id='line_$id' class='btn_head update_tr'><i class='fas fa-pen-fancy'></i></button>
+// </a>
 
 /**
  * Display changelog page
