@@ -4,6 +4,7 @@ include('header.php');
 <section>
 <?php
     if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+        // d($_REQUEST);
         $era  = $_REQUEST['name_era'];
         $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
 
@@ -13,22 +14,26 @@ include('header.php');
         }
 
         echo "<div class='form'>";
-        // Delete image if new image uploaded
-        if ($_FILES['cover']['error'] == 0) {
-            $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
-            unlink($old_cover['cover']);
-        }
-        // Upload new image
-        $upload = uploadCover();
-            // Update image
-        $update_img = FALSE;
-        if ($upload[0] === TRUE) {
-            if (!empty($upload[1])) {
-                $bdd->exec('UPDATE odldc_rebirth SET cover = \''.$upload[1].'\' WHERE id = \''.$_REQUEST['id'].'\'');
-                $update_img = TRUE;
+        if (!empty($_FILES)) {
+            // Delete image if new image uploaded
+            if ($_FILES['cover']['error'] == 0) {
+                $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+                unlink($old_cover['cover']);
             }
-        } else {
-            d($upload[1], FALSE);
+            // Upload new image
+            $upload = uploadCover();
+        }
+        // Update image
+        $update_img = FALSE;
+        if (isset($upload)) {
+            if ($upload[0] === TRUE) {
+                if (!empty($upload[1])) {
+                    $bdd->exec('UPDATE odldc_rebirth SET cover = \''.$upload[1].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                    $update_img = TRUE;
+                }
+            } else {
+                d($upload[1], FALSE);
+            }
         }
         // Update period
         if (!empty($_REQUEST['id_period'])) {
@@ -77,7 +82,7 @@ include('header.php');
         $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
         $date    = new DateTime();
         $date->setTimezone(new DateTimeZone('+0100'));
-        
+
         $clIsEvent = "0";                                   // Isn't event before submit
         if ($_REQUEST['isEventReturn'] == "checked") {      // If is event before submit
             $clIsEvent = "1";
