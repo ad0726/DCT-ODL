@@ -325,41 +325,79 @@ $(document).ready(function() {
     });
 
     $('.btn_head.update_tr').click(function() {
-        var id = $(this).attr('id');
-        $('.btn.update_td.'+id).toggle();
-    })
+        var alreadyFormUpdate = $('tr#updateInLine');
+        if (alreadyFormUpdate !== undefined) alreadyFormUpdate.remove();
+        var id      = $(this).attr('id').replace("line_", "");
+        var title   = $('tr#'+id+' .cel_title').text();
+        var content = $('tr#'+id+' .cel_content').text();
 
-    $('.btn.update_td').click(function() {
-        var id   = $(this).attr('class').replace("btn update_td line_", "");
-        var text = $('tr#'+id+' .cel_title span h3').text();
+        var dctrad = $('tr#'+id+' .cel_publi div').children('a.urlDctrad').prop('href');
+        if (dctrad === undefined) dctrad = "";
+        var urban = $('tr#'+id+' .cel_publi div').children('a.urlUrban').prop('href');
+        if (urban === undefined) urban = "";
 
-        $('tr#'+id+' .cel_title span').replaceWith('<input id="updating" type="text" value="'+text+'">');
+        var isEventReturn = "";
+        if ($('tr#'+id).attr('class').replace("line ", "") == "isEvent")
+            isEventReturn = "checked";
 
-        $('#updating').keypress(function(e) {
-            if(e.which == 13) {
-                var isEvent       = "off";
-                var isEventReturn = "";
-                if ($(this).parent('td').parent('tr#'+id).attr('class').replace("line ", "") == "isEvent") {
-                    isEvent       = "on";
-                    isEventReturn = "checked";
-                }
-                console.log(isEvent);
-                var newText = $(this).val();
-                var data = {
-                    formfilled   : 42,
-                    id           : id,
-                    new_title    : newText,
-                    name_era     : "rebirth",
-                    isEvent      : isEvent,
-                    isEventReturn: isEventReturn
-                };
-                console.log(data);
-                $.ajax({
-                    method: "POST",
-                    url: "modify.php",
-                    data: data
-                  })
+        var formUpdate = $.ajax({
+            type: "GET",
+            url: "updateInLine.php",
+            data: {
+                formfilled: 42,
+                title: title,
+                content: content,
+                dctrad: dctrad,
+                urban: urban,
+                isEvent: isEventReturn
+            },
+            async: false
+        }).responseText;
+        $('tr#'+id).after(formUpdate);
+
+        $('tr#updateInLine').show("slow");
+
+        $('#updateInLine .btn_send').click(function() {
+            var newTitle;
+            var newContent;
+            var newUrban;
+            var newDctrad;
+            var newId;
+            $('#updateInLine div input').each(function() {
+                if ($(this).prop('name') == 'title')
+                    newTitle = $(this).val();
+                if ($(this).prop('name') == 'urban')
+                    newUrban = $(this).val();
+                if ($(this).prop('name') == 'dctrad')
+                    newDctrad = $(this).val();
+                if ($(this).prop('name') == 'new_id')
+                    newId = $(this).val();
+            });
+            newContent = $('#updateInLine div textarea').text();
+
+            var isEvent       = "off";
+            if ($('#updateInLine div #checkboxIsEvent').prop('checked') === true) {
+                isEvent       = "on";
             }
+
+            var data = {
+                formfilled   : 42,
+                id           : id,
+                new_title    : newTitle,
+                new_content  : newContent,
+                new_urban    : newUrban,
+                new_dctrad   : newDctrad,
+                name_era     : "rebirth",
+                isEvent      : isEvent,
+                isEventReturn: isEventReturn,
+                new_id       : newId
+            };
+            console.log(data);
+            // $.ajax({
+            //     method: "POST",
+            //     url   : "modify.php",
+            //     data  : data
+            // })
         });
     });
 })

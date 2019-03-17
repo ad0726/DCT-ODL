@@ -134,24 +134,20 @@ function displayLine($ARinfo, $period=FALSE, $p = FALSE) {
                         <tr class='line $classIsEvent' id='".$id."'>
                             <td class='nolog'>".$id."</td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
-                            <td class='cel_title'><span><h3>".$ARinfo['arc']."</h3></span>".displayBtnUpdateTD("arc", $id)."</td>
+                            <td class='cel_title'><h3>".$ARinfo['arc']."</h3>".displayBtnUpdateTD("arc", $id)."</td>
                             <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p>".displayBtnUpdateTD("content", $id)."</td>
                             <td class='cel_publi'>
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
     if (!empty($ARinfo['urban'])) {
-        echo "
-        <a href='".$ARinfo['urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
+        echo "<a class='urlUrban' href='".$ARinfo['urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
     } else {
-        echo "
-            <img src='assets/img/logo_urban_mini.png' class='logo_opacity'>";
+        echo "<img src='assets/img/logo_urban_mini.png' class='logo_opacity'>";
     }
     if (!empty($ARinfo['dctrad'])) {
-        echo "
-            <a href='".$ARinfo['dctrad']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
+        echo "<a class='urlDctrad' href='".$ARinfo['dctrad']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
     } else {
-        echo "
-            <img src='assets/img/logo_dct_mini.png' class='logo_opacity'>";
+        echo "<img src='assets/img/logo_dct_mini.png' class='logo_opacity'>";
     }
     echo"
                                 </div>

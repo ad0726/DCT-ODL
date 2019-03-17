@@ -4,8 +4,14 @@ include('header.php');
 <section>
 <?php
     if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+        d($_REQUEST);
         $era  = $_REQUEST['name_era'];
         $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+
+        $isEvent = 0;
+        if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") {
+            $isEvent = 1;
+        }
 
         echo "<div class='form'>";
         if (!empty($_FILES)) {
@@ -47,62 +53,53 @@ include('header.php');
         }
         // Update Urban's link
         $update_urban = FALSE;
-        if (isset($_REQUEST['new_urban']) && ($_REQUEST['new_urban'] != $info['urban'])) {
+        if ($_REQUEST['new_urban'] != $info['urban']) {
             $bdd->exec('UPDATE odldc_rebirth SET urban = \''.$_REQUEST['new_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
             $update_urban = TRUE;
         }
         // Update DCTrad's link
         $update_dct = FALSE;
-        if (isset($_REQUEST['new_dctrad']) && ($_REQUEST['new_dctrad'] != $info['dctrad'])) {
+        if ($_REQUEST['new_dctrad'] != $info['dctrad']) {
             $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
             $update_dct = TRUE;
         }
         // Update Id
-        $clNewId = "";
-        if (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] > $_REQUEST['id'])) {
-            $clNewId = $_REQUEST['new_id'];
-            $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = \''.$_REQUEST['id'].'\'');
-            $bdd->exec('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$_REQUEST['id'].' AND '.$_REQUEST['new_id']);
-            $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
-            $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
-        } elseif (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] < $_REQUEST['id'])) {
-            $clNewId = $_REQUEST['new_id'];
-            $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = '.$_REQUEST['id']);
-            $bdd->exec('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$_REQUEST['id']);
-            $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
-            $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
+        if (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] != 0)) {
+            if ($_REQUEST['new_id'] > $_REQUEST['id']) {
+                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = \''.$_REQUEST['id'].'\'');
+                $bdd->exec('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$_REQUEST['id'].' AND '.$_REQUEST['new_id']);
+                $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
+                $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
+            } elseif ($_REQUEST['new_id'] < $_REQUEST['id']) {
+                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = '.$_REQUEST['id']);
+                $bdd->exec('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$_REQUEST['id']);
+                $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
+                $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
+            }
         }
         // Is Event
-        if (isset($_REQUEST['isEvent'])) {
-            $isEvent = 0;
-            if ($_REQUEST['isEvent'] == "on") {
-                $isEvent = 1;
-            }
-            $bdd->exec('UPDATE odldc_rebirth SET isEvent = \''.$isEvent.'\' WHERE id = \''.$_REQUEST['id'].'\'');
-
-            // For changelog
-            $clIsEvent = "0";                                   // Isn't event before submit
-            if ($_REQUEST['isEventReturn'] == "checked") {      // If is event before submit
-                $clIsEvent = "1";
-            }
-            if (($isEvent == 1) && ($clIsEvent == "0")) {       // If isn't event before submit and update to isEvent = TRUE
-                $clIsEvent = "+1";
-            } elseif (($isEvent == 0) && ($clIsEvent == "1")) { // If is event before submit and update to isEvent = FALSE
-                $clIsEvent = "-1";
-            }
-        }
+        $bdd->exec('UPDATE odldc_rebirth SET isEvent = \''.$isEvent.'\' WHERE id = \''.$_REQUEST['id'].'\'');
 
         // Changelog
         $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
         $date    = new DateTime();
         $date->setTimezone(new DateTimeZone('+0100'));
 
+        $clIsEvent = "0";                                   // Isn't event before submit
+        if ($_REQUEST['isEventReturn'] == "checked") {      // If is event before submit
+            $clIsEvent = "1";
+        }
+        if (($isEvent == 1) && ($clIsEvent == "0")) {       // If isn't event before submit and update to isEvent = TRUE
+            $clIsEvent = "+1";
+        } elseif (($isEvent == 0) && ($clIsEvent == "1")) { // If is event before submit and update to isEvent = FALSE
+            $clIsEvent = "-1";
+        }
         $changelog = array(
             'id'       => $date->format('Y-m-d_H:i:s'),
             'era'      => $_REQUEST['name_era'],
             'position' => array(
                 'old' => $_REQUEST['id'],
-                'new' => $clNewId
+                'new' => $_REQUEST['new_id']
             ),
             'title' => array(
                 'old' => $title['arc'],
@@ -202,13 +199,13 @@ include('header.php');
                 </div>
             </div>
             <input type="url" class="input" name="new_urban" id="LinkUrban"
-            <?php 
+            <?php
             if (isset($info['urban']) && !empty($info['urban'])) {
                 echo "style='display: block;'";
-            } else { 
+            } else {
                 echo "style='display: none;'";
             }
-            ?> 
+            ?>
             placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779" value="<?= @$info['urban'] ?>">
             <input type="url" class="input" name="new_dctrad" id="LinkDCT"
             <?php
