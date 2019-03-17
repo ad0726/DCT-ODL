@@ -333,7 +333,7 @@ $(document).ready(function() {
         var id   = $(this).attr('class').replace("btn update_td line_", "");
         var text = $('tr#'+id+' .cel_title span h3').text();
 
-        $('tr#'+id+' .cel_title span').replaceWith("<input id='updating' type='text' value='"+text+"'>");
+        $('tr#'+id+' .cel_title span').replaceWith('<input id="updating" type="text" value="'+text+'">');
 
         $('#updating').keypress(function(e) {
             if(e.which == 13) {
