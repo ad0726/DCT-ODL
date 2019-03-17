@@ -199,7 +199,9 @@ table tr.line.isEvent {
 
 form input,
 .form form textarea,
-.form form select {
+.form form select,
+#updateInLine input,
+#updateInLine textarea {
   margin-bottom: 15px;
   border-radius: 5px;
   border: transparent;
@@ -385,6 +387,24 @@ div.period {
   justify-content: center;
   align-items: center;
   padding: 5px;
+}
+
+#updateInLine td {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#updateInLine td .btn_send {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+#updateInLine td .pos {
+  width: 50px;
 }
 
 .logo_opacity {
