@@ -366,7 +366,7 @@ function createSection($section) {
         // Insert into first place
         $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN 1 AND $maxID");
 
-        $query = $bdd->prepare("INSERT INTO odldc_$section($cols) 
+        $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
             VALUES($values)");
 
         $query->execute($execute);
@@ -380,7 +380,7 @@ function createSection($section) {
             // Insert into last place
             $id = ++$maxID;
 
-            $query = $bdd->prepare("INSERT INTO odldc_$section($cols) 
+            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
             VALUES($values)");
 
             $execute['id'] = $id;
@@ -393,8 +393,8 @@ function createSection($section) {
             $id       = ++$query['id'];
 
             $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN $id AND $maxID");
-            
-            $query = $bdd->prepare("INSERT INTO odldc_$section($cols) 
+
+            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
             VALUES($values)");
 
             $execute['id'] = $id;

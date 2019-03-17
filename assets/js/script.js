@@ -337,18 +337,27 @@ $(document).ready(function() {
 
         $('#updating').keypress(function(e) {
             if(e.which == 13) {
+                var isEvent       = "off";
+                var isEventReturn = "";
+                if ($(this).parent('td').parent('tr#'+id).attr('class').replace("line ", "") == "isEvent") {
+                    isEvent       = "on";
+                    isEventReturn = "checked";
+                }
+                console.log(isEvent);
                 var newText = $(this).val();
-                var datas = {
-                    formfilled: 42,
-                    id: id,
-                    new_title: newText,
-                    name_era: "rebirth"
+                var data = {
+                    formfilled   : 42,
+                    id           : id,
+                    new_title    : newText,
+                    name_era     : "rebirth",
+                    isEvent      : isEvent,
+                    isEventReturn: isEventReturn
                 };
-                console.log(datas);
+                console.log(data);
                 $.ajax({
                     method: "POST",
                     url: "modify.php",
-                    data: datas
+                    data: data
                   })
             }
         });
