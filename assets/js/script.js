@@ -363,6 +363,18 @@ $(document).ready(function() {
             var newUrban;
             var newDctrad;
             var newId;
+            var cover;
+            var era;
+            var page;
+            var sectionODL;
+            var tmp;
+
+            tmp        = new RegExp(/([a-z]+)_page/, "i");
+            sectionODL = $('section.odl').attr('id');
+            era        = sectionODL.match(tmp)[1];
+            tmp        = new RegExp(/page_([1-9]+)/, "i");
+            page       = $('#updateInLine').parent('tbody').parent('table').attr('class').match(tmp)[1];
+
             $('#updateInLine div input').each(function() {
                 if ($(this).prop('name') == 'title')
                     newTitle = $(this).val();
@@ -372,6 +384,8 @@ $(document).ready(function() {
                     newDctrad = $(this).val();
                 if ($(this).prop('name') == 'new_id')
                     newId = $(this).val();
+                if ($(this).prop('name') == 'cover')
+                    cover = $(this);
             });
             newContent = $('#updateInLine div textarea').text();
 
@@ -380,24 +394,52 @@ $(document).ready(function() {
                 isEvent       = "on";
             }
 
-            var data = {
+            cover = $('#updateInLine #cover')[0].files[0];
+
+            var requestData = {
                 formfilled   : 42,
                 id           : id,
                 new_title    : newTitle,
                 new_content  : newContent,
                 new_urban    : newUrban,
                 new_dctrad   : newDctrad,
-                name_era     : "rebirth",
+                name_era     : era,
                 isEvent      : isEvent,
                 isEventReturn: isEventReturn,
                 new_id       : newId
             };
-            console.log(data);
-            // $.ajax({
-            //     method: "POST",
-            //     url   : "modify.php",
-            //     data  : data
-            // })
+
+            var fd = new FormData();
+            fd.append('cover', cover);
+
+            $.ajax({
+            url: 'modify.php?id='+id+'&formfilled=42&name_era='+era,
+            data: fd,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            // success: function(data){
+            //     $.ajax({
+            //         method: "POST",
+            //         url   : "refreshData.php",
+            //         data  : {
+            //             formfilled: 42,
+            //             id        : id,
+            //             name_era  : era,
+            //             page      : page
+            //         },
+            //         success: function(data) {
+            //             $('#updateInLine').parent('tbody').html($(data).children('tbody').children('tr'));
+            //         }
+            //     })
+            // }
+            });
+
+            $.ajax({
+                method: "POST",
+                url   : "modify.php",
+                data  : requestData
+            })
         });
     });
 })

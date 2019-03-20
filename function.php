@@ -76,11 +76,11 @@ function displayPeriod($period, $ARlineID) {
                 }
                 foreach ($ARlineID as $lineID=>$ARinfo) {
                     if ($i % 20 == 0) {
-                        displayLine($ARinfo, $period, $p);
+                        displayLine($ARinfo, $p);
                         $i++;
                         $p++;
                     } else {
-                        displayLine($ARinfo, $period, $p);
+                        displayLine($ARinfo, $p);
                         $i++;
                     }
                 }
@@ -121,10 +121,9 @@ function displayBTNpagination($i) {
  * @param integer $p : number of pages (optionnal)
  * @return display
  */
-function displayLine($ARinfo, $period=FALSE, $p = FALSE) {
+function displayLine($ARinfo, $p = FALSE) {
     $id            = $ARinfo['id'];
     $era_current   = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
-    $period_format = strtolower(str_replace(" ", "_", $period));
     $classIsEvent  = "";
 
     if ($era_current == "results") $era_current   = $_REQUEST['era'];
