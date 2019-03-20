@@ -9,7 +9,7 @@ if ($_REQUEST['formfilled'] == 42) {
                 <label for="new_id">New position</label><br />
                 <input type="number" class="pos" min="0" name="new_id">
             </div>
-            <input type="file" class="file" name="cover">
+            <input id="cover" type="file" class="file" name="cover">
             <div>
                 <label>Title</label><br />
                 <input type="text" class="input" name="title" value="'.$_REQUEST['title'].'">

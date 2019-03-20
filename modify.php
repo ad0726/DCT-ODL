@@ -3,8 +3,7 @@ include('header.php');
 ?>
 <section>
 <?php
-    if (!empty($_REQUEST['id']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        d($_REQUEST);
+    if (!empty($_REQUEST['id']) && !empty($_REQUEST['name_era']) && isset($_REQUEST['formfilled']) && ($_REQUEST['formfilled'] == 42)) {
         $era  = $_REQUEST['name_era'];
         $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
 
@@ -14,12 +13,10 @@ include('header.php');
         }
 
         echo "<div class='form'>";
-        if (!empty($_FILES)) {
+        if ($_FILES['cover']['error'] == 0) {
             // Delete image if new image uploaded
-            if ($_FILES['cover']['error'] == 0) {
-                $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
-                unlink($old_cover['cover']);
-            }
+            $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+            unlink($old_cover['cover']);
             // Upload new image
             $upload = uploadCover();
         }
