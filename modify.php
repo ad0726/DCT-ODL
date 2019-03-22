@@ -13,7 +13,7 @@ include('header.php');
         }
 
         echo "<div class='form'>";
-        if ($_FILES['cover']['error'] == 0) {
+        if (!isset($_REQUEST['noCover']) && ($_FILES['cover']['error'] == 0))  {
             // Delete image if new image uploaded
             $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
             unlink($old_cover['cover']);

@@ -394,8 +394,6 @@ $(document).ready(function() {
                 isEvent       = "on";
             }
 
-            cover = $('#updateInLine #cover')[0].files[0];
-
             var requestData = {
                 formfilled   : 42,
                 id           : id,
@@ -406,40 +404,45 @@ $(document).ready(function() {
                 name_era     : era,
                 isEvent      : isEvent,
                 isEventReturn: isEventReturn,
-                new_id       : newId
+                new_id       : newId,
+                noCover      : true
             };
-
-            var fd = new FormData();
-            fd.append('cover', cover);
-
-            $.ajax({
-            url: 'modify.php?id='+id+'&formfilled=42&name_era='+era,
-            data: fd,
-            processData: false,
-            contentType: false,
-            type: 'POST',
-            // success: function(data){
-            //     $.ajax({
-            //         method: "POST",
-            //         url   : "refreshData.php",
-            //         data  : {
-            //             formfilled: 42,
-            //             id        : id,
-            //             name_era  : era,
-            //             page      : page
-            //         },
-            //         success: function(data) {
-            //             $('#updateInLine').parent('tbody').html($(data).children('tbody').children('tr'));
-            //         }
-            //     })
-            // }
-            });
 
             $.ajax({
                 method: "POST",
                 url   : "modify.php",
                 data  : requestData
-            })
+            });
+
+            cover = $('#updateInLine #cover')[0].files[0];
+
+            if (cover !== undefined) {
+                var fd = new FormData();
+                fd.append('cover', cover);
+
+                $.ajax({
+                url: 'modify.php?id='+id+'&formfilled=42&name_era='+era,
+                data: fd,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                // success: function(data){
+                //     $.ajax({
+                //         method: "POST",
+                //         url   : "refreshData.php",
+                //         data  : {
+                //             formfilled: 42,
+                //             id        : id,
+                //             name_era  : era,
+                //             page      : page
+                //         },
+                //         success: function(data) {
+                //             $('#updateInLine').parent('tbody').html($(data).children('tbody').children('tr'));
+                //         }
+                //     })
+                // }
+                });
+            }
         });
     });
 })
