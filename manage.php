@@ -16,8 +16,10 @@ if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
 
     echo "\t<form action='?' method='POST'>\n";
     echo "\t\t<input type='hidden' name='formfilled' value='42'>\n";
-    echo "\t\t<label>Maintenance</label>\n";
-    echo "\t\t<input type='checkbox' name='maintaining' $checked >\n";
+    echo "\t\t<label class='container'>Maintenance\n";
+    echo "\t\t\t<input type='checkbox' name='maintaining' $checked >\n";
+    echo "\t\t\t<span class='checkmark'></span>\n";
+    echo "\t\t</label>\n";
     echo "\t\t<input type='submit' class='btn_send' value='Envoyez'>\n";
     echo "\t</form>\n";
 }

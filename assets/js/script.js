@@ -257,6 +257,26 @@ $(document).ready(function() {
         }
     })
 
+    $('#whichEra').click(function() {
+        var eraSelected = $('.selectEra:selected').attr('value');
+        var selectPeriod;
+
+        if (eraSelected !== "") {
+            $.ajax({
+                method: "GET",
+                url: "fetch-periods.php?formfilled=42&era="+eraSelected,
+                success: function(data) {
+                    selectPeriod = '<option value="">En premier</option>\n'
+                    $(data).each(function(i) {
+                        selectPeriod += '<option value="after_'+data[i].clean_name+'">Après '+data[i].name+'</option>\n';
+                    })
+                    $('#selectPeriod').toggle();
+                    $('#wherePeriod').html(selectPeriod);
+                }
+            })
+        }
+    })
+
     /**
      * Back to top button
      */
@@ -293,7 +313,7 @@ $(document).ready(function() {
     $('textarea.content').keyup(function() {
         name = $(this).attr('name');
         if (name == "contenu") {
-            $('td.cel_content p').html($(this).val());
+            $('td.cel_content p').html(nl2br($(this).val()));
         }
     });
     $('input#checkboxIsEvent').click(function() {
