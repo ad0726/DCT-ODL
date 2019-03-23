@@ -9,6 +9,13 @@ header {
   background: url("../img/banniere_header.png") center;
 }
 
+header a#header {
+  width: 50%;
+  height: 100%;
+  text-decoration: none;
+  color: white;
+}
+
 /* .title_header {
   position: relative;
   height: 100%;
@@ -153,6 +160,10 @@ table tr.line {
   display: flex;
   justify-content: space-between;
 }
+table tr.line.isEvent {
+  border: 5px solid rgb(124, 205, 237);
+  border-radius: 5px;
+}
 .modify {
   margin-left: 10px;
 }
@@ -188,15 +199,58 @@ table tr.line {
 
 form input,
 .form form textarea,
-.form form select {
+.form form select,
+#updateInLine input,
+#updateInLine textarea {
   margin-bottom: 15px;
   border-radius: 5px;
   border: transparent;
   background: lightgrey;
 }
 
+form :required {
+  background: lightgrey;
+}
+
 .form form .input {
   width: 250px;
+}
+
+.form form div.head_form {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.form.modify form div.head_form select {
+  height: 20px;
+  width: 100px;
+  margin: 0 5px 5px 5px;
+}
+
+.form form div.head_form .info_isEvent {
+  display: flex;
+  flex-direction: column;
+}
+
+.form form div.div_checkbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+.form form div.isUrban_DCT {
+  display: flex;
+  align-items: center;
+}
+
+.form form div.isUrban_DCT div.isUrban {
+  width: 50%;
+}
+
+.form form div.isUrban_DCT div.isDCT {
+  width: 50%;
 }
 
 .form form .file {
@@ -293,9 +347,29 @@ div.period {
   display: flex;
 }
 
+.btn_admin {
+  background: lightgrey;
+  border: none;
+  border-radius: 5px;
+  width: 100px;
+}
+
 .content_period {
   display: none;
   position: relative;
+  padding-bottom: 25px;
+}
+
+.content_period table .cel_id span {
+  border: 1px solid darkgray;
+  border-radius: 0 5px 5px 5px;
+  min-width: 20px;
+  display: block;
+  text-align: center;
+}
+
+.content_period table .cel_id span:hover {
+  background: lightblue;
 }
 
 .content_period table .cel_img {
@@ -325,6 +399,24 @@ div.period {
   justify-content: center;
   align-items: center;
   padding: 5px;
+}
+
+#updateInLine td {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#updateInLine td .btn_send {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+#updateInLine td .pos {
+  width: 50px;
 }
 
 .logo_opacity {
@@ -466,4 +558,100 @@ footer p {
 
 p.text-result {
   text-align: center;
+}
+
+div.flex.row {
+  display: flex;
+}
+
+div.last_element {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content_period td {
+  position: relative;
+}
+
+.btn.update_td {
+  border: none;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  display: none;
+}
+
+/*
+*
+* Custom Checkbox
+*
+*/
+ /* Customize the label (the container) */
+ .container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }

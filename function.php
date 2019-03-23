@@ -25,10 +25,8 @@ function displayHeader() {
                 <a href='?logout' title='Déconnexion'>
                 <button type='button' class='btn_head'><i class='fas fa-sign-out-alt'></i></button>
                 </a>
-                <a href='rebirth.php' title=\"Voir l'ODL\"><button type='button' class='btn_head' ><i class='fas fa-glasses'></i></button></a>
                 <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
-                <a href='modify.php' title='Modifier un arc'><button type='button' class='btn_head' ><i class='fas fa-exchange-alt'></i></button></a>
-                <a href='changelog.php' title='Voir le changelog'><button type='button' class='btn_head' ><i class='fas fa-list-ul'></i></button></a>
+                <a href='admin.php' title=\"PCA\"><button type='button' class='btn_head' ><i class='fas fa-bars'></i></button></a>
                 </div>";
     }
     echo "
@@ -119,49 +117,55 @@ function displayBTNpagination($i) {
  * Display each line for comics arc
  *
  * @param array $ARinfo
+ * @param string $period : current period (optionnal)
  * @param integer $p : number of pages (optionnal)
  * @return display
  */
 function displayLine($ARinfo, $p = FALSE) {
-    $id = $ARinfo['id'];
-    $era_current = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
-    if ($era_current == "results") $era_current = $_REQUEST['era'];
+    $id            = $ARinfo['id'];
+    $era_current   = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
+    $classIsEvent  = "";
+
+    if ($era_current == "results") $era_current   = $_REQUEST['era'];
+    if ($ARinfo['isEvent'] == TRUE) $classIsEvent = "isEvent";
     echo "
                     <table class='page_$p'>
-                        <tr class='line' id='".$id."'>
-                            <td class='nolog'>".$id."</td>
+                        <tr class='line $classIsEvent' id='".$id."'>
+                            <td class='cel_id'><span>".$id."</span></td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
-                            <td class='cel_title'><span><h3>".$ARinfo['arc']."</h3></span></td>
-                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
+                            <td class='cel_title'><h3>".$ARinfo['arc']."</h3>".displayBtnUpdateTD("arc", $id)."</td>
+                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p>".displayBtnUpdateTD("content", $id)."</td>
                             <td class='cel_publi'>
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
-    if ($ARinfo['urban'] == 1) {
-        echo "
-        <a href='".$ARinfo['link_urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
+    if (!empty($ARinfo['urban'])) {
+        echo "<a class='urlUrban' href='".$ARinfo['urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
     } else {
-        echo "
-            <img src='assets/img/logo_urban_mini.png' class='logo_opacity'>";
+        echo "<img src='assets/img/logo_urban_mini.png' class='logo_opacity'>";
     }
-    if ($ARinfo['dctrad'] == 1) {
-        echo "
-            <a href='".$ARinfo['topic']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
+    if (!empty($ARinfo['dctrad'])) {
+        echo "<a class='urlDctrad' href='".$ARinfo['dctrad']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
     } else {
-        echo "
-            <img src='assets/img/logo_dct_mini.png' class='logo_opacity'>";
+        echo "<img src='assets/img/logo_dct_mini.png' class='logo_opacity'>";
     }
     echo"
                                 </div>
                             </td>
                             <td class='nolog'>
-                                <a href='modify.php?era=$era_current&id=$id' title='Modifier'>
-                                    <button type='button' class='btn_head'><i class='fas fa-pen-fancy'></i></button>
-                                </a>
+                                    <button type='button' id='line_$id' class='btn_head update_tr'><i class='fas fa-pen-fancy'></i></button>
                                 <button type='button' class='btn_head btn_trash'><i class='fas fa-trash-alt'></i></button>
                             </td>
                         </tr>
                     </table>";
 }
+
+function displayBtnUpdateTD($TDname, $id) {
+    return "<button type='button' id='td_".$TDname."_$id' class='btn update_td line_$id'><i class='fas fa-pen-fancy'></i></button>";
+}
+
+// <a href='modify.php?era=$era_current&period=$period_format&id=$id' title='Modifier'>
+// <button type='button' id='line_$id' class='btn_head update_tr'><i class='fas fa-pen-fancy'></i></button>
+// </a>
 
 /**
  * Display changelog page
@@ -170,6 +174,11 @@ function displayLine($ARinfo, $p = FALSE) {
  * @return display
  */
 function displayChangelog($val) {
+    $TranscoIsEvent = [
+        "+1" => "le tag <i>Event</i> a été ajouté.",
+        "-1" => "le tag <i>Event</i> a été retiré."
+    ];
+    if (isset($TranscoIsEvent[$val['isEvent']])) $isEvent = $TranscoIsEvent[$val['isEvent']];
     if ($val['cl_type'] == "add") {
         $type = "ajouté à ".ucfirst($val['name_era'])." dans ".$val['name_period']." en position ".$val['new_position'].".";
     } elseif ($val['cl_type'] == "modify") {
@@ -201,25 +210,14 @@ function displayChangelog($val) {
         if ($val['content'] == 1) {
             echo "<li>le contenu de l'arc a été mis à jour.</li>";
         }
-        if (!empty($val['urban'])) {
-            if ($val['urban'] == 1) {
-                echo "<li>l'option Urban a été sélectionnée.</li>";
-            } else {
-                echo "<li>l'option Urban a été désélectionnée.</li>";
-            }
-        }
-        if (!empty($val['dctrad'])) {
-            if ($val['dctrad'] == 1) {
-                echo "<li>l'option DCtrad a été sélectionnée.</li>";
-            } else {
-                echo "<li>l'option DCtrad a été désélectionnée.</li>";
-            }
-        }
-        if ($val['link_urban'] == 1) {
+        if ($val['urban'] == 1) {
             echo "<li>le lien Urban a été mis à jour.</li>";
         }
-        if ($val['topic'] == 1) {
+        if ($val['dctrad'] == 1) {
             echo "<li>le lien DCTrad a été mis à jour.</li>";
+        }
+        if (isset($isEvent)) {
+            echo "<li>$isEvent</li>";
         }
         echo "</ul>";
     }
@@ -235,7 +233,7 @@ function displayChangelog($val) {
  * @return display
  */
 function displayBtnUp() {
-    echo "<a href='#up'><div class='btnup'><i class='fas fa-arrow-circle-up'></i></div></a>";
+    echo "<div id='btnup'><i class='fas fa-arrow-circle-up'></i></div>";
 }
 
 /**
@@ -271,7 +269,7 @@ function uploadCover() {
     if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.\n";
 // AFFICHAGE DE L'ERREUR OU ENVOI
     if (!empty($error)) {
-        return [FALSE, @$error];
+        return (isset($error[1])) ? [FALSE, $error[1]] : [FALSE, @$error];
     } else {
 // SAUVEGARDE DE L'IMAGE SUR LE FTP
         $image = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
@@ -326,6 +324,80 @@ function ResizeCover($source, $type_value = "W", $new_value) {
     imagedestroy($source_image);
 
     return $image;
-  }
+}
 
+function createSection($section) {
+    global $bdd;
+    $name      = htmlentities($_REQUEST["name_$section"]);
+    $nameClean = strtolower(str_replace(" ", "_", htmlentities($_REQUEST["name_$section"])));
+    $maxID     = $bdd->query("SELECT MAX(id) FROM odldc_$section")->fetch(PDO::FETCH_ASSOC);
+    $maxID     = $maxID['MAX(id)'];
+
+    if ($section == "era") {
+        $cols    = "id, name, clean_name, id_era";
+        $values  = ":id, :name, :clean_name, :id_era";
+        $execute = [
+            'id'         => 1,
+            'name'       => $name,
+            'clean_name' => $nameClean,
+            'id_era'     => uniqid(),
+        ];
+    } else {
+        $cols    = "id, name, clean_name, id_era, id_period";
+        $values  = ":id, :name, :clean_name, :id_era, :id_period";
+        $nameEra = $_REQUEST['periodToEra'];
+        $query   = $bdd->query("SELECT id_era FROM odldc_era WHERE clean_name = '$nameEra'")->fetch(PDO::FETCH_ASSOC);
+        $eraID   = $query['id_era'];
+        $execute = [
+            'id'         => 1,
+            'name'       => $name,
+            'clean_name' => $nameClean,
+            'id_era'     => $eraID,
+            'id_period'  => uniqid()
+        ];
+    }
+
+    if ($_REQUEST["where_$section"] == "first") {
+        // Insert into first place
+        $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN 1 AND $maxID");
+
+        $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            VALUES($values)");
+
+        $query->execute($execute);
+
+    } else {
+        $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
+        $query    = $bdd->query("SELECT clean_name FROM odldc_$section WHERE id = $maxID")->fetch(PDO::FETCH_ASSOC);
+        $lastEra  = $query['clean_name'];
+
+        if ($whereEra == $lastEra) {
+            // Insert into last place
+            $id = ++$maxID;
+
+            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            VALUES($values)");
+
+            $execute['id'] = $id;
+            $query->execute($execute);
+
+        } else {
+            // Other insert
+            $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
+            $query    = $bdd->query("SELECT id FROM odldc_$section WHERE clean_name = '$whereEra'")->fetch(PDO::FETCH_ASSOC);
+            $id       = ++$query['id'];
+
+            $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN $id AND $maxID");
+
+            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            VALUES($values)");
+
+            $execute['id'] = $id;
+            $query->execute($execute);
+            $bdd->exec("ALTER TABLE odldc_$section ORDER BY id ASC");
+
+        }
+    }
+    echo "$name a bien été créé.";
+}
 ?>

@@ -94,4 +94,7 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
     echo "<p class='text-result'>Aucun résultat trouvé.</p>";
     echo "</section>";
 }
+
+displayBtnUp();
+
 include('footer.php');
