@@ -452,6 +452,9 @@ $(document).ready(function() {
                                     $(this).children('div').html(tdPubli);
                                 }
                             })
+
+                            if (newId > 0)
+                                alert('La nouvelle position sera prise en compte après avoir rechargé la page');
                         }
                     })
                 }
