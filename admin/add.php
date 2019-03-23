@@ -1,5 +1,6 @@
 <?php
-include('header.php');
+$ROOT = "../";
+include($ROOT.'partial/header.php');
 ?>
 <section>
 <?php
@@ -82,13 +83,13 @@ include('header.php');
 
             echo ".";
     ?>
-                <a href="add.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
-                <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
+                <a href="/admin/add.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
+                <a href="/index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
             </div>
 <?php
         } else {
             print_r($upload[1]);
-            echo "<a href='add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+            echo "<a href='/admin/add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
         }
     } elseif (isset($_SESSION['pseudo'])) {
         $eras       = $bdd->query('SELECT * FROM odldc_era');
@@ -140,13 +141,13 @@ include('header.php');
                 </div>
             </div>
             <input type="url" class="input" name="urban" id="LinkUrban"
-            <?php 
+            <?php
             if (isset($_REQUEST['urban']) && !empty($_REQUEST['urban'])) {
                 echo "style='display: block;'";
-            } else { 
+            } else {
                 echo "style='display: none;'";
             }
-            ?> 
+            ?>
             placeholder="https://www.mdcu-comics.fr/comics-vo/comics-vo-44779" value="<?= @$_REQUEST['urban'] ?>">
             <input type="url" class="input" name="dctrad" id="LinkDCT"
             <?php
@@ -165,7 +166,7 @@ include('header.php');
             <input type="submit" class="btn_send" value="Envoyer">
         </form>
     </div>
-<?php 
+<?php
 echo "<div id='preview' class='content_period' style='display: block;'>\n";
 echo "\t<table>\n";
 echo "\t\t<tr class='line'>\n";
@@ -186,4 +187,4 @@ echo "</div>\n";
     echo "Veuillez vous connecter pour poursuivre.";
 }?>
 </section>
-<?php include("footer.php"); ?>
+<?php include($ROOT.'partial/footer.php'); ?>

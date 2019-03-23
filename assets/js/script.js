@@ -146,7 +146,7 @@ $(document).ready(function() {
         if (answer === true) {
             $.ajax({
                 method: "GET",
-                url   : 'delete.php?rm='+id+'&from='+era,
+                url   : '/ajax/delete.php?rm='+id+'&from='+era,
                 success: function(code) {
                     if (code == "200") {
                         $('tr#'+id).parent('tbody').parent('table').remove();
@@ -197,7 +197,7 @@ $(document).ready(function() {
         autocompletion = function(era, ARtd, countARtd, n=1) {
             var ret = "";
             for (i=1;i<=n;i++) {
-                ret += '<a href="results.php?era='+era+'&search='+ARtd['id'][countARtd-i]+'"><div>'+ARtd['text'][countARtd-i]+'</div></a>\n';
+                ret += '<a href="/results.php?era='+era+'&search='+ARtd['id'][countARtd-i]+'"><div>'+ARtd['text'][countARtd-i]+'</div></a>\n';
             }
             return ret;
         }
@@ -264,7 +264,7 @@ $(document).ready(function() {
         if (eraSelected !== "") {
             $.ajax({
                 method: "GET",
-                url: "fetch-periods.php?formfilled=42&era="+eraSelected,
+                url: "/ajax/fetch-periods.php?formfilled=42&era="+eraSelected,
                 success: function(data) {
                     selectPeriod = '<option value="">En premier</option>\n'
                     $(data).each(function(i) {
@@ -371,7 +371,7 @@ $(document).ready(function() {
 
         var formUpdate = $.ajax({
             type: "GET",
-            url: "updateInLine.php",
+            url: "/ajax/update-in-line.php",
             data: {
                 formfilled: 42,
                 title: title,
@@ -439,12 +439,12 @@ $(document).ready(function() {
 
             $.ajax({
                 method: "POST",
-                url   : "modify.php",
+                url   : "/admin/modify.php",
                 data  : requestData,
                 success: function(data) {
                     $.ajax({
                         method: "POST",
-                        url   : "refreshData.php",
+                        url   : "/ajax/refresh-data.php",
                         data  : {
                             formfilled: 42,
                             id        : id,
@@ -496,7 +496,7 @@ $(document).ready(function() {
                 fd.append('cover', cover);
 
                 $.ajax({
-                    url: 'modify.php?id='+id+'&formfilled=42&name_era='+era,
+                    url: '/admin/modify.php?id='+id+'&formfilled=42&name_era='+era,
                     data: fd,
                     processData: false,
                     contentType: false,
@@ -504,7 +504,7 @@ $(document).ready(function() {
                     success: function(data) {
                         $.ajax({
                             method: "POST",
-                            url   : "refreshData.php",
+                            url   : "/ajax/refresh-data.php",
                             data  : {
                                 formfilled: 42,
                                 id        : id,

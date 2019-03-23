@@ -1,18 +1,16 @@
 <?php
-include("config.php");
-
 /**
  * Display admin header
  *
  * @return display
  */
-function displayHeader() {
+function displayHeader($ROOT) {
     global $bdd;
-    include('search.php');
+    include($ROOT.'partial/search.php');
     echo "<div class='admin'>";
     if (!isset($_SESSION['pseudo'])) {
         echo "
-                <a href='login.php' title='Connexion'><button class='log btn_head' type='button' ><i class='fas fa-sign-in-alt'></i></button></a>
+                <a href='/admin/login.php' title='Connexion'><button class='log btn_head' type='button' ><i class='fas fa-sign-in-alt'></i></button></a>
                 <style>
                     .nolog {
                         display: none;
@@ -25,8 +23,8 @@ function displayHeader() {
                 <a href='?logout' title='Déconnexion'>
                 <button type='button' class='btn_head'><i class='fas fa-sign-out-alt'></i></button>
                 </a>
-                <a href='add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
-                <a href='admin.php' title=\"PCA\"><button type='button' class='btn_head' ><i class='fas fa-bars'></i></button></a>
+                <a href='/admin/add.php' title='Ajouter un arc'><button type='button' class='btn_head' ><i class='fas fa-plus-circle'></i></button></a>
+                <a href='/admin/index.php' title=\"PCA\"><button type='button' class='btn_head' ><i class='fas fa-bars'></i></button></a>
                 </div>";
     }
     echo "

@@ -1,5 +1,6 @@
 <?php
-include('header.php');
+$ROOT = './';
+include($ROOT.'partial/header.php');
 echo "<section class='odl' id='rebirth_page'>";
 
 $answer   = $bdd->query('SELECT * FROM odldc_rebirth ORDER BY id ASC');
@@ -30,5 +31,5 @@ displayBtnUp();
 
 echo "</section>\n";
 
-include("footer.php");
+include($ROOT."partial/footer.php");
 ?>

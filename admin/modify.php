@@ -1,5 +1,6 @@
 <?php
-include('header.php');
+$ROOT = "../";
+include($ROOT.'partial/header.php');
 ?>
 <section>
 <?php
@@ -136,8 +137,8 @@ include('header.php');
         echo "L'ODL a bien été mis à jour.";
     ?>
             <br />
-            <a href="modify.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
-            <a href="index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
+            <a href="/admin/modify.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
+            <a href="/index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
         </div>
 <?php
     } elseif (isset($_SESSION['pseudo'])) {
@@ -220,6 +221,6 @@ include('header.php');
     </div>
 <?php } else {
     echo "Veuillez vous connecter pour poursuivre.";
-}?>
+} ?>
 </section>
-<?php include("footer.php"); ?>
+<?php include($ROOT.'partial/footer.php'); ?>
