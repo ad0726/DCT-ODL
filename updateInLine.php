@@ -20,11 +20,11 @@ if ($_REQUEST['formfilled'] == 42) {
             </div>
             <div>
                 <label>Urban</label><br />
-                <input type="text" class="input" name="dctrad" value="'.$_REQUEST['dctrad'].'">
+                <input type="text" class="input" name="urban" value="'.$_REQUEST['urban'].'">
             </div>
             <div>
                 <label>DCTrad</label><br />
-                <input type="text" class="input" name="urban" value="'.$_REQUEST['urban'].'">
+                <input type="text" class="input" name="dctrad" value="'.$_REQUEST['dctrad'].'">
             </div>
             <div>
                 <label>Event</label><br />
