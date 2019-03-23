@@ -144,7 +144,16 @@ $(document).ready(function() {
         }
         var answer = confirm('Voulez-vous vraiment supprimer la ligne '+id+' ?');
         if (answer === true) {
-            location.href='delete.php?rm='+id+'&from='+era;
+            $.ajax({
+                method: "GET",
+                url   : 'delete.php?rm='+id+'&from='+era,
+                success: function(code) {
+                    if (code == "200") {
+                        $('tr#'+id).parent('tbody').parent('table').remove();
+                        location.reload();
+                    }
+                }
+            })
         }
     });
 
@@ -454,7 +463,7 @@ $(document).ready(function() {
                             })
 
                             if (newId > 0)
-                                alert('La nouvelle position sera prise en compte après avoir rechargé la page');
+                                location.reload();
                         }
                     })
                 }

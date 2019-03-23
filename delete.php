@@ -8,6 +8,7 @@ if (isset($_GET['rm'])) {
     $era         = $_GET['from'];
     $maxID       = $bdd->query("SELECT MAX(id) FROM odldc_$era")->fetch(PDO::FETCH_ASSOC);
     $lineDeleted = $bdd->query("SELECT * FROM odldc_$era WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
+    $period      = ($bdd->query('SELECT name FROM odldc_period WHERE id_period = "'.$lineDeleted['id_period'].'"')->fetch(PDO::FETCH_ASSOC))['name'];
 
     // Delete
     $bdd->exec("DELETE FROM odldc_$era WHERE id = $id");
@@ -20,12 +21,12 @@ if (isset($_GET['rm'])) {
     $date->setTimezone(new DateTimeZone('+0200'));
     $changelog = array(
         'id'          => $date->format('Y-m-d_H:i:s'),
-        'name_period' => $lineDeleted['name_period'],
+        'name_period' => $period,
         'position'    => $id,
         'title'       => $lineDeleted['arc']
     );
-    $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, link_urban, topic) 
-                        VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :link_urban, :topic)');
+    $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent)
+                        VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
     $query->execute(array(
         'id'           => $changelog['id'],
         'author'       => $_SESSION['pseudo'],
@@ -40,8 +41,7 @@ if (isset($_GET['rm'])) {
         'content'      => '',
         'urban'        => '',
         'dctrad'       => '',
-        'link_urban'   => '',
-        'topic'        => '',
+        'isEvent'      => 0,
     ));
 
     $count = $bdd->query('SELECT count(*) FROM odldc_changelog')->fetch(PDO::FETCH_ASSOC);
@@ -50,5 +50,5 @@ if (isset($_GET['rm'])) {
         $bdd->exec('DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1');
     }
 
-    header('Location: index.php');
+    echo "200";
 }
