@@ -131,7 +131,7 @@ function displayLine($ARinfo, $p = FALSE) {
     echo "
                     <table class='page_$p'>
                         <tr class='line $classIsEvent' id='".$id."'>
-                            <td class='nolog'>".$id."</td>
+                            <td class='cel_id'><span>".$id."</span></td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
                             <td class='cel_title'><h3>".$ARinfo['arc']."</h3>".displayBtnUpdateTD("arc", $id)."</td>
                             <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p>".displayBtnUpdateTD("content", $id)."</td>
