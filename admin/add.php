@@ -5,7 +5,7 @@ include($ROOT.'partial/header.php');
 <section>
 <?php
     if (isset($_REQUEST['id_period']) && ($_REQUEST['id_period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        $era = $_REQUEST['name_era'];
+        $era = strtolower($_REQUEST['name_era']);
 
         $isEvent = 0;
         if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") $isEvent = 1;
