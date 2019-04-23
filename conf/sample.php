@@ -5,4 +5,4 @@ try {
         die('Erreur : '.$e->getMessage());
 }
 
-include('../php/func.inc.php');
+include($ROOT.'php/func.inc.php');
