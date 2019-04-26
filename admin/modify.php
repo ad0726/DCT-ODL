@@ -1,22 +1,26 @@
 <?php
 $ROOT = "../";
 include($ROOT.'partial/header.php');
-?>
-<section>
-<?php
+
+echo "<section>";
+
+if (isset($_SESSION['pseudo'])) {
     if (!empty($_REQUEST['id']) && !empty($_REQUEST['name_era']) && isset($_REQUEST['formfilled']) && ($_REQUEST['formfilled'] == 42)) {
         $era  = $_REQUEST['name_era'];
-        $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+        $id   = $_REQUEST['id'];
+        $info = $bdd->query('SELECT * FROM odldc_'.$era.' WHERE id = \''.$id.'\'')->fetch(PDO::FETCH_ASSOC);
 
         $isEvent = 0;
         if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") {
             $isEvent = 1;
         }
+        // Update event
+        $bdd->exec('UPDATE odldc_rebirth SET isEvent = \''.$isEvent.'\' WHERE id = \''.$id.'\'');
 
         echo "<div class='form'>";
         if (!isset($_REQUEST['noCover']) && ($_FILES['cover']['error'] == 0))  {
             // Delete image if new image uploaded
-            $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
+            $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$id.'\'')->fetch(PDO::FETCH_ASSOC);
             unlink($old_cover['cover']);
             // Upload new image
             $upload = uploadCover();
@@ -26,7 +30,7 @@ include($ROOT.'partial/header.php');
         if (isset($upload)) {
             if ($upload[0] === TRUE) {
                 if (!empty($upload[1])) {
-                    $bdd->exec('UPDATE odldc_rebirth SET cover = \''.$upload[1].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+                    $bdd->exec('UPDATE odldc_rebirth SET cover = \''.$upload[1].'\' WHERE id = \''.$id.'\'');
                     $update_img = TRUE;
                 }
             } else {
@@ -35,83 +39,75 @@ include($ROOT.'partial/header.php');
         }
         // Update period
         if (!empty($_REQUEST['id_period'])) {
-            $bdd->exec('UPDATE odldc_rebirth SET id_period = \''.$_REQUEST['id_period'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+            $bdd->exec('UPDATE odldc_rebirth SET id_period = \''.$_REQUEST['id_period'].'\' WHERE id = \''.$id.'\'');
         }
         // Update title
         if (!empty($_REQUEST['new_title'])) {
             $_REQUEST['new_title'] = htmlentities($_REQUEST['new_title'], ENT_QUOTES);
-            $bdd->exec('UPDATE odldc_rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+            $bdd->exec('UPDATE odldc_rebirth SET arc = \''.$_REQUEST['new_title'].'\' WHERE id = \''.$id.'\'');
         }
         // Update content
         $update_content = FALSE;
         if (!empty($_REQUEST['new_content'])) {
             $_REQUEST['new_content'] = htmlentities($_REQUEST['new_content'], ENT_QUOTES);
-            $bdd->exec('UPDATE odldc_rebirth SET contenu = \''.$_REQUEST['new_content'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+            $bdd->exec('UPDATE odldc_rebirth SET contenu = \''.$_REQUEST['new_content'].'\' WHERE id = \''.$id.'\'');
             $update_content = TRUE;
         }
         // Update Urban's link
         $update_urban = FALSE;
-        if ($_REQUEST['new_urban'] != $info['urban']) {
-            $bdd->exec('UPDATE odldc_rebirth SET urban = \''.$_REQUEST['new_urban'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+        if (isset($_REQUEST['new_urban']) && ($_REQUEST['new_urban'] != $info['urban'])) {
+            $bdd->exec('UPDATE odldc_rebirth SET urban = \''.$_REQUEST['new_urban'].'\' WHERE id = \''.$id.'\'');
             $update_urban = TRUE;
         }
         // Update DCTrad's link
         $update_dct = FALSE;
-        if ($_REQUEST['new_dctrad'] != $info['dctrad']) {
-            $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$_REQUEST['id'].'\'');
+        if (isset($_REQUEST['new_dctrad']) && ($_REQUEST['new_dctrad'] != $info['dctrad'])) {
+            $bdd->exec('UPDATE odldc_rebirth SET dctrad = \''.$_REQUEST['new_dctrad'].'\' WHERE id = \''.$id.'\'');
             $update_dct = TRUE;
         }
         // Update Id
-        if (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] != 0)) {
-            if ($_REQUEST['new_id'] > $_REQUEST['id']) {
-                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = \''.$_REQUEST['id'].'\'');
-                $bdd->exec('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$_REQUEST['id'].' AND '.$_REQUEST['new_id']);
+        if ((isset($_REQUEST['new_id'])) && (!empty($_REQUEST['new_id']) && ($_REQUEST['new_id'] != 0))) {
+            if ($_REQUEST['new_id'] > $id) {
+                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = \''.$id.'\'');
+                $bdd->exec('UPDATE odldc_rebirth SET id = id - 1 WHERE id BETWEEN '.$id.' AND '.$_REQUEST['new_id']);
                 $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
                 $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
-            } elseif ($_REQUEST['new_id'] < $_REQUEST['id']) {
-                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = '.$_REQUEST['id']);
-                $bdd->exec('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$_REQUEST['id']);
+            } elseif ($_REQUEST['new_id'] < $id) {
+                $bdd->exec('UPDATE odldc_rebirth SET id = \'-1\' WHERE id = '.$id);
+                $bdd->exec('UPDATE odldc_rebirth SET id = id + 1 WHERE id BETWEEN '.$_REQUEST['new_id'].' AND '.$id);
                 $bdd->exec('UPDATE odldc_rebirth SET id = \''.$_REQUEST['new_id'].'\' WHERE id = \'-1\'');
                 $bdd->exec('ALTER TABLE odldc_rebirth ORDER BY id ASC');
             }
         }
-        // Is Event
-        $bdd->exec('UPDATE odldc_rebirth SET isEvent = \''.$isEvent.'\' WHERE id = \''.$_REQUEST['id'].'\'');
 
         // Changelog
-        $title   = $bdd->query('SELECT arc FROM odldc_rebirth WHERE id = \''.$_REQUEST['id'].'\'')->fetch(PDO::FETCH_ASSOC);
-        $date    = new DateTime();
-        $date->setTimezone(new DateTimeZone('+0100'));
+        $date  = new DateTime();
 
-        $clIsEvent = "0";                                   // Isn't event before submit
-        if ($_REQUEST['isEventReturn'] == "checked") {      // If is event before submit
+        $clIsEvent = "0";                                                                           // Isn't event before submit
+        if (isset($_REQUEST['isEventReturn']) && ($_REQUEST['isEventReturn'] == "checked")) {       // If is event before submit
             $clIsEvent = "1";
         }
-        if (($isEvent == 1) && ($clIsEvent == "0")) {       // If isn't event before submit and update to isEvent = TRUE
+        if (($isEvent == 1) && ($clIsEvent == "0")) {                                               // If isn't event before submit and update to isEvent = TRUE
             $clIsEvent = "+1";
-        } elseif (($isEvent == 0) && ($clIsEvent == "1")) { // If is event before submit and update to isEvent = FALSE
+        } elseif (($isEvent == 0) && ($clIsEvent == "1")) {                                         // If is event before submit and update to isEvent = FALSE
             $clIsEvent = "-1";
         }
-        $changelog = array(
+        $changelog = [
             'id'       => $date->format('Y-m-d_H:i:s'),
             'era'      => $_REQUEST['name_era'],
-            'position' => array(
-                'old' => $_REQUEST['id'],
-                'new' => $_REQUEST['new_id']
-            ),
-            'title' => array(
-                'old' => $title['arc'],
-                'new' => $_REQUEST['new_title']
-            ),
-            'cover'   => $update_img,
-            'content' => $update_content,
-            'urban'   => $update_urban,
-            'dctrad'  => $update_dct
-        );
+            'position' => ['old' => $id],
+            'title'    => ['old' => $info['arc']],
+            'cover'    => $update_img,
+            'content'  => $update_content,
+            'urban'    => $update_urban,
+            'dctrad'   => $update_dct
+        ];
+        $changelog['position']['new'] = $_REQUEST['new_id'] ?? "";
+        $changelog['title']['new']    = $_REQUEST['new_title'] ?? "";
 
         $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
                             VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
-        $query->execute(array(
+        $query->execute([
         'id'           => $changelog['id'],
         'author'       => $_SESSION['pseudo'],
         'cl_type'      => 'modify',
@@ -126,7 +122,7 @@ include($ROOT.'partial/header.php');
         'urban'        => $changelog['urban'],
         'dctrad'       => $changelog['dctrad'],
         'isEvent'      => $clIsEvent
-        ));
+        ]);
 
         $count = $bdd->query('SELECT count(*) FROM odldc_changelog')->fetch(PDO::FETCH_ASSOC);
 
@@ -135,13 +131,12 @@ include($ROOT.'partial/header.php');
         }
 
         echo "L'ODL a bien été mis à jour.";
-    ?>
-            <br />
-            <a href="/admin/modify.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
-            <a href="/index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
-        </div>
-<?php
-    } elseif (isset($_SESSION['pseudo'])) {
+        echo "<br />";
+        echo "<a href='/admin/modify.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+        echo "<a href='/index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
+        echo "</div>";
+
+    } else {
         if (isset($_GET["id"])) {
             $id              = $_GET["id"];
             $era             = $_GET["era"];
@@ -219,8 +214,10 @@ include($ROOT.'partial/header.php');
             <input type="submit" class="btn_send" value="Envoyer">
         </form>
     </div>
-<?php } else {
+<?php }
+} else {
     echo "Veuillez vous connecter pour poursuivre.";
-} ?>
-</section>
-<?php include($ROOT.'partial/footer.php'); ?>
+}
+echo "</section>";
+
+include($ROOT.'partial/footer.php');

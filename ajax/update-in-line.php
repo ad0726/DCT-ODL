@@ -1,13 +1,13 @@
 <?php
-session_start();
-include('function.php');
+$ROOT = "../";
+include($ROOT.'conf/conf.php');
 
 if ($_REQUEST['formfilled'] == 42) {
     echo '<tr id="updateInLine" class="line" style="display: none;">
         <td>
             <div>
                 <label for="new_id">New position</label><br />
-                <input type="number" class="pos" min="0" name="new_id">
+                <input type="number" class="pos" min="0" name="new_id" value="'.$_REQUEST['id'].'">
             </div>
             <input id="cover" type="file" class="file" name="cover">
             <div>
@@ -30,7 +30,8 @@ if ($_REQUEST['formfilled'] == 42) {
                 <label>Event</label><br />
                 <input type="checkbox" name="isEvent" id="checkboxIsEvent" '.$_REQUEST['isEvent'].'>
             </div>
-            <input type="button" class="btn_send" value="Send">
+            <input type="submit" class="btn_send" value="Send">
+            <i class="far fa-times-circle btn_close" id="update_close"></i>
         </td>
     </tr>';
 }

@@ -353,7 +353,7 @@ $(document).ready(function() {
         readURL(this);
     });
 
-    $('.btn_head.update_tr').click(function() {
+    $('.update_tr').click(function() {
         var alreadyFormUpdate = $('tr#updateInLine');
         if (alreadyFormUpdate !== undefined) alreadyFormUpdate.remove();
         var id      = $(this).attr('id').replace("line_", "");
@@ -374,11 +374,12 @@ $(document).ready(function() {
             url: "/ajax/update-in-line.php",
             data: {
                 formfilled: 42,
-                title: title,
-                content: content,
-                dctrad: dctrad,
-                urban: urban,
-                isEvent: isEventReturn
+                id        : id,
+                title     : title,
+                content   : content,
+                dctrad    : dctrad,
+                urban     : urban,
+                isEvent   : isEventReturn
             },
             async: false
         }).responseText;
@@ -406,17 +407,17 @@ $(document).ready(function() {
 
             $('#updateInLine div input').each(function() {
                 if ($(this).prop('name') == 'title')
-                    newTitle = $(this).val();
+                    newTitle = checkUpdateEqual($(this).val(), title);
                 if ($(this).prop('name') == 'urban')
-                    newUrban = $(this).val();
+                    newUrban = checkUpdateEqual($(this).val(), urban);
                 if ($(this).prop('name') == 'dctrad')
-                    newDctrad = $(this).val();
+                    newDctrad = checkUpdateEqual($(this).val(), dctrad);
                 if ($(this).prop('name') == 'new_id')
-                    newId = $(this).val();
+                    newId = checkUpdateEqual($(this).val(), id);
                 if ($(this).prop('name') == 'cover')
                     cover = $(this);
             });
-            newContent = $('#updateInLine div textarea').val();
+            newContent = checkUpdateEqual($('#updateInLine div textarea').val(), content);
 
             var isEvent       = "off";
             if ($('#updateInLine div #checkboxIsEvent').prop('checked') === true) {
@@ -456,13 +457,13 @@ $(document).ready(function() {
                             var tdPubli;
 
                             if ((data.urban == false) && (data.dctrad == false)) {
-                                tdPubli = '<img class="logo_opacity" src="assets/img/logo_urban_mini.png"><img class="logo_opacity" src="assets/img/logo_dct_mini.png">';
+                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
                             } else if ((data.urban != false) && (data.dctrad == false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="assets/img/logo_dct_mini.png">';
+                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
                             } else if ((data.urban == false) && (data.dctrad != false)) {
-                                tdPubli = '<img class="logo_opacity" src="assets/img/logo_urban_mini.png"><a href="'+data.dctrad+'"><img src="assets/img/logo_dct_mini.png"></a>';
+                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
                             } else if ((data.urban != false) && (data.dctrad != false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="assets/img/logo_urban_mini.png"></a><a href="'+data.dctrad+'"><img src="assets/img/logo_dct_mini.png"></a>';
+                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
                             }
 
                             if (data.isEvent == 0) {
@@ -482,7 +483,7 @@ $(document).ready(function() {
                                 }
                             })
 
-                            if (newId > 0)
+                            if (checkUpdateEqual(newId, id) !== undefined)
                                 location.reload();
                         }
                     })
@@ -526,9 +527,20 @@ $(document).ready(function() {
                 });
             }
         });
+        $("#update_close").click(function() {
+            $('tr#updateInLine').remove();
+        })
     });
+
 });
 
 function nl2br (str) {
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ "<br />" +'$2');
+}
+
+function checkUpdateEqual(that, ref) {
+    if (that == ref)
+        return undefined;
+    else
+        return that;
 }
