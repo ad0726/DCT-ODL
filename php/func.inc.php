@@ -37,7 +37,7 @@ function displayHeader($ROOT) {
  * @return display javascript alerting
  */
 function logout() {
-    if($_SERVER['QUERY_STRING'] == "logout") {
+    if(isset($_SERVER['QUERY_STRING']) && ($_SERVER['QUERY_STRING'] == "logout")) {
         session_destroy();
         echo "<script>
             alert('Vous avez bien été déconnecté.');
@@ -131,34 +131,30 @@ function displayLine($ARinfo, $p = FALSE) {
                         <tr class='line $classIsEvent' id='".$id."'>
                             <td class='cel_id'><span>".$id."</span></td>
                             <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
-                            <td class='cel_title'><h3>".$ARinfo['arc']."</h3>".displayBtnUpdateTD("arc", $id)."</td>
-                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p>".displayBtnUpdateTD("content", $id)."</td>
+                            <td class='cel_title'><h3>".$ARinfo['arc']."</h3></td>
+                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
                             <td class='cel_publi'>
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
     if (!empty($ARinfo['urban'])) {
-        echo "<a class='urlUrban' href='".$ARinfo['urban']."' target='_blank'><img src='assets/img/logo_urban_mini.png'></a>";
+        echo "<a class='urlUrban' href='".$ARinfo['urban']."' target='_blank'><img src='/assets/img/logo_urban_mini.png'></a>";
     } else {
-        echo "<img src='assets/img/logo_urban_mini.png' class='logo_opacity'>";
+        echo "<img src='/assets/img/logo_urban_mini.png' class='logo_opacity'>";
     }
     if (!empty($ARinfo['dctrad'])) {
-        echo "<a class='urlDctrad' href='".$ARinfo['dctrad']."' target='_blank'><img src='assets/img/logo_dct_mini.png'></a>";
+        echo "<a class='urlDctrad' href='".$ARinfo['dctrad']."' target='_blank'><img src='/assets/img/logo_dct_mini.png'></a>";
     } else {
-        echo "<img src='assets/img/logo_dct_mini.png' class='logo_opacity'>";
+        echo "<img src='/assets/img/logo_dct_mini.png' class='logo_opacity'>";
     }
     echo"
                                 </div>
                             </td>
                             <td class='nolog'>
-                                    <button type='button' id='line_$id' class='btn_head update_tr'><i class='fas fa-pen-fancy'></i></button>
-                                <button type='button' class='btn_head btn_trash'><i class='fas fa-trash-alt'></i></button>
+                                <i id='line_$id' class='fas fa-pen-fancy update_tr'></i>
+                                <i class='fas fa-trash-alt btn_trash'></i>
                             </td>
                         </tr>
                     </table>";
-}
-
-function displayBtnUpdateTD($TDname, $id) {
-    return "<button type='button' id='td_".$TDname."_$id' class='btn update_td line_$id'><i class='fas fa-pen-fancy'></i></button>";
 }
 
 // <a href='modify.php?era=$era_current&period=$period_format&id=$id' title='Modifier'>
@@ -196,10 +192,10 @@ function displayChangelog($val) {
     <p><strong>".ucfirst($val['title'])."</strong> a été $type";
     if ($val['cl_type'] == "modify") {
         echo "<ul class='cl_list'>";
-        if (!empty($val['new_title'])) {
+        if (!empty($val['new_title']) && ($val['new_title'] != $val['title'])) {
             echo "<li>le titre a été modifié pour : ".$val['new_title'].".</li>";
         }
-        if (!empty($val['new_position'])) {
+        if (!empty($val['new_position']) && ($val['new_position'] != $val['old_position'])) {
             echo "<li>a été replacé en position : ".$val['new_position'].".</li>";
         }
         if ($val['cover'] == 1) {
@@ -270,10 +266,10 @@ function uploadCover() {
         return (isset($error[1])) ? [FALSE, $error[1]] : [FALSE, @$error];
     } else {
 // SAUVEGARDE DE L'IMAGE SUR LE FTP
-        $image = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
+        $image      = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
         $name       = md5(uniqid(rand(), true));
         $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-        $name_ext   = "assets/img/covers/{$name}.{$ext_upload}";
+        $name_ext   = "../assets/img/covers/{$name}.{$ext_upload}";
         $resultat   = imagejpeg($image, $name_ext, 70);
         if (!$resultat) {
             return [FALSE, "Transfert échoué.\n"];
