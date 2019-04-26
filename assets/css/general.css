@@ -49,3 +49,32 @@ main {
     justify-content: center;
     align-items: center;
 }
+
+.btn_head,
+.btn_send,
+.btn_hide,
+.btn_show,
+.btn_next,
+.btn_prev,
+.btn_page,
+.btn_pagination,
+.btn_admin,
+.btn_trash,
+.update_tr,
+.btn_close,
+#btnup {
+    cursor: pointer;
+}
+
+.btn_head:hover,
+.btn_send:hover,
+.btn_hide:hover,
+.btn_show:hover,
+.btn_next:hover,
+.btn_prev:hover,
+.btn_page:hover,
+.btn_pagination:hover,
+.btn_admin:hover,
+#btnup:hover {
+    box-shadow: 0.5px 0.5px 0.5px grey;
+}
