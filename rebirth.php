@@ -1,10 +1,12 @@
 <?php
 $ROOT = './';
 include($ROOT.'partial/header.php');
+
 echo "<section class='odl' id='rebirth_page'>";
 
 $answer   = $bdd->query('SELECT * FROM odldc_rebirth ORDER BY id ASC');
 $periodID = "";
+
 while ($line = $answer->fetch(PDO::FETCH_ASSOC)) {
     if ($line['id_period'] != $periodID) {
         $query    = $bdd->query("SELECT name FROM odldc_period WHERE id_period = \"".$line['id_period']."\"")->fetch(PDO::FETCH_ASSOC);
@@ -32,4 +34,3 @@ displayBtnUp();
 echo "</section>\n";
 
 include($ROOT."partial/footer.php");
-?>

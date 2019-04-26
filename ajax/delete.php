@@ -1,6 +1,6 @@
 <?php
-session_start();
-include_once('function.php');
+$ROOT = "../";
+include($ROOT.'conf/conf.php');
 
 if (isset($_GET['rm'])) {
     // Infos

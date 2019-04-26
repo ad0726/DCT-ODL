@@ -1,4 +1,5 @@
 <?php
-  header('Location: rebirth.php');
-  exit();
+session_start();
+header('Location: rebirth.php');
+exit();
 ?>

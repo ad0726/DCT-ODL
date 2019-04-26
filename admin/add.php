@@ -1,9 +1,10 @@
 <?php
 $ROOT = "../";
 include($ROOT.'partial/header.php');
-?>
-<section>
-<?php
+
+echo "<section>";
+
+if (isset($_SESSION['pseudo'])) {
     if (isset($_REQUEST['id_period']) && ($_REQUEST['id_period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         $era = strtolower($_REQUEST['name_era']);
 
@@ -82,20 +83,18 @@ include($ROOT.'partial/header.php');
             }
 
             echo ".";
-    ?>
-                <a href="/admin/add.php"><button type="button" class="btn_head">Retour au formulaire</button></a>
-                <a href="/index.php"><button type="button" class="btn_head">Retour à l'accueil</button></a>
-            </div>
-<?php
+            echo "<a href='/admin/add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+            echo "<a href='/index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
+            echo "</div>";
         } else {
             print_r($upload[1]);
             echo "<a href='/admin/add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
         }
-    } elseif (isset($_SESSION['pseudo'])) {
+    } else {
         $eras       = $bdd->query('SELECT * FROM odldc_era');
         $periods    = $bdd->query('SELECT * FROM odldc_period');
-        $lastPeriod = $bdd->query('SELECT clean_name FROM odldc_period WHERE id_period IN 
-                                    (SELECT id_period FROM odldc_rebirth WHERE id IN 
+        $lastPeriod = $bdd->query('SELECT clean_name FROM odldc_period WHERE id_period IN
+                                    (SELECT id_period FROM odldc_rebirth WHERE id IN
                                         (SELECT MAX(id) FROM odldc_rebirth))'
                             )->fetch(PDO::FETCH_ASSOC)['clean_name'];
 ?>
@@ -176,15 +175,17 @@ echo "\t\t\t<td class='cel_content'><p></p></td>\n";
 echo "\t\t\t<td class='cel_publi'>\n";
 echo "\t\t\t\t<h4>Disponible chez</h4>\n";
 echo "\t\t\t\t<div class='img_publi'>\n";
-echo "\t\t\t\t\t<img src='assets/img/logo_urban_mini.png' id='logoUrban' class='logo_opacity'>\n";
-echo "\t\t\t\t\t<img src='assets/img/logo_dct_mini.png' id='logoDCT' class='logo_opacity'>\n";
+echo "\t\t\t\t\t<img src='/assets/img/logo_urban_mini.png' id='logoUrban' class='logo_opacity'>\n";
+echo "\t\t\t\t\t<img src='/assets/img/logo_dct_mini.png' id='logoDCT' class='logo_opacity'>\n";
 echo "\t\t\t\t</div>\n";
 echo "\t\t\t</td>\n";
 echo "\t\t</tr>\n";
 echo "\t</table>\n";
 echo "</div>\n";
+    }
 } else {
     echo "Veuillez vous connecter pour poursuivre.";
-}?>
-</section>
-<?php include($ROOT.'partial/footer.php'); ?>
+}
+echo "</section>";
+
+include($ROOT.'partial/footer.php');

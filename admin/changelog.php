@@ -1,8 +1,10 @@
 <?php
+$ROOT = "../";
+include($ROOT.'partial/header.php');
+
+echo "<section class='changelog'>";
+
 if (isset($_SESSION['pseudo'])) {
-    $ROOT = "../";
-    include($ROOT.'partial/header.php');
-    echo "<section class='changelog'>";
     echo "<h1>Changelog</h1>";
 
     $query = $bdd->query('SELECT * FROM odldc_changelog ORDER BY id DESC LIMIT 20');
@@ -15,8 +17,11 @@ if (isset($_SESSION['pseudo'])) {
         $type = FALSE;
         displayChangelog($val);
     }
-    echo "</section>";
-    include($ROOT.'partial/footer.php');
+
 } else {
-    header('Location: /index.php');
+    echo "Veuillez vous connecter pour poursuivre.";
 }
+
+echo "</section>";
+
+include($ROOT.'partial/footer.php');

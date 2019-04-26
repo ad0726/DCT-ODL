@@ -1,9 +1,10 @@
 <?php
-if (isset($_SESSION['pseudo'])) {
-    $ROOT = "../";
-    include($ROOT.'partial/header.php');
+$ROOT = "../";
+include($ROOT.'partial/header.php');
 
-    echo "<section>";
+echo "<section>";
+
+if (isset($_SESSION['pseudo'])) {
     echo "<div class='form'>\n";
     if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         if (isset($_REQUEST['name_era']) && ($_REQUEST['name_era'] != "")) {
@@ -65,8 +66,10 @@ if (isset($_SESSION['pseudo'])) {
         echo "\t</form>\n";
     }
     echo "</div>";
-    echo "</section>";
-    include($ROOT.'partial/footer.php');
 } else {
-    header('Location: /index.php');
+    echo "Veuillez vous connecter pour poursuivre.";
 }
+
+echo "</section>";
+
+include($ROOT.'partial/footer.php');

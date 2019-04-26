@@ -1,6 +1,7 @@
 <?php
 $ROOT = './';
 include($ROOT.'partial/header.php');
+
 if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST['era']) && !empty($_REQUEST['era']) && ($_REQUEST['era'] !== "all")) {
     $era = $_REQUEST['era'];
     $id  = (int) $_REQUEST['search'];
