@@ -13,11 +13,11 @@ if (($query['value'] == TRUE) && ($_SERVER['SCRIPT_NAME'] !== "/manage.php")) {
         <title>DCTrad - Ordre de lecture DC</title>
         <link rel="icon" href="/assets/img/icon_dct.png" type="image/png" sizes="16x16">
         <link rel="icon" href="/assets/img/icon_dct.png" type="image/png" sizes="32x32">
-        <link rel="stylesheet" href="/assets/css/general.css?1.1.0">
-        <link rel="stylesheet" href="/assets/css/style.css?1.4.8">
+        <link rel="stylesheet" href="/assets/css/general.css?1.2.0">
+        <link rel="stylesheet" href="/assets/css/style.css?1.5.0">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script type="text/javascript" src="/assets/js/script.js?2.3.0"></script>
+        <script type="text/javascript" src="/assets/js/script.js?2.5.0"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <head>
     <body>

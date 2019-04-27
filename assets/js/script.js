@@ -340,19 +340,13 @@ $(document).ready(function() {
             $('img#logoDCT').addClass('logo_opacity');
         }
     });
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('td.cel_img img').attr('src', e.target.result);
-        }
-        reader.readAsDataURL(input.files[0]);
-        }
-    }
     $("input.file").change(function() {
         readURL(this);
     });
 
+    /**
+     * Update-in-line
+     */
     $('.update_tr').click(function() {
         var alreadyFormUpdate = $('tr#updateInLine');
         if (alreadyFormUpdate !== undefined) alreadyFormUpdate.remove();
@@ -483,6 +477,20 @@ $(document).ready(function() {
                                 }
                             })
 
+                            if (newTitle !== undefined)
+                                title   = newTitle;
+                            if (newContent !== undefined)
+                                content = newContent;
+                            if (newUrban !== undefined)
+                                urban   = newUrban;
+                            if (newDctrad !== undefined)
+                                dctrad  = newDctrad;
+
+                            newTitle   = undefined;
+                            newContent = undefined;
+                            newUrban   = undefined;
+                            newDctrad  = undefined;
+
                             if (checkUpdateEqual(newId, id) !== undefined)
                                 location.reload();
                         }
@@ -521,6 +529,8 @@ $(document).ready(function() {
                                         $(this).children('img').prop('src', data.cover);
                                     }
                                 })
+                                resetInput($('#cover'));
+                                $('#result-file-selected').text("");
                             }
                         })
                     }
@@ -530,8 +540,15 @@ $(document).ready(function() {
         $("#update_close").click(function() {
             $('tr#updateInLine').remove();
         })
+        $('#fake-input').click(function(){
+            $('#cover').click();
+        });
+        fileInput = document.querySelector("#cover");
+        fileInput.addEventListener("change", function(event) {
+            var text = $(this).val().replace("C:\\fakepath\\", "");
+            $('#result-file-selected').text(text);
+        });
     });
-
 });
 
 function nl2br (str) {
@@ -543,4 +560,19 @@ function checkUpdateEqual(that, ref) {
         return undefined;
     else
         return that;
+}
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        $('td.cel_img img').attr('src', e.target.result);
+    }
+    reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function resetInput(e) {
+    e.wrap('<form>').closest('form').get(0).reset();
+    e.unwrap();
 }

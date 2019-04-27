@@ -6,10 +6,15 @@ if ($_REQUEST['formfilled'] == 42) {
     echo '<tr id="updateInLine" class="line" style="display: none;">
         <td>
             <div>
-                <label for="new_id">New position</label><br />
+                <label for="new_id">Position</label><br />
                 <input type="number" class="pos" min="0" name="new_id" value="'.$_REQUEST['id'].'">
             </div>
-            <input id="cover" type="file" class="file" name="cover">
+            <div>
+                <label for="new_id">Cover</label><br />
+                <input id="fake-input" type="button" value="Select a file">
+                <input id="cover" type="file" accept="image/*" class="file" name="cover">
+                <p id="result-file-selected"></p>
+            </div>
             <div>
                 <label>Title</label><br />
                 <input type="text" class="input" name="title" value="'.$_REQUEST['title'].'">

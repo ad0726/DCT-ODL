@@ -240,6 +240,24 @@ form :required {
   width: 100%;
 }
 
+#updateInLine input[type="file"] {
+  width: 1px;
+  opacity: 0;
+}
+
+p#result-file-selected {
+  position: absolute;
+  bottom: 0;
+  display: inline-block;
+  margin: 0;
+  left: 5px;
+  font-size: 0.7em;
+}
+
+p#result-file-selected:not(:empty):before {
+  content: "Selected file: ";
+}
+
 div.period {
   position: relative;
   display: flex;
