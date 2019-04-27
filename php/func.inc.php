@@ -269,7 +269,7 @@ function uploadCover() {
         $image      = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
         $name       = md5(uniqid(rand(), true));
         $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-        $name_ext   = "../assets/img/covers/{$name}.{$ext_upload}";
+        $name_ext   = "assets/img/covers/{$name}.{$ext_upload}";
         $resultat   = imagejpeg($image, $name_ext, 70);
         if (!$resultat) {
             return [FALSE, "Transfert échoué.\n"];
