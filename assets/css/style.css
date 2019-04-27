@@ -23,7 +23,7 @@ div.search {
 
 @media (max-width: 992px) {
   div.search {
-    width: 200px;
+    width: 120px;
   }
   div.search i.fa-search {
     position: absolute;
