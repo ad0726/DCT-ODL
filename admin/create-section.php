@@ -9,17 +9,14 @@ if (isset($_SESSION['pseudo'])) {
     if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         if (isset($_REQUEST['name_era']) && ($_REQUEST['name_era'] != "")) {
             createSection("era");
-            echo "<a href='create_section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
-            echo "<a href='index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
             echo "</div>";
         } elseif (isset($_REQUEST['name_period']) && ($_REQUEST['name_period'] != "")) {
             createSection("period");
-            echo "<a href='create_section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
-            echo "<a href='index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
             echo "</div>";
         } else {
             echo "Une erreur est survenue.";
-            echo "<a href='create_section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+            echo "<a href='create-section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+            echo "<a href='/admin/index.php'><button type='button' class='btn_head'>Retour au PCA</button></a>";
             echo "<a href='index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
             echo "</div>";
         }

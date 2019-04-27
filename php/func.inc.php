@@ -393,5 +393,8 @@ function createSection($section) {
         }
     }
     echo "$name a bien été créé.";
+    echo "<a href='/admin/create-section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+    echo "<a href='/admin/index.php'><button type='button' class='btn_head'>Retour au PCA</button></a>";
+    echo "<a href='/index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
 }
 ?>

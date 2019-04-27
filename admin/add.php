@@ -18,7 +18,7 @@ if (isset($_SESSION['pseudo'])) {
         if ($upload[0] === TRUE) {
             $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
             $id    = ++$maxid['id'];
-            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, id_period, arc, cover, contenu, urban, dctrad, isEvent) 
+            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, id_period, arc, cover, contenu, urban, dctrad, isEvent)
                                 VALUES(:id, :id_period, :arc, :cover, :contenu, :urban, :dctrad, :isEvent)");
             $req->execute(array(
                 'id'        => $id,
