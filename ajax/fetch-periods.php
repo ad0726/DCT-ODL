@@ -1,6 +1,6 @@
 <?php
-session_start();
-include('function.php');
+$ROOT = "../";
+include($ROOT.'conf/conf.php');
 
 if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['era'])) {
     $idEra = $bdd->query('SELECT id_era FROM odldc_era WHERE clean_name = "'.$_REQUEST['era'].'"')->fetch(PDO::FETCH_ASSOC);

@@ -146,7 +146,7 @@ $(document).ready(function() {
         if (answer === true) {
             $.ajax({
                 method: "GET",
-                url   : 'delete.php?rm='+id+'&from='+era,
+                url   : '/ajax/delete.php?rm='+id+'&from='+era,
                 success: function(code) {
                     if (code == "200") {
                         $('tr#'+id).parent('tbody').parent('table').remove();
@@ -197,7 +197,7 @@ $(document).ready(function() {
         autocompletion = function(era, ARtd, countARtd, n=1) {
             var ret = "";
             for (i=1;i<=n;i++) {
-                ret += '<a href="results.php?era='+era+'&search='+ARtd['id'][countARtd-i]+'"><div>'+ARtd['text'][countARtd-i]+'</div></a>\n';
+                ret += '<a href="/results.php?era='+era+'&search='+ARtd['id'][countARtd-i]+'"><div>'+ARtd['text'][countARtd-i]+'</div></a>\n';
             }
             return ret;
         }
@@ -264,7 +264,7 @@ $(document).ready(function() {
         if (eraSelected !== "") {
             $.ajax({
                 method: "GET",
-                url: "fetch-periods.php?formfilled=42&era="+eraSelected,
+                url: "/ajax/fetch-periods.php?formfilled=42&era="+eraSelected,
                 success: function(data) {
                     selectPeriod = '<option value="">En premier</option>\n'
                     $(data).each(function(i) {
@@ -340,20 +340,14 @@ $(document).ready(function() {
             $('img#logoDCT').addClass('logo_opacity');
         }
     });
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('td.cel_img img').attr('src', e.target.result);
-        }
-        reader.readAsDataURL(input.files[0]);
-        }
-    }
     $("input.file").change(function() {
         readURL(this);
     });
 
-    $('.btn_head.update_tr').click(function() {
+    /**
+     * Update-in-line
+     */
+    $('.update_tr').click(function() {
         var alreadyFormUpdate = $('tr#updateInLine');
         if (alreadyFormUpdate !== undefined) alreadyFormUpdate.remove();
         var id      = $(this).attr('id').replace("line_", "");
@@ -371,14 +365,15 @@ $(document).ready(function() {
 
         var formUpdate = $.ajax({
             type: "GET",
-            url: "updateInLine.php",
+            url: "/ajax/update-in-line.php",
             data: {
                 formfilled: 42,
-                title: title,
-                content: content,
-                dctrad: dctrad,
-                urban: urban,
-                isEvent: isEventReturn
+                id        : id,
+                title     : title,
+                content   : content,
+                dctrad    : dctrad,
+                urban     : urban,
+                isEvent   : isEventReturn
             },
             async: false
         }).responseText;
@@ -406,17 +401,17 @@ $(document).ready(function() {
 
             $('#updateInLine div input').each(function() {
                 if ($(this).prop('name') == 'title')
-                    newTitle = $(this).val();
+                    newTitle = checkUpdateEqual($(this).val(), title);
                 if ($(this).prop('name') == 'urban')
-                    newUrban = $(this).val();
+                    newUrban = checkUpdateEqual($(this).val(), urban);
                 if ($(this).prop('name') == 'dctrad')
-                    newDctrad = $(this).val();
+                    newDctrad = checkUpdateEqual($(this).val(), dctrad);
                 if ($(this).prop('name') == 'new_id')
-                    newId = $(this).val();
+                    newId = checkUpdateEqual($(this).val(), id);
                 if ($(this).prop('name') == 'cover')
                     cover = $(this);
             });
-            newContent = $('#updateInLine div textarea').val();
+            newContent = checkUpdateEqual($('#updateInLine div textarea').val(), content);
 
             var isEvent       = "off";
             if ($('#updateInLine div #checkboxIsEvent').prop('checked') === true) {
@@ -439,12 +434,12 @@ $(document).ready(function() {
 
             $.ajax({
                 method: "POST",
-                url   : "modify.php",
+                url   : "/admin/modify.php",
                 data  : requestData,
                 success: function(data) {
                     $.ajax({
                         method: "POST",
-                        url   : "refreshData.php",
+                        url   : "/ajax/refresh-data.php",
                         data  : {
                             formfilled: 42,
                             id        : id,
@@ -456,13 +451,13 @@ $(document).ready(function() {
                             var tdPubli;
 
                             if ((data.urban == false) && (data.dctrad == false)) {
-                                tdPubli = '<img class="logo_opacity" src="assets/img/logo_urban_mini.png"><img class="logo_opacity" src="assets/img/logo_dct_mini.png">';
+                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
                             } else if ((data.urban != false) && (data.dctrad == false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="assets/img/logo_dct_mini.png">';
+                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
                             } else if ((data.urban == false) && (data.dctrad != false)) {
-                                tdPubli = '<img class="logo_opacity" src="assets/img/logo_urban_mini.png"><a href="'+data.dctrad+'"><img src="assets/img/logo_dct_mini.png"></a>';
+                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
                             } else if ((data.urban != false) && (data.dctrad != false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="assets/img/logo_urban_mini.png"></a><a href="'+data.dctrad+'"><img src="assets/img/logo_dct_mini.png"></a>';
+                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
                             }
 
                             if (data.isEvent == 0) {
@@ -482,7 +477,21 @@ $(document).ready(function() {
                                 }
                             })
 
-                            if (newId > 0)
+                            if (newTitle !== undefined)
+                                title   = newTitle;
+                            if (newContent !== undefined)
+                                content = newContent;
+                            if (newUrban !== undefined)
+                                urban   = newUrban;
+                            if (newDctrad !== undefined)
+                                dctrad  = newDctrad;
+
+                            newTitle   = undefined;
+                            newContent = undefined;
+                            newUrban   = undefined;
+                            newDctrad  = undefined;
+
+                            if (checkUpdateEqual(newId, id) !== undefined)
                                 location.reload();
                         }
                     })
@@ -496,7 +505,7 @@ $(document).ready(function() {
                 fd.append('cover', cover);
 
                 $.ajax({
-                    url: 'modify.php?id='+id+'&formfilled=42&name_era='+era,
+                    url: '/admin/modify.php?id='+id+'&formfilled=42&name_era='+era,
                     data: fd,
                     processData: false,
                     contentType: false,
@@ -504,7 +513,7 @@ $(document).ready(function() {
                     success: function(data) {
                         $.ajax({
                             method: "POST",
-                            url   : "refreshData.php",
+                            url   : "/ajax/refresh-data.php",
                             data  : {
                                 formfilled: 42,
                                 id        : id,
@@ -520,15 +529,50 @@ $(document).ready(function() {
                                         $(this).children('img').prop('src', data.cover);
                                     }
                                 })
+                                resetInput($('#cover'));
+                                $('#result-file-selected').text("");
                             }
                         })
                     }
                 });
             }
         });
+        $("#update_close").click(function() {
+            $('tr#updateInLine').remove();
+        })
+        $('#fake-input').click(function(){
+            $('#cover').click();
+        });
+        fileInput = document.querySelector("#cover");
+        fileInput.addEventListener("change", function(event) {
+            var text = $(this).val().replace("C:\\fakepath\\", "");
+            $('#result-file-selected').text(text);
+        });
     });
 });
 
 function nl2br (str) {
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ "<br />" +'$2');
+}
+
+function checkUpdateEqual(that, ref) {
+    if (that == ref)
+        return undefined;
+    else
+        return that;
+}
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        $('td.cel_img img').attr('src', e.target.result);
+    }
+    reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function resetInput(e) {
+    e.wrap('<form>').closest('form').get(0).reset();
+    e.unwrap();
 }

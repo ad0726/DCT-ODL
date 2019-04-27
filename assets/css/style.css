@@ -16,43 +16,6 @@ header a#header {
   color: white;
 }
 
-/* .title_header {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  text-align: center;
-  color: lightgrey;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
-
-.title_header div {
-  position: relative;
-  text-align: center;
-  color: lightgrey;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.title_header img {
-  width: 150px;
-  height: 150px;
-  float: left;
-}
-
-.title_header h1 {
-  width: 200px;
-  margin: 0;
-}
-
-.title_header h2 {
-  width: 100%;
-  margin: 0;
-} */
-
 div.search {
   position: absolute;
   left: 10px;
@@ -194,7 +157,7 @@ table tr.line.isEvent {
 .form.login {
   margin-top: 20px;
   height: 200px;
-  width: 200px;
+  width: 300px;
 }
 
 form input,
@@ -277,6 +240,24 @@ form :required {
   width: 100%;
 }
 
+#updateInLine input[type="file"] {
+  width: 1px;
+  opacity: 0;
+}
+
+p#result-file-selected {
+  position: absolute;
+  bottom: 0;
+  display: inline-block;
+  margin: 0;
+  left: 5px;
+  font-size: 0.7em;
+}
+
+p#result-file-selected:not(:empty):before {
+  content: "Selected file: ";
+}
+
 div.period {
   position: relative;
   display: flex;
@@ -347,11 +328,16 @@ div.period {
   display: flex;
 }
 
+.btn_pagination:hover {
+  border-radius: 5px;
+}
+
 .btn_admin {
   background: lightgrey;
   border: none;
   border-radius: 5px;
-  width: 100px;
+  width: 105px;
+  height: 52px;
 }
 
 .content_period {
@@ -575,12 +561,15 @@ div.last_element {
   position: relative;
 }
 
-.btn.update_td {
-  border: none;
+.btn_close {
   position: absolute;
   right: 5px;
   top: 5px;
-  display: none;
+}
+
+.btn_trash,
+.update_tr {
+  margin: 2px;
 }
 
 /*

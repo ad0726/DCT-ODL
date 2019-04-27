@@ -1,15 +1,20 @@
 <?php
-session_start();
-include('function.php');
+$ROOT = "../";
+include($ROOT.'conf/conf.php');
 
 if ($_REQUEST['formfilled'] == 42) {
     echo '<tr id="updateInLine" class="line" style="display: none;">
         <td>
             <div>
-                <label for="new_id">New position</label><br />
-                <input type="number" class="pos" min="0" name="new_id">
+                <label for="new_id">Position</label><br />
+                <input type="number" class="pos" min="0" name="new_id" value="'.$_REQUEST['id'].'">
             </div>
-            <input id="cover" type="file" class="file" name="cover">
+            <div>
+                <label for="new_id">Cover</label><br />
+                <input id="fake-input" type="button" value="Select a file">
+                <input id="cover" type="file" accept="image/*" class="file" name="cover">
+                <p id="result-file-selected"></p>
+            </div>
             <div>
                 <label>Title</label><br />
                 <input type="text" class="input" name="title" value="'.$_REQUEST['title'].'">
@@ -30,7 +35,8 @@ if ($_REQUEST['formfilled'] == 42) {
                 <label>Event</label><br />
                 <input type="checkbox" name="isEvent" id="checkboxIsEvent" '.$_REQUEST['isEvent'].'>
             </div>
-            <input type="button" class="btn_send" value="Send">
+            <input type="submit" class="btn_send" value="Send">
+            <i class="far fa-times-circle btn_close" id="update_close"></i>
         </td>
     </tr>';
 }
