@@ -16,6 +16,7 @@ if (isset($_SESSION['pseudo'])) {
         $upload = uploadCover();
 
         if ($upload[0] === TRUE) {
+            $cover = str_replace("../", "", $upload[1]);
             $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
             $id    = ++$maxid['id'];
             $req   = $bdd->prepare("INSERT INTO odldc_$era(id, id_period, arc, cover, contenu, urban, dctrad, isEvent)
@@ -24,7 +25,7 @@ if (isset($_SESSION['pseudo'])) {
                 'id'        => $id,
                 'id_period' => $_REQUEST['id_period'],
                 'arc'       => htmlentities($_REQUEST['titre_arc']),
-                'cover'     => $upload[1],
+                'cover'     => $cover,
                 'contenu'   => htmlentities($_REQUEST['contenu']),
                 'urban'     => $_REQUEST['urban'],
                 'dctrad'    => $_REQUEST['dctrad'],
@@ -127,7 +128,7 @@ if (isset($_SESSION['pseudo'])) {
             <input type="text" class="input" name="titre_arc" placeholder="Titre de l'arc" value="<?= @$_REQUEST['titre_arc'] ?>" required><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
-            <input type="file" class="file" name="cover" required><br />
+            <input type="file" class="file" name="cover" accept="image/*" required><br />
             <textarea class="content" name="contenu" placeholder="Liste des issues de l'arc" required><?= @$_REQUEST['contenu'] ?></textarea><br />
             <div class="isUrban_DCT">
                 <div class="isUrban">

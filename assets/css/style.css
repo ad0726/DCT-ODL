@@ -356,6 +356,10 @@ div.period {
   padding-bottom: 25px;
 }
 
+.content_period.content_result {
+  display: block;
+}
+
 .content_period table .cel_id span {
   border: 1px solid darkgray;
   border-radius: 0 5px 5px 5px;

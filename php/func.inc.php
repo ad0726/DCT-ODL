@@ -117,12 +117,13 @@ function displayBTNpagination($i) {
  * @param array $ARinfo
  * @param string $period : current period (optionnal)
  * @param integer $p : number of pages (optionnal)
+ * @param string $cover : src of cover (optionnal)
  * @return display
  */
-function displayLine($ARinfo, $p = FALSE) {
-    $id            = $ARinfo['id'];
-    $era_current   = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
-    $classIsEvent  = "";
+function displayLine($ARinfo, $p = FALSE, $cover = "") {
+    $id           = $ARinfo['id'];
+    $era_current  = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
+    $classIsEvent = "";
 
     if ($era_current == "results") $era_current   = $_REQUEST['era'];
     if ($ARinfo['isEvent'] == TRUE) $classIsEvent = "isEvent";
@@ -130,7 +131,7 @@ function displayLine($ARinfo, $p = FALSE) {
                     <table class='page_$p'>
                         <tr class='line $classIsEvent' id='".$id."'>
                             <td class='cel_id'><span>".$id."</span></td>
-                            <td class='cel_img'><img src=\"".$ARinfo['cover']."\" ></td>
+                            <td class='cel_img'><img src=\"$cover\" ></td>
                             <td class='cel_title'><h3>".$ARinfo['arc']."</h3></td>
                             <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
                             <td class='cel_publi'>
@@ -269,7 +270,7 @@ function uploadCover() {
         $image      = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
         $name       = md5(uniqid(rand(), true));
         $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-        $name_ext   = "assets/img/covers/{$name}.{$ext_upload}";
+        $name_ext   = "../assets/img/covers/{$name}.{$ext_upload}";
         $resultat   = imagejpeg($image, $name_ext, 70);
         if (!$resultat) {
             return [FALSE, "Transfert échoué.\n"];

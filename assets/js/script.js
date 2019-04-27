@@ -16,10 +16,12 @@ $(document).ready(function() {
      * Toggle content_period
      */
     $('.title_period').click(function(){
-        var period = $(this).attr('class');
-        period = period.replace('title_period btn_', '');
+        var classThis  = $(this).attr('class');
+        var period     = classThis.replace('title_period btn_', '');
+
         $('div.content_period#'+period).toggle();
         if ($('div.content_period#'+period).css('display') == 'block') {
+            getCovers($(this), 'page_1');
             $('div.content_period#'+period).children('table').css('display', 'none');
             $('div.content_period#'+period).children('table.page_1').toggle();
             $('div.content_period').css('display', 'none');
@@ -49,6 +51,7 @@ $(document).ready(function() {
         }
         var ShowPage = "page_" + Sp;
         var HidePage = "page_" + Hp;
+        getCovers($(this), ShowPage);
         $('div.content_period#'+id).children('.' + ShowPage).toggle();
         $('div.content_period#'+id).children('.' + HidePage).toggle();
         $('html,body').animate( {
@@ -77,6 +80,7 @@ $(document).ready(function() {
 
         var ShowPage = "page_" + Sp;
         var HidePage = "page_" + Hp;
+        getCovers($(this), ShowPage);
         $('div.content_period#'+id).children('.' + ShowPage).toggle();
         $('div.content_period#'+id).children('.' + HidePage).toggle();
         $('html,body').animate( {
@@ -96,6 +100,7 @@ $(document).ready(function() {
         var Sp       = $(this).html();
         var ShowPage = 'page_'+Sp;
         var id       = $(this).parent('div').parent('div').attr('id');
+        getCovers($(this), ShowPage);
         for(a=1;a<=nbrP;a++) {
             var search = $('div.content_period#'+id).children('table.page_'+a).css('display') == 'table';
             if(search === true) {
@@ -135,9 +140,11 @@ $(document).ready(function() {
     $('.btn_trash').click(function() {
         var id         = $(this).parents('tr').attr('id');
         var sectionODL = $('section.odl').attr('id');
-        var era        = "";
+        var isResultPage;
+        var era;
         if (sectionODL ===  undefined) {
-            era = $('section.results_page').attr('id');
+            isResultPage = true;
+            era          = $('section.results_page').attr('id');
         } else {
             var tmp = new RegExp(/([a-z]+)_page/, "i");
                 era = sectionODL.match(tmp)[1];
@@ -150,7 +157,8 @@ $(document).ready(function() {
                 success: function(code) {
                     if (code == "200") {
                         $('tr#'+id).parent('tbody').parent('table').remove();
-                        location.reload();
+                        if (isResultPage !== true)
+                            location.reload();
                     }
                 }
             })
@@ -188,6 +196,7 @@ $(document).ready(function() {
             var search = $(this).text();
             var id     = $(this).parent('tr').attr('id');
             if(search.match(tmp)) {
+                if($.inArray(id, td['id']) !== -1) return true;
                 td['id'].push(id);
                 td['text'].push(search);
             }
@@ -389,15 +398,18 @@ $(document).ready(function() {
             var newId;
             var cover;
             var era;
-            var page;
             var sectionODL;
+            var isResultPage;
             var tmp;
 
             tmp        = new RegExp(/([a-z]+)_page/, "i");
             sectionODL = $('section.odl').attr('id');
-            era        = sectionODL.match(tmp)[1];
-            tmp        = new RegExp(/page_([1-9]+)/, "i");
-            page       = $('#updateInLine').parent('tbody').parent('table').attr('class').match(tmp)[1];
+            if (sectionODL ===  undefined) {
+                isResultPage = true;
+                era          = $('section.results_page').attr('id');
+            } else {
+                era = sectionODL.match(tmp)[1];
+            }
 
             $('#updateInLine div input').each(function() {
                 if ($(this).prop('name') == 'title')
@@ -437,6 +449,7 @@ $(document).ready(function() {
                 url   : "/admin/modify.php",
                 data  : requestData,
                 success: function(data) {
+                    if (newId !== undefined) id = newId;
                     $.ajax({
                         method: "POST",
                         url   : "/ajax/refresh-data.php",
@@ -444,7 +457,6 @@ $(document).ready(function() {
                             formfilled: 42,
                             id        : id,
                             name_era  : era,
-                            page      : page
                         },
                         success: function(data) {
                             var tdName;
@@ -491,7 +503,7 @@ $(document).ready(function() {
                             newUrban   = undefined;
                             newDctrad  = undefined;
 
-                            if (checkUpdateEqual(newId, id) !== undefined)
+                            if (newId !== undefined)
                                 location.reload();
                         }
                     })
@@ -518,7 +530,6 @@ $(document).ready(function() {
                                 formfilled: 42,
                                 id        : id,
                                 name_era  : era,
-                                page      : page
                             },
                             success: function(data) {
                                 var tdName;
@@ -575,4 +586,37 @@ function readURL(input) {
 function resetInput(e) {
     e.wrap('<form>').closest('form').get(0).reset();
     e.unwrap();
+}
+
+function getCovers(object, page) {
+    var sectionODL = $('section.odl').attr('id');
+    var tmp        = new RegExp(/([a-z]+)_page/, "i");
+    var era        = sectionODL.match(tmp)[1];
+    var period     = object.parents('div.period').find('div.content_period').attr('id');
+    var lines      = $('div#'+period+'.content_period').find('table.'+page+' tr');
+    var ids        = [];
+
+    lines.each(function() {
+        ids.push($(this).attr('id'));
+    });
+
+    $.ajax({
+        method: 'POST',
+        url: '/ajax/get-covers.php',
+        data: {
+            era: era,
+            ids: ids
+        },
+        success: function(ret) {
+            var i = 0;
+            lines.each(function() {
+                if (i < 20) {
+                    $(this).find('td.cel_img img').prop('src', "/"+ret[i]);
+                    i++;
+                } else {
+                    return false;
+                }
+            });
+        }
+    })
 }

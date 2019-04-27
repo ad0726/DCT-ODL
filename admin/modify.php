@@ -179,7 +179,7 @@ if (isset($_SESSION['pseudo'])) {
             <input type="text" class="input" name="new_title" placeholder="Titre de l'arc"  value="<?= @$info['arc'] ?>"><br />
             <label for="cover">Cover</label>
             <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
-            <input type="file" class="file" name="cover"><br />
+            <input type="file" class="file" name="cover" accept="image/*"><br />
             <textarea class="content" name="new_content" placeholder="Liste des issues de l'arc"><?= @$info['contenu'] ?></textarea><br />
             <div class="isUrban_DCT">
                 <div class="isUrban">
