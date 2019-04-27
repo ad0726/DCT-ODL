@@ -34,7 +34,7 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
         array_multisort($IDresults, SORT_ASC);
         $n = count($IDresults);
         echo "<section class='results_page' id='$era'>";
-        echo "<p class='text-result'>$n résultats de la recherche.</p>";
+        echo "<p class='text-result'>$n résultat(s) de la recherche.</p>";
         echo "<div class='content_period content_result'>";
         foreach ($IDresults as $k=>$line) {
             displayLine($line, false, "/".$line['cover']);
@@ -45,7 +45,7 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
         array_multisort($results, SORT_ASC);
         $n = count($results);
         echo "<section class='results_page' id='$era'>";
-        echo "<p class='text-result'>$n résultats pour :<br />".$_REQUEST['search']."</p>";
+        echo "<p class='text-result'>$n résultat(s) pour :<br />".$_REQUEST['search']."</p>";
         echo "<div class='content_period content_result'>";
         foreach ($results as $k=>$line) {
             displayLine($line, false, "/".$line['cover']);
@@ -88,7 +88,7 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
         array_multisort($IDresults, SORT_ASC);
         $n = count($IDresults);
         echo "<section>";
-        echo "<p class='text-result'>$n résultats.</p>";
+        echo "<p class='text-result'>$n résultat(s).</p>";
         echo "<div class='content_period content_result'>";
         foreach ($IDresults as $k=>$line) {
             displayLine($line, false, "/".$line['cover']);
@@ -99,7 +99,7 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
         array_multisort($results, SORT_ASC);
         $n = count($results);
         echo "<section>";
-        echo "<p class='text-result'>$n résultats pour :<br />".$_REQUEST['search']."</p>";
+        echo "<p class='text-result'>$n résultat(s) pour :<br />".$_REQUEST['search']."</p>";
         echo "<div class='content_period content_result'>";
         foreach ($results as $k=>$line) {
             displayLine($line, false, "/".$line['cover']);
