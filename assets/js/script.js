@@ -611,7 +611,7 @@ function getCovers(object, page) {
             var i = 0;
             lines.each(function() {
                 if (i < 20) {
-                    $(this).find('td.cel_img img').prop('src', ret[i]);
+                    $(this).find('td.cel_img img').prop('src', "/"+ret[i]);
                     i++;
                 } else {
                     return false;
