@@ -45,7 +45,6 @@ if (isset($_SESSION['pseudo'])) {
 
             // Changelog
             $date = new DateTime();
-            $date->setTimezone(new DateTimeZone('+0100'));
 
             (!isset($newid)) ? $pos = $id : $pos = $newid;
 
