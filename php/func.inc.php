@@ -147,13 +147,15 @@ function displayLine($ARinfo, $p = FALSE, $cover = "") {
     } else {
         echo "<img src='/assets/img/logo_dct_mini.png' class='logo_opacity'>";
     }
-    echo"
+    echo "
                                 </div>
                             </td>
                             <td class='nolog'>
-                                <i id='line_$id' class='fas fa-pen-fancy update_tr'></i>
-                                <i class='fas fa-trash-alt btn_trash'></i>
-                            </td>
+                                <i id='line_$id' class='fas fa-pen-fancy update_tr'></i>";
+    if (whichRole() != "editor") {
+        echo "<i class='fas fa-trash-alt btn_trash'></i>";
+    }
+    echo "                  </td>
                         </tr>
                     </table>";
 }
@@ -397,5 +399,14 @@ function createSection($section) {
     echo "<a href='/admin/create-section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
     echo "<a href='/admin/index.php'><button type='button' class='btn_head'>Retour au PCA</button></a>";
     echo "<a href='/index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
+}
+
+function whichRole() {
+    global $bdd;
+
+    $login    = strtolower($_SESSION['pseudo']);
+    $fetchACL = $bdd->query('SELECT user_acl FROM odldc_users WHERE user_name_clean = \''.$login.'\'')->fetch(PDO::FETCH_ASSOC);
+
+    return $fetchACL['user_acl'];
 }
 ?>

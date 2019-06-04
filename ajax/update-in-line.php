@@ -3,9 +3,15 @@ $ROOT = "../";
 include($ROOT.'conf/conf.php');
 
 if ($_REQUEST['formfilled'] == 42) {
+    $role = whichRole();
+    if ($role == "editor") {
+        $display = "style='display: none;'";
+    } else {
+        $display = "";
+    }
     echo '<tr id="updateInLine" class="line" style="display: none;">
         <td>
-            <div>
+            <div '.$display.'>
                 <label for="new_id">Position</label><br />
                 <input type="number" class="pos" min="0" name="new_id" value="'.$_REQUEST['id'].'">
             </div>

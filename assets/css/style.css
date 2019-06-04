@@ -571,6 +571,15 @@ div.last_element {
   align-items: center;
 }
 
+div.last_element.forbidden {
+  opacity: 0.3;
+}
+
+div.last_element.forbidden .btn_admin:hover {
+  box-shadow: none;
+  cursor: auto;
+}
+
 .content_period td {
   position: relative;
 }
