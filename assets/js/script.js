@@ -236,7 +236,8 @@ $(document).ready(function() {
             $('#LinkUrban').attr('value', "");
             $('#LinkUrban').prop('required', false);
         }
-    })
+    });
+
     $('#CBisDCT').click(function() {
         var isChecked = $('#CBisDCT').prop('checked');
         if (isChecked === true) {
@@ -247,7 +248,7 @@ $(document).ready(function() {
             $('#LinkDCT').attr('value', "");
             $('#LinkDCT').prop('required', false);
         }
-    })
+    });
 
     $('#selectCreate').click(function() {
         var ChoiceCreate = $('.optionCreate:selected').attr('value');
@@ -264,16 +265,57 @@ $(document).ready(function() {
             $('#create_period').css('display', 'none');
             $('.btn_send').css('display', 'none');
         }
+    });
+
+    $('#whichUniverseForEra').click(function() {
+        var universeSelected = $('.selectUniverseForEra:selected').attr('value');
+        var selectEra;
+
+        if ((universeSelected !== "") && (universeSelected !== undefined)) {
+            $.ajax({
+                method: "GET",
+                url: "/ajax/fetch-section.php?formfilled=42&universe="+universeSelected,
+                success: function(data) {
+                    selectEra = '<option value="" selected>Cliquez</option>\n'
+                    $(data).each(function(i) {
+                        selectEra += '<option value="'+data[i].clean_name+'">'+data[i].name+'</option>\n';
+                    })
+                    $('#selectEraForEra').toggle();
+                    $('#whereEra').html(selectEra);
+                }
+            })
+        }
+    });
+
+    $('#whichUniverseForPeriod').click(function() {
+        var universeSelected = $('.selectUniverseForPeriod:selected').attr('value');
+        var selectEra;
+
+        if ((universeSelected !== "") && (universeSelected !== undefined)) {
+            $.ajax({
+                method: "GET",
+                url: "/ajax/fetch-section.php?formfilled=42&universe="+universeSelected,
+                success: function(data) {
+                    selectEra = '<option value="" selected>Cliquez</option>\n'
+                    $(data).each(function(i) {
+                        selectEra += '<option class="selectEra" value="'+data[i].clean_name+'">'+data[i].name+'</option>\n';
+                    })
+                    $('#selectEraForPeriod').toggle();
+                    $('#whichEra').html(selectEra);
+                }
+            })
+        }
     })
 
     $('#whichEra').click(function() {
         var eraSelected = $('.selectEra:selected').attr('value');
         var selectPeriod;
+        console.log(eraSelected);
 
-        if (eraSelected !== "") {
+        if ((eraSelected !== "") && (eraSelected !== undefined)) {
             $.ajax({
                 method: "GET",
-                url: "/ajax/fetch-periods.php?formfilled=42&era="+eraSelected,
+                url: "/ajax/fetch-section.php?formfilled=42&era="+eraSelected,
                 success: function(data) {
                     selectPeriod = '<option value="">En premier</option>\n'
                     $(data).each(function(i) {
@@ -284,7 +326,7 @@ $(document).ready(function() {
                 }
             })
         }
-    })
+    });
 
     /**
      * Back to top button
