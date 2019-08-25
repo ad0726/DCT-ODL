@@ -99,6 +99,58 @@ function displayPeriod($period, $ARlineID) {
 }
 
 /**
+ * Display tab on home page
+ *
+ * @param string name of ODL
+ * @param array $ARlineID
+ * @return display
+ */
+function displayHome($period, $ARlineID) {
+    $period_format = strtolower(str_replace(" ", "_", $period));
+    $arc_count = count($ARlineID);
+    echo "
+            <div class='period'>
+                <h2 class='title_period btn_$period_format'>".$period."</h2>
+                <span class='arc_count'>$arc_count arcs</span>
+                <div class='content_period' id='$period_format'>";
+                $i = 1;
+                $p = 1;
+                if ($arc_count > 20) {
+                echo "<br />";
+                echo "
+                            <div class='btn_pagination top'>
+                                <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
+                                displayBTNpagination($arc_count);
+                echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
+                            </div>";
+                }
+                foreach ($ARlineID as $lineID=>$ARinfo) {
+                    if ($i % 20 == 0) {
+                        displayLine($ARinfo, $p);
+                        $i++;
+                        $p++;
+                    } else {
+                        displayLine($ARinfo, $p);
+                        $i++;
+                    }
+                }
+                $i--;
+    if ($arc_count > 20) {
+    echo "<br />";
+    echo "
+                <div class='btn_pagination bottom'>
+                    <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
+                    displayBTNpagination($arc_count);
+    echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
+                </div>";
+    }
+    echo "
+                <button class='btn_hide down btn_$period_format' name='hide'>Fermer</button>
+                </div>
+            </div>";
+}
+
+/**
  * Display pagination button
  *
  * @param integer $p : number of pages
@@ -159,10 +211,6 @@ function displayLine($ARinfo, $p = FALSE, $cover = "") {
                         </tr>
                     </table>";
 }
-
-// <a href='modify.php?era=$era_current&period=$period_format&id=$id' title='Modifier'>
-// <button type='button' id='line_$id' class='btn_head update_tr'><i class='fas fa-pen-fancy'></i></button>
-// </a>
 
 /**
  * Display changelog page
@@ -330,7 +378,15 @@ function createSection($section) {
     $maxID     = $bdd->query("SELECT MAX(id) FROM odldc_$section")->fetch(PDO::FETCH_ASSOC);
     $maxID     = $maxID['MAX(id)'];
 
-    if ($section == "era") {
+    if ($section == "universe") {
+        $cols    = "name, clean_name, id_universe";
+        $values  = ":name, :clean_name, :id_universe";
+        $execute = [
+            'name'        => $name,
+            'clean_name'  => $nameClean,
+            'id_universe' => uniqid(),
+        ];
+    } elseif ($section == "era") {
         $cols    = "id, name, clean_name, id_era";
         $values  = ":id, :name, :clean_name, :id_era";
         $execute = [
@@ -354,46 +410,65 @@ function createSection($section) {
         ];
     }
 
-    if ($_REQUEST["where_$section"] == "first") {
-        // Insert into first place
-        $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN 1 AND $maxID");
-
-        $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
-            VALUES($values)");
-
-        $query->execute($execute);
-
-    } else {
-        $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
-        $query    = $bdd->query("SELECT clean_name FROM odldc_$section WHERE id = $maxID")->fetch(PDO::FETCH_ASSOC);
-        $lastEra  = $query['clean_name'];
-
-        if ($whereEra == $lastEra) {
-            // Insert into last place
-            $id = ++$maxID;
+    if ($section != "universe") {
+        if ($_REQUEST["where_$section"] == "first") {
+            // Insert into first place
+            $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN 1 AND $maxID");
 
             $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
-            VALUES($values)");
+                VALUES($values)");
 
-            $execute['id'] = $id;
             $query->execute($execute);
 
         } else {
-            // Other insert
             $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
-            $query    = $bdd->query("SELECT id FROM odldc_$section WHERE clean_name = '$whereEra'")->fetch(PDO::FETCH_ASSOC);
-            $id       = ++$query['id'];
+            $query    = $bdd->query("SELECT clean_name FROM odldc_$section WHERE id = $maxID")->fetch(PDO::FETCH_ASSOC);
+            $lastEra  = $query['clean_name'];
 
-            $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN $id AND $maxID");
+            if ($whereEra == $lastEra) {
+                // Insert into last place
+                $id = ++$maxID;
 
-            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
-            VALUES($values)");
+                $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+                VALUES($values)");
 
-            $execute['id'] = $id;
-            $query->execute($execute);
-            $bdd->exec("ALTER TABLE odldc_$section ORDER BY id ASC");
+                $execute['id'] = $id;
+                $query->execute($execute);
 
+            } else {
+                // Other insert
+                $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
+                $query    = $bdd->query("SELECT id FROM odldc_$section WHERE clean_name = '$whereEra'")->fetch(PDO::FETCH_ASSOC);
+                $id       = ++$query['id'];
+
+                $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN $id AND $maxID");
+
+                $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+                VALUES($values)");
+
+                $execute['id'] = $id;
+                $query->execute($execute);
+                $bdd->exec("ALTER TABLE odldc_$section ORDER BY id ASC");
+
+            }
         }
+    } elseif ($section == "universe") {
+        $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+        VALUES($values)");
+        $query->execute($execute);
+        $toto = $bdd->exec("CREATE TABLE IF NOT EXISTS odldc_$nameClean (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `position` int(11) NOT NULL,
+            `id_period` varchar(60) NOT NULL,
+            `id_era` varchar(60) NOT NULL,
+            `arc` text NOT NULL,
+            `cover` text NOT NULL,
+            `contenu` text NOT NULL,
+            `vf` text NOT NULL,
+            `dctrad` text NOT NULL,
+            `isEvent` tinyint(1) NOT NULL,
+            PRIMARY KEY (`id`)
+            )");
     }
     echo "$name a bien été créé.";
     echo "<a href='/admin/create-section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";

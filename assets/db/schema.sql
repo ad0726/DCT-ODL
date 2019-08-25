@@ -48,16 +48,28 @@ CREATE TABLE IF NOT EXISTS `odldc_changelog` (
 
 -- --------------------------------------------------------
 
+DROP TABLE IF EXISTS `odldc_universe`;
+CREATE TABLE IF NOT EXISTS `odldc_universe` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `clean_name` varchar(50) NOT NULL,
+  `id_universe` varchar(60) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Structure de la table `odldc_era`
 --
 
 DROP TABLE IF EXISTS `odldc_era`;
 CREATE TABLE IF NOT EXISTS `odldc_era` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `position` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `clean_name` varchar(100) NOT NULL,
-  `id_era` varchar(60) NOT NULL
+  `id_era` varchar(60) NOT NULL,
+  `id_universe` varchar(60) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -68,11 +80,14 @@ CREATE TABLE IF NOT EXISTS `odldc_era` (
 
 DROP TABLE IF EXISTS `odldc_period`;
 CREATE TABLE IF NOT EXISTS `odldc_period` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `position` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
   `clean_name` varchar(100) NOT NULL,
   `id_era` varchar(60) NOT NULL,
-  `id_period` varchar(60) NOT NULL
+  `id_period` varchar(60) NOT NULL,
+  `id_universe` varchar(60) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -85,6 +100,7 @@ DROP TABLE IF EXISTS `odldc_rebirth`;
 CREATE TABLE IF NOT EXISTS `odldc_rebirth` (
   `id` int(11) NOT NULL,
   `id_period` varchar(60) NOT NULL,
+  `id_era` varchar(60) NOT NULL,
   `arc` text NOT NULL,
   `cover` text NOT NULL,
   `contenu` text NOT NULL,

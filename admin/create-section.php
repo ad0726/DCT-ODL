@@ -13,6 +13,9 @@ if (isset($_SESSION['pseudo'])) {
         } elseif (isset($_REQUEST['name_period']) && ($_REQUEST['name_period'] != "")) {
             createSection("period");
             echo "</div>";
+        } elseif (isset($_REQUEST['name_universe']) && ($_REQUEST['name_universe'] != "")) {
+            createSection("universe");
+            echo "</div>";
         } else {
             echo "Une erreur est survenue.";
             echo "<a href='create-section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
@@ -29,12 +32,14 @@ if (isset($_SESSION['pseudo'])) {
         echo "\t<h2>Créer...</h2>\n";
         echo "\t<form action='?' method='POST'>\n";
         echo "\t\t<input type='hidden' name='formfilled' value='42' />\n";
+
         echo "\t\t<select name='create' id='selectCreate'>\n";
         echo "\t\t\t<option class='optionCreate'>Cliquez</option>\n";
         echo "\t\t\t<option class='optionCreate' value='universe'>Univers</option>\n";
         echo "\t\t\t<option class='optionCreate' value='era'>Ère</option>\n";
         echo "\t\t\t<option class='optionCreate' value='period'>Période</option>\n";
         echo "\t\t</select>\n";
+
         echo "\t\t<div id='create_universe' style='display: none;'>";
         echo "\t\t\t<input type='text' class='input' name='name_universe' placeholder=\"Nom de l'univers\">\n";
         echo "\t\t</div>";

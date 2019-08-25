@@ -252,15 +252,23 @@ $(document).ready(function() {
 
     $('#selectCreate').click(function() {
         var ChoiceCreate = $('.optionCreate:selected').attr('value');
-        if (ChoiceCreate === "era") {
+        if (ChoiceCreate === "universe") {
+            $('#create_universe').css('display', 'block');
+            $('#create_era').css('display', 'none');
+            $('#create_period').css('display', 'none');
+            $('.btn_send').css('display', 'block');
+        } else if (ChoiceCreate === "era") {
+            $('#create_universe').css('display', 'none');
             $('#create_era').css('display', 'block');
             $('#create_period').css('display', 'none');
             $('.btn_send').css('display', 'block');
         } else if (ChoiceCreate === "period") {
+            $('#create_universe').css('display', 'none');
             $('#create_era').css('display', 'none');
             $('#create_period').css('display', 'block');
             $('.btn_send').css('display', 'block');
         } else if (ChoiceCreate === "") {
+            $('#create_universe').css('display', 'none');
             $('#create_era').css('display', 'none');
             $('#create_period').css('display', 'none');
             $('.btn_send').css('display', 'none');
@@ -282,7 +290,7 @@ $(document).ready(function() {
                     })
                     $('#selectEraForEra').toggle();
                     $('#whereEra').html(selectEra);
-                }
+                },
             })
         }
     });
