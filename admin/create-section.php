@@ -7,14 +7,8 @@ echo "<section>";
 if (isset($_SESSION['pseudo'])) {
     echo "<div class='form'>\n";
     if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        if (isset($_REQUEST['name_era']) && ($_REQUEST['name_era'] != "")) {
-            createSection("era");
-            echo "</div>";
-        } elseif (isset($_REQUEST['name_period']) && ($_REQUEST['name_period'] != "")) {
-            createSection("period");
-            echo "</div>";
-        } elseif (isset($_REQUEST['name_universe']) && ($_REQUEST['name_universe'] != "")) {
-            createSection("universe");
+        if (isset($_REQUEST['create']) && ($_REQUEST['create'] != "")) {
+            createSection($_REQUEST['create']);
             echo "</div>";
         } else {
             echo "Une erreur est survenue.";
@@ -40,43 +34,48 @@ if (isset($_SESSION['pseudo'])) {
         echo "\t\t\t<option class='optionCreate' value='period'>Période</option>\n";
         echo "\t\t</select>\n";
 
+        // Create Universe
         echo "\t\t<div id='create_universe' style='display: none;'>";
         echo "\t\t\t<input type='text' class='input' name='name_universe' placeholder=\"Nom de l'univers\">\n";
         echo "\t\t</div>";
 
+        // Create Era
         echo "\t\t<div id='create_era' style='display: none;'>";
         echo "\t\t\t<input type='text' class='input' name='name_era' placeholder=\"Nom de l'ère\"><br />";
-        echo "\t\t\t<label name='eraToUniverse'>Dans l'univers :</label>\n";
-        echo "\t\t\t<select id='whichUniverseForEra' name='eraToUniverse'>\n";
+        echo "\t\t\t<label>Dans l'univers :</label>\n";
+        echo "\t\t\t<select id='whichUniverseForEra' name='referer[eraToUniverse]'>\n";
         echo "\t\t\t\t<option class='selectUniverseForEra' value=''>Cliquez</option>\n";
         foreach ($names_universe as $name_universe) {
-            echo "\t\t\t\t<option class='selectUniverseForEra' value='".$name_universe['clean_name']."'>".$name_universe['name']."</option>\n";
+            echo "\t\t\t\t<option class='selectUniverseForEra' value='".$name_universe['id_universe']."'>".$name_universe['name']."</option>\n";
         }
         echo "\t\t\t</select>\n";
         echo "\t\t\t<div id='selectEraForEra' style='display: none;'>\n";
         echo "\t\t\t\t<label name='where_era'>Emplacement</label>\n";
         echo "\t\t\t\t<select id='whereEra' name='where_era'>\n";
+        // echo "\t\t\t\t\t<option value='first'>En premier</option>\n";
         echo "\t\t\t\t</select>\n";
         echo "\t\t\t</div>\n";
         echo "\t\t</div>";
 
+        // Create period
         echo "\t\t<div id='create_period' style='display: none;'>";
         echo "\t\t\t<input type='text' class='input' name='name_period' placeholder='Nom de la période'><br />";
-        echo "\t\t\t<label name='periodToUniverse'>Dans l'universe :</label>\n";
-        echo "\t\t\t<select id='whichUniverseForPeriod' name='periodToUniverse'>\n";
+        echo "\t\t\t<label>Dans l'universe :</label>\n";
+        echo "\t\t\t<select id='whichUniverseForPeriod' name='referer[periodToUniverse]'>\n";
         echo "\t\t\t\t<option class='selectUniverseForPeriod' value=''>Cliquez</option>\n";
         foreach ($names_universe as $name_universe) {
-            echo "\t\t\t\t<option class='selectUniverseForPeriod' value='".$name_universe['clean_name']."'>".$name_universe['name']."</option>\n";
+            echo "\t\t\t\t<option class='selectUniverseForPeriod' value='".$name_universe['id_universe']."'>".$name_universe['name']."</option>\n";
         }
         echo "\t\t\t</select>\n";
         echo "\t\t\t<div id='selectEraForPeriod' style='display: none;'>\n";
-        echo "\t\t\t\t<label name='periodToEra'>Dans l'ère :</label>\n";
-        echo "\t\t\t\t<select id='whichEra' name='periodToEra'>\n";
+        echo "\t\t\t\t<label>Dans l'ère :</label>\n";
+        echo "\t\t\t\t<select id='whichEra' name='referer[periodToEra]'>\n";
         echo "\t\t\t\t</select>\n";
         echo "\t\t\t</div>\n";
         echo "\t\t\t<div id='selectPeriod' style='display: none;'>\n";
         echo "\t\t\t\t<label name='where_period'>Emplacement</label>\n";
         echo "\t\t\t\t<select id='wherePeriod' name='where_period'>\n";
+        echo "\t\t\t\t\t<option value='first'>En premier</option>\n";
         echo "\t\t\t\t</select>\n";
         echo "\t\t\t</div>\n";
         echo "\t\t</div>";

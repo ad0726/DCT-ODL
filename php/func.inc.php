@@ -373,10 +373,10 @@ function ResizeCover($source, $type_value = "W", $new_value) {
 
 function createSection($section) {
     global $bdd;
-    $name      = htmlentities($_REQUEST["name_$section"]);
-    $nameClean = strtolower(str_replace(" ", "_", htmlentities($_REQUEST["name_$section"])));
-    $maxID     = $bdd->query("SELECT MAX(id) FROM odldc_$section")->fetch(PDO::FETCH_ASSOC);
-    $maxID     = $maxID['MAX(id)'];
+    $name         = $_REQUEST["name_$section"];
+    $nameClean    = strtolower(str_replace(" ", "_", $name));
+    $max_position = 0;
+    $last_insert  = false;
 
     if ($section == "universe") {
         $cols    = "name, clean_name, id_universe";
@@ -387,71 +387,77 @@ function createSection($section) {
             'id_universe' => uniqid(),
         ];
     } elseif ($section == "era") {
-        $cols    = "id, name, clean_name, id_era";
-        $values  = ":id, :name, :clean_name, :id_era";
+        $cols    = "position, name, clean_name, id_era, id_universe";
+        $values  = ":position, :name, :clean_name, :id_era, :id_universe";
         $execute = [
-            'id'         => 1,
+            'position'   => 1,
             'name'       => $name,
             'clean_name' => $nameClean,
             'id_era'     => uniqid(),
+            'id_universe'=> null
         ];
     } else {
-        $cols    = "id, name, clean_name, id_era, id_period";
-        $values  = ":id, :name, :clean_name, :id_era, :id_period";
-        $nameEra = $_REQUEST['periodToEra'];
-        $query   = $bdd->query("SELECT id_era FROM odldc_era WHERE clean_name = '$nameEra'")->fetch(PDO::FETCH_ASSOC);
-        $eraID   = $query['id_era'];
+        $cols    = "position, name, clean_name, id_era, id_period, id_universe";
+        $values  = ":position, :name, :clean_name, :id_era, :id_period, :id_universe";
         $execute = [
-            'id'         => 1,
-            'name'       => $name,
-            'clean_name' => $nameClean,
-            'id_era'     => $eraID,
-            'id_period'  => uniqid()
+            'position'    => 1,
+            'name'        => $name,
+            'clean_name'  => $nameClean,
+            'id_era'      => null,
+            'id_period'   => uniqid(),
+            'id_universe' => null
         ];
     }
 
-    if ($section != "universe") {
-        if ($_REQUEST["where_$section"] == "first") {
-            // Insert into first place
-            $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN 1 AND $maxID");
+    if (in_array($section, ['era', 'period'])) {
+        $where_insert               = $_REQUEST["where_$section"];
 
-            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
-                VALUES($values)");
+        if (!empty($_REQUEST['referer']['eraToUniverse'])) {
+            $referer                = $_REQUEST['referer']['eraToUniverse'];
+            $where_condition        = "id_universe = '$referer'";
+            $execute['id_universe'] = $referer;
+        } else {
+            $referer_universe       = $_REQUEST['referer']['periodToUniverse'];
+            $referer_era            = $_REQUEST['referer']['periodToEra'];
+            $where_condition        = "id_universe = '$referer_universe' AND id_era = '$referer_era'";
+            $execute['id_universe'] = $referer_universe;
+            $execute['id_era']      = $referer_era;
+        }
+
+        $sql    = "SELECT MAX(position) FROM (SELECT position FROM odldc_$section WHERE $where_condition) AS $section";
+        $return = $bdd->query($sql)->fetch(PDO::FETCH_ASSOC);
+        if ($max_position = $return['MAX(position)']) {
+            $query        = $bdd->query("SELECT id_$section FROM odldc_$section WHERE position = $max_position")->fetch(PDO::FETCH_ASSOC);
+            $last_insert  = $query["id_$section"];
+        }
+
+        if (!$last_insert) {
+            // Insert in last position
+            if ($where_insert == $last_insert) {
+                $execute['position'] = ++$max_position;
+            }
+            $query    = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            VALUES($values)");
 
             $query->execute($execute);
 
         } else {
-            $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
-            $query    = $bdd->query("SELECT clean_name FROM odldc_$section WHERE id = $maxID")->fetch(PDO::FETCH_ASSOC);
-            $lastEra  = $query['clean_name'];
-
-            if ($whereEra == $lastEra) {
-                // Insert into last place
-                $id = ++$maxID;
-
-                $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
-                VALUES($values)");
-
-                $execute['id'] = $id;
-                $query->execute($execute);
-
-            } else {
-                // Other insert
-                $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
-                $query    = $bdd->query("SELECT id FROM odldc_$section WHERE clean_name = '$whereEra'")->fetch(PDO::FETCH_ASSOC);
-                $id       = ++$query['id'];
-
-                $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN $id AND $maxID");
-
-                $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
-                VALUES($values)");
-
-                $execute['id'] = $id;
-                $query->execute($execute);
-                $bdd->exec("ALTER TABLE odldc_$section ORDER BY id ASC");
-
+            // Insert in first position or after $where_insert
+            $position = 1;
+            if ($where_insert != "first") {
+                $query    = $bdd->query("SELECT position FROM odldc_$section WHERE id_$section = '$where_insert'")->fetch(PDO::FETCH_ASSOC);
+                $position = ++$query['position'];
             }
+
+            $bdd->exec("UPDATE odldc_$section SET position = position + 1 WHERE position BETWEEN $position AND $max_position");
+
+            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            VALUES($values)");
+
+            $execute['position'] = $position;
+            $query->execute($execute);
         }
+
     } elseif ($section == "universe") {
         $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
         VALUES($values)");
@@ -469,6 +475,8 @@ function createSection($section) {
             `isEvent` tinyint(1) NOT NULL,
             PRIMARY KEY (`id`)
             )");
+    } else {
+        die("Error");
     }
     echo "$name a bien été créé.";
     echo "<a href='/admin/create-section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";

@@ -284,9 +284,10 @@ $(document).ready(function() {
                 method: "GET",
                 url: "/ajax/fetch-section.php?formfilled=42&universe="+universeSelected,
                 success: function(data) {
-                    selectEra = '<option value="" selected>Cliquez</option>\n'
+                    selectEra    = '<option value="" selected>Cliquez</option>\n';
+                    selectEra   += '<option value="first">En premier</option>\n';
                     $(data).each(function(i) {
-                        selectEra += '<option value="'+data[i].clean_name+'">'+data[i].name+'</option>\n';
+                        selectEra += '<option value="'+data[i].id_era+'">Après '+data[i].name+'</option>\n';
                     })
                     $('#selectEraForEra').toggle();
                     $('#whereEra').html(selectEra);
@@ -304,9 +305,9 @@ $(document).ready(function() {
                 method: "GET",
                 url: "/ajax/fetch-section.php?formfilled=42&universe="+universeSelected,
                 success: function(data) {
-                    selectEra = '<option value="" selected>Cliquez</option>\n'
+                    selectEra  = '<option value="" selected>Cliquez</option>\n';
                     $(data).each(function(i) {
-                        selectEra += '<option class="selectEra" value="'+data[i].clean_name+'">'+data[i].name+'</option>\n';
+                        selectEra += '<option class="selectEra" value="'+data[i].id_era+'">'+data[i].name+'</option>\n';
                     })
                     $('#selectEraForPeriod').toggle();
                     $('#whichEra').html(selectEra);
@@ -325,9 +326,9 @@ $(document).ready(function() {
                 method: "GET",
                 url: "/ajax/fetch-section.php?formfilled=42&era="+eraSelected,
                 success: function(data) {
-                    selectPeriod = '<option value="">En premier</option>\n'
+                    selectPeriod = '<option value="first">En premier</option>\n';
                     $(data).each(function(i) {
-                        selectPeriod += '<option value="after_'+data[i].clean_name+'">Après '+data[i].name+'</option>\n';
+                        selectPeriod += '<option value="'+data[i].id_period+'">Après '+data[i].name+'</option>\n';
                     })
                     $('#selectPeriod').toggle();
                     $('#wherePeriod').html(selectPeriod);

@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 
 if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['era'])) {
     $periods      = [];
-    $periodsQuery = $bdd->query('SELECT * FROM odldc_period WHERE id_era = (SELECT id_era FROM odldc_era WHERE clean_name = "'.$_REQUEST['era'].'")');
+    $periodsQuery = $bdd->query("SELECT name, id_period FROM odldc_period WHERE id_era = '{$_REQUEST['era']}' ORDER BY position ASC");
     while ($period = $periodsQuery->fetch(PDO::FETCH_ASSOC)) {
         $periods[] = $period;
     }
@@ -18,9 +18,9 @@ if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['era'])) {
         http_response_code(404);
     }
 
-} if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['universe'])) {
+} else if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['universe'])) {
     $eras      = [];
-    $erasQuery = $bdd->query('SELECT * FROM odldc_era WHERE id_universe = (SELECT id_universe FROM odldc_universe WHERE clean_name = "'.$_REQUEST['universe'].'")');
+    $erasQuery = $bdd->query("SELECT name, id_era FROM odldc_era WHERE id_universe = '{$_REQUEST['universe']}' ORDER BY position ASC");
 
     while ($era = $erasQuery->fetch(PDO::FETCH_ASSOC)) {
         $eras[] = $era;
@@ -32,4 +32,6 @@ if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['era'])) {
     } else {
         http_response_code(404);
     }
+} else {
+    http_response_code(400);
 }

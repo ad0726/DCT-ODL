@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS `odldc_universe` (
   `name` varchar(50) NOT NULL,
   `clean_name` varchar(50) NOT NULL,
   `id_universe` varchar(60) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `odldc_universe_UN` (`id_universe`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -69,7 +70,8 @@ CREATE TABLE IF NOT EXISTS `odldc_era` (
   `clean_name` varchar(100) NOT NULL,
   `id_era` varchar(60) NOT NULL,
   `id_universe` varchar(60) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `odldc_era_UN` (`id_era`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -87,7 +89,8 @@ CREATE TABLE IF NOT EXISTS `odldc_period` (
   `id_era` varchar(60) NOT NULL,
   `id_period` varchar(60) NOT NULL,
   `id_universe` varchar(60) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `odldc_period_UN` (`id_period`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
