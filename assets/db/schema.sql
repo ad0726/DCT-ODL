@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `odldc_era` (
   `clean_name` varchar(100) NOT NULL,
   `id_era` varchar(60) NOT NULL,
   `id_universe` varchar(60) NOT NULL,
+  `image` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `odldc_era_UN` (`id_era`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

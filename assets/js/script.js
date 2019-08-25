@@ -12,6 +12,14 @@ $(document).ready(function() {
         border: 'none'
     };
 
+
+    $('.title_universe').click(function() {
+        var classThis   = $(this).attr('class');
+        var tmp         = new RegExp(/btn_([a-z1-9]+)/, "i");
+        var id_universe = classThis.match(tmp)[1];
+        $('#'+id_universe).toggle();
+    })
+
     /**
      * Toggle content_period
      */
@@ -319,7 +327,6 @@ $(document).ready(function() {
     $('#whichEra').click(function() {
         var eraSelected = $('.selectEra:selected').attr('value');
         var selectPeriod;
-        console.log(eraSelected);
 
         if ((eraSelected !== "") && (eraSelected !== undefined)) {
             $.ajax({

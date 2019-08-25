@@ -24,7 +24,7 @@ if (isset($_SESSION['pseudo'])) {
             $names_universe[] = $name_universe;
         }
         echo "\t<h2>Créer...</h2>\n";
-        echo "\t<form action='?' method='POST'>\n";
+        echo "\t<form action='?' method='POST' enctype='multipart/form-data'>\n";
         echo "\t\t<input type='hidden' name='formfilled' value='42' />\n";
 
         echo "\t\t<select name='create' id='selectCreate'>\n";
@@ -52,9 +52,10 @@ if (isset($_SESSION['pseudo'])) {
         echo "\t\t\t<div id='selectEraForEra' style='display: none;'>\n";
         echo "\t\t\t\t<label name='where_era'>Emplacement</label>\n";
         echo "\t\t\t\t<select id='whereEra' name='where_era'>\n";
-        // echo "\t\t\t\t\t<option value='first'>En premier</option>\n";
         echo "\t\t\t\t</select>\n";
         echo "\t\t\t</div>\n";
+        echo "\t\t\t<input type='hidden' name='MAX_FILE_SIZE' value='1048576' />";
+        echo "\t\t\t<input type='file' class='file' name='image' accept='image/*' required>";
         echo "\t\t</div>";
 
         // Create period

@@ -99,58 +99,6 @@ function displayPeriod($period, $ARlineID) {
 }
 
 /**
- * Display tab on home page
- *
- * @param string name of ODL
- * @param array $ARlineID
- * @return display
- */
-function displayHome($period, $ARlineID) {
-    $period_format = strtolower(str_replace(" ", "_", $period));
-    $arc_count = count($ARlineID);
-    echo "
-            <div class='period'>
-                <h2 class='title_period btn_$period_format'>".$period."</h2>
-                <span class='arc_count'>$arc_count arcs</span>
-                <div class='content_period' id='$period_format'>";
-                $i = 1;
-                $p = 1;
-                if ($arc_count > 20) {
-                echo "<br />";
-                echo "
-                            <div class='btn_pagination top'>
-                                <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
-                                displayBTNpagination($arc_count);
-                echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
-                            </div>";
-                }
-                foreach ($ARlineID as $lineID=>$ARinfo) {
-                    if ($i % 20 == 0) {
-                        displayLine($ARinfo, $p);
-                        $i++;
-                        $p++;
-                    } else {
-                        displayLine($ARinfo, $p);
-                        $i++;
-                    }
-                }
-                $i--;
-    if ($arc_count > 20) {
-    echo "<br />";
-    echo "
-                <div class='btn_pagination bottom'>
-                    <button class='btn_prev' name='pagination' style='display: none'><i class='fas fa-chevron-circle-left'></i></button>";
-                    displayBTNpagination($arc_count);
-    echo "          <button class='btn_next' name='pagination'><i class='fas fa-chevron-circle-right'></i></button>
-                </div>";
-    }
-    echo "
-                <button class='btn_hide down btn_$period_format' name='hide'>Fermer</button>
-                </div>
-            </div>";
-}
-
-/**
  * Display pagination button
  *
  * @param integer $p : number of pages
@@ -300,27 +248,27 @@ function d($msg, $die=TRUE, $pre='<pre>'){
  *
  * @return void : if return TRUE, return root of cover (string). Else return error.
  */
-function uploadCover() {
+function uploadCover($file, $width=150, $path="../assets/img/covers/") {
     // global $name_ext;
     $error = FALSE;
 // VERIF UPLOAD
-    if ($_FILES['cover']['error'] > 0) $error[1] = "Pas de cover transférée.\n";
+    if ($file['error'] > 0) $error[1] = "Pas de cover transférée.\n";
 // VERIF WEIGHT
     $maxsize = 1048576;
-    if ($_FILES['cover']['size'] > $maxsize) $error[2] = "Le fichier est trop gros.\n";
+    if ($file['size'] > $maxsize) $error[2] = "Le fichier est trop gros.\n";
 // VERIF EXTENSION
     $img_ext_ok = array( 'jpg' , 'jpeg' , 'png' );
-    $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
+    $ext_upload = strtolower(  substr(  strrchr($file['name'], '.')  ,1)  );
     if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.\n";
 // AFFICHAGE DE L'ERREUR OU ENVOI
     if (!empty($error)) {
         return (isset($error[1])) ? [FALSE, $error[1]] : [FALSE, @$error];
     } else {
 // SAUVEGARDE DE L'IMAGE SUR LE FTP
-        $image      = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
+        $image      = ResizeCover($file['tmp_name'], "W", $width);
         $name       = md5(uniqid(rand(), true));
-        $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-        $name_ext   = "../assets/img/covers/{$name}.{$ext_upload}";
+        $ext_upload = strtolower(  substr(  strrchr($file['name'], '.')  ,1)  );
+        $name_ext   = "{$path}{$name}.{$ext_upload}";
         $resultat   = imagejpeg($image, $name_ext, 70);
         if (!$resultat) {
             return [FALSE, "Transfert échoué.\n"];
@@ -373,8 +321,16 @@ function ResizeCover($source, $type_value = "W", $new_value) {
 
 function createSection($section) {
     global $bdd;
+    global $ROOT;
+
+    $image  = "";
+    $upload = uploadCover($_FILES['image'], 950, "../assets/img/sections/");
+    if ($upload[0] === TRUE) {
+        $image = str_replace("../", "", $upload[1]);
+    }
+
     $name         = $_REQUEST["name_$section"];
-    $nameClean    = strtolower(str_replace(" ", "_", $name));
+    $name_clean    = strtolower(str_replace(" ", "_", $name));
     $max_position = 0;
     $last_insert  = false;
 
@@ -383,18 +339,19 @@ function createSection($section) {
         $values  = ":name, :clean_name, :id_universe";
         $execute = [
             'name'        => $name,
-            'clean_name'  => $nameClean,
+            'clean_name'  => $name_clean,
             'id_universe' => uniqid(),
         ];
     } elseif ($section == "era") {
-        $cols    = "position, name, clean_name, id_era, id_universe";
-        $values  = ":position, :name, :clean_name, :id_era, :id_universe";
+        $cols    = "position, name, clean_name, id_era, id_universe, image";
+        $values  = ":position, :name, :clean_name, :id_era, :id_universe, :image";
         $execute = [
-            'position'   => 1,
-            'name'       => $name,
-            'clean_name' => $nameClean,
-            'id_era'     => uniqid(),
-            'id_universe'=> null
+            'position'    => 1,
+            'name'        => $name,
+            'clean_name'  => $name_clean,
+            'id_era'      => uniqid(),
+            'id_universe' => null,
+            'image'       => $image
         ];
     } else {
         $cols    = "position, name, clean_name, id_era, id_period, id_universe";
@@ -402,7 +359,7 @@ function createSection($section) {
         $execute = [
             'position'    => 1,
             'name'        => $name,
-            'clean_name'  => $nameClean,
+            'clean_name'  => $name_clean,
             'id_era'      => null,
             'id_period'   => uniqid(),
             'id_universe' => null
@@ -462,7 +419,7 @@ function createSection($section) {
         $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
         VALUES($values)");
         $query->execute($execute);
-        $toto = $bdd->exec("CREATE TABLE IF NOT EXISTS odldc_$nameClean (
+        $bdd->exec("CREATE TABLE IF NOT EXISTS odldc_$name_clean (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `position` int(11) NOT NULL,
             `id_period` varchar(60) NOT NULL,
@@ -475,6 +432,7 @@ function createSection($section) {
             `isEvent` tinyint(1) NOT NULL,
             PRIMARY KEY (`id`)
             )");
+
     } else {
         die("Error");
     }
@@ -492,4 +450,3 @@ function whichRole() {
 
     return $fetchACL['user_acl'];
 }
-?>

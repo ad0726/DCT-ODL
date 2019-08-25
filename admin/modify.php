@@ -23,7 +23,7 @@ if (isset($_SESSION['pseudo'])) {
             $old_cover = $bdd->query('SELECT cover FROM odldc_rebirth WHERE id = \''.$id.'\'')->fetch(PDO::FETCH_ASSOC);
             unlink($old_cover['cover']);
             // Upload new image
-            $upload = uploadCover();
+            $upload = uploadCover($_FILES['cover']);
         }
         // Update image
         $update_img = FALSE;

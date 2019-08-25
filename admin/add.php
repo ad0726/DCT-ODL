@@ -13,7 +13,7 @@ if (isset($_SESSION['pseudo'])) {
 
         echo "<div class='form'>";
 
-        $upload = uploadCover();
+        $upload = uploadCover($_FILES['cover']);
 
         if ($upload[0] === TRUE) {
             $cover = str_replace("../", "", $upload[1]);
