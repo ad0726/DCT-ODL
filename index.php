@@ -39,7 +39,7 @@ foreach ($rows as $universe) {
                 <div class='era_home' id='{$universe['id']}'>";
 
     foreach ($universe['era'] as $era) {
-    echo "<a href='/{$era['name_clean']}.php'>
+    echo "<a href='/odl.php?universe={$universe['id']}&era={$era['id']}'>
                     <table class='{$universe['id']}' style='display: table;'>
                         <tr class='line' id='{$era['id']}'>
                             <td class='cel_img'><img src='{$era['image']}' ></td>
