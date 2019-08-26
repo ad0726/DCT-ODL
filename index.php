@@ -1,7 +1,6 @@
 <?php
 $ROOT = './';
 include($ROOT.'partial/header.php');
-$table_prefix = TABLE_PREFIX;
 
 $sql = "SELECT
             universe.name AS name_universe,
@@ -11,8 +10,8 @@ $sql = "SELECT
             era.clean_name AS name_clean_era,
             era.image AS image
         FROM
-            {$table_prefix}universe AS universe,
-            {$table_prefix}era AS era
+            universe AS universe,
+            era AS era
         WHERE
             era.id_universe = universe.id_universe";
 
@@ -39,10 +38,10 @@ foreach ($rows as $universe) {
                 <div class='era_home' id='{$universe['id']}'>";
 
     foreach ($universe['era'] as $era) {
-    echo "<a href='/odl.php?universe={$universe['id']}&era={$era['id']}'>
+    echo "<a href='/odl.php?era={$era['id']}'>
                     <table class='{$universe['id']}' style='display: table;'>
                         <tr class='line' id='{$era['id']}'>
-                            <td class='cel_img'><img src='{$era['image']}' ></td>
+                            <td class='cel_img'><img src='/assets/img/sections/{$era['image']}' ></td>
                             <td class='cel_title'><h3>{$era['name']}</h3></td>
                         </tr>
                     </table>

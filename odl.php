@@ -2,32 +2,46 @@
 $ROOT = './';
 include($ROOT.'partial/header.php');
 
-if (isset($_REQUEST['universe']) && isset($_REQUEST['era'])) {
-    $universe_id = $_REQUEST['universe'];  // todo: sanitize
-    $era_id      = $_REQUEST['era'];       // todo: sanitize
-    $periods     = [];
-    $arcs        = [];
+if (isset($_REQUEST['era'])) {
+    $era_id            = $_REQUEST['era'];       // todo: sanitize
+    $periods           = [];
+    $arcs              = [];
+    $where_clause_arcs = "";
 
-    $universe      = $bdd->query("SELECT * FROM odldc_universe WHERE id_universe = '$universe_id'")->fetch(PDO::FETCH_ASSOC);
-    $universe['clean_name'] = "rebirth"; // for debug
-    $era           = $bdd->query("SELECT * FROM odldc_era WHERE id_universe = '$universe_id'")->fetch(PDO::FETCH_ASSOC);
-    $periods_query = $bdd->query("SELECT name, id_period FROM odldc_period WHERE id_universe = '$universe_id' AND id_era = '$era_id'");
-    $arcs_query    = $bdd->query("SELECT * FROM odldc_{$universe['clean_name']} WHERE id_era = '$era_id' ORDER BY id ASC");              // todo: replace id to position
+    $era           = $bdd->query("SELECT clean_name FROM era WHERE id_era = '$era_id'")->fetch(PDO::FETCH_ASSOC);
+    $periods_query = $bdd->query("SELECT name, id_period FROM period WHERE id_era = '$era_id'");
 
     while ($row = $periods_query->fetch(PDO::FETCH_ASSOC)) {
         $periods[$row['id_period']] = $row['name'];
     }
 
+    $n = count($periods);
+    $i = 0;
+    foreach ($periods as $id=>$name) {
+        ++$i;
+        $where_clause_arcs .= "id_period = '$id'";
+        if ($i < $n) {
+            $where_clause_arcs .= " OR ";
+        }
+    }
+
+    $sql = "SELECT *
+            FROM arc
+            WHERE $where_clause_arcs ORDER BY position ASC";
+
+    $arcs_query    = $bdd->query($sql);              // todo: replace id to position
+
+
     while ($line = $arcs_query->fetch(PDO::FETCH_ASSOC)) {
-        $arcs[$periods[$line['id_period']]][$line['id']] = array (
-            "id"         => $line['id'],
-            "arc"        => $line['arc'],
+        $arcs[$periods[$line['id_period']]][$line['position']] = [
+            "id"         => $line['position'],
+            "arc"        => $line['title'],
             "cover"      => $line['cover'],
-            "contenu"    => $line['contenu'],
-            "urban"      => $line['urban'],
-            "dctrad"     => $line['dctrad'],
-            "isEvent"    => $line['isEvent']
-        );
+            "contenu"    => $line['content'],
+            "urban"      => $line['link_a'],
+            "dctrad"     => $line['link_b'],
+            "isEvent"    => $line['is_event']
+        ];
     }
 
     if (!empty($arcs)) {
