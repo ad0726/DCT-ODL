@@ -18,7 +18,6 @@ if (isset($_SESSION['pseudo'])) {
             echo "</div>";
         }
     } else {
-        $table_prefix = TABLE_PREFIX;
         $universe     = $bdd->query('SELECT * FROM '.$table_prefix.'universe');
         while ($name_universe = $universe->fetch(PDO::FETCH_ASSOC)) {
             $names_universe[] = $name_universe;

@@ -290,12 +290,12 @@ $(document).ready(function() {
         if ((universeSelected !== "") && (universeSelected !== undefined)) {
             $.ajax({
                 method: "GET",
-                url: "/ajax/fetch-section.php?formfilled=42&universe="+universeSelected,
+                url: "/ajax/fetch-section.php?type=universe&id="+universeSelected,
                 success: function(data) {
                     selectEra    = '<option value="" selected>Cliquez</option>\n';
                     selectEra   += '<option value="first">En premier</option>\n';
                     $(data).each(function(i) {
-                        selectEra += '<option value="'+data[i].id_era+'">Après '+data[i].name+'</option>\n';
+                        selectEra += '<option value="'+data[i].id+'">Après '+data[i].name+'</option>\n';
                     })
                     $('#selectEraForEra').toggle();
                     $('#whereEra').html(selectEra);
@@ -311,11 +311,11 @@ $(document).ready(function() {
         if ((universeSelected !== "") && (universeSelected !== undefined)) {
             $.ajax({
                 method: "GET",
-                url: "/ajax/fetch-section.php?formfilled=42&universe="+universeSelected,
+                url: "/ajax/fetch-section.php?type=universe&id="+universeSelected,
                 success: function(data) {
                     selectEra  = '<option value="" selected>Cliquez</option>\n';
                     $(data).each(function(i) {
-                        selectEra += '<option class="selectEra" value="'+data[i].id_era+'">'+data[i].name+'</option>\n';
+                        selectEra += '<option class="selectEra" value="'+data[i].id+'">'+data[i].name+'</option>\n';
                     })
                     $('#selectEraForPeriod').toggle();
                     $('#whichEra').html(selectEra);
@@ -331,11 +331,11 @@ $(document).ready(function() {
         if ((eraSelected !== "") && (eraSelected !== undefined)) {
             $.ajax({
                 method: "GET",
-                url: "/ajax/fetch-section.php?formfilled=42&era="+eraSelected,
+                url: "/ajax/fetch-section.php?type=era&id="+eraSelected,
                 success: function(data) {
                     selectPeriod = '<option value="first">En premier</option>\n';
                     $(data).each(function(i) {
-                        selectPeriod += '<option value="'+data[i].id_period+'">Après '+data[i].name+'</option>\n';
+                        selectPeriod += '<option value="'+data[i].id+'">Après '+data[i].name+'</option>\n';
                     })
                     $('#selectPeriod').toggle();
                     $('#wherePeriod').html(selectPeriod);
@@ -677,4 +677,23 @@ function getCovers(object, page) {
             });
         }
     })
+}
+
+function fillSelect(name_selected, name_select_to_add) {
+    var universe_selected = $('select[name="'+name_selected+'"] > option:selected').attr('value');
+    var options;
+
+    if ((universe_selected !== "") && (universe_selected !== undefined)) {
+        $.ajax({
+            method: "GET",
+            url: "/ajax/fetch-section.php?type="+name_selected+"&id="+universe_selected,
+            success: function(data) {
+                options = '<option value="" selected>'+name_select_to_add+'</option>\n';
+                $(data).each(function(i) {
+                    options += '<option value="'+data[i].id+'">'+data[i].name+'</option>\n';
+                })
+                $('select[name="'+name_select_to_add+'"]').html(options);
+            },
+        })
+    }
 }

@@ -11,6 +11,4 @@ catch(Exception $e)
         die('Erreur : '.$e->getMessage());
 }
 
-define('TABLE_PREFIX', 'odldc_');
-
 include($ROOT.'php/func.inc.php');

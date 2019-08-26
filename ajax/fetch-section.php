@@ -4,34 +4,33 @@ include($ROOT.'conf/conf.php');
 
 header('Content-Type: application/json');
 
-if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['era'])) {
-    $periods      = [];
-    $periodsQuery = $bdd->query("SELECT name, id_period FROM odldc_period WHERE id_era = '{$_REQUEST['era']}' ORDER BY position ASC");
-    while ($period = $periodsQuery->fetch(PDO::FETCH_ASSOC)) {
-        $periods[] = $period;
+if (isset($_REQUEST['type']) && isset($_REQUEST['id'])) {
+    $type   = $_REQUEST['type'];
+    $id     = $_REQUEST['id'];
+    $table  = "";
+    $search = "";
+
+    if ($type == "era") {
+        $search = "period";
+        $table  = $table_prefix.$search;
+    } else if ($type == "universe") {
+        $search = "era";
+        $table = $table_prefix."era";
     }
 
-    if (!empty($periods)) {
+    $where  = "id_$type = '$id'";
+    $result = [];
+    $query  = $bdd->query("SELECT name, id_$search FROM $table WHERE $where ORDER BY position ASC");
+    while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+        $row["id"] = $row["id_$search"];
+        unset($row["id_$search"]);
+        $result[] = $row;
+    }
+
+    if (!empty($result)) {
         http_response_code(200);
-        echo json_encode($periods);
+        echo json_encode($result);
     } else {
         http_response_code(404);
     }
-
-} else if (($_REQUEST['formfilled'] == 42) && isset($_REQUEST['universe'])) {
-    $eras      = [];
-    $erasQuery = $bdd->query("SELECT name, id_era FROM odldc_era WHERE id_universe = '{$_REQUEST['universe']}' ORDER BY position ASC");
-
-    while ($era = $erasQuery->fetch(PDO::FETCH_ASSOC)) {
-        $eras[] = $era;
-    }
-
-    if (!empty($eras)) {
-        http_response_code(200);
-        echo json_encode($eras);
-    } else {
-        http_response_code(404);
-    }
-} else {
-    http_response_code(400);
 }

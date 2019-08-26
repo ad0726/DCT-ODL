@@ -6,7 +6,7 @@ echo "<section>";
 
 if (isset($_SESSION['pseudo'])) {
     if (isset($_REQUEST['id_period']) && ($_REQUEST['id_period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        $era = strtolower($_REQUEST['name_era']);
+        $era = strtolower($_REQUEST['era']);
 
         $isEvent = 0;
         if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") $isEvent = 1;
@@ -64,7 +64,7 @@ if (isset($_SESSION['pseudo'])) {
                 'id'           => $changelog['id'],
                 'author'       => $_SESSION['pseudo'],
                 'cl_type'      => 'add',
-                'name_era'     => $_REQUEST["name_era"],
+                'name_era'     => $_REQUEST["era"],
                 'name_period'  => $changelog['name_period'],
                 'old_position' => '',
                 'new_position' => $changelog['position'],
@@ -91,12 +91,8 @@ if (isset($_SESSION['pseudo'])) {
             echo "<a href='/admin/add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
         }
     } else {
-        $eras       = $bdd->query('SELECT * FROM odldc_era');
-        $periods    = $bdd->query('SELECT * FROM odldc_period');
-        $lastPeriod = $bdd->query('SELECT clean_name FROM odldc_period WHERE id_period IN
-                                    (SELECT id_period FROM odldc_rebirth WHERE id IN
-                                        (SELECT MAX(id) FROM odldc_rebirth))'
-                            )->fetch(PDO::FETCH_ASSOC)['clean_name'];
+        $universes = [];
+        $universe_query = $bdd->query("SELECT * FROM {$table_prefix}universe");
 ?>
     <div class="form">
         <h2>Ajouter un arc</h2>
@@ -104,19 +100,19 @@ if (isset($_SESSION['pseudo'])) {
             <div class="head_form">
                 <div class="info_sections">
                     <input type="hidden" name="formfilled" value="42" />
-                    <select name="name_era" required>
-                        <option value="Rebirth">Rebirth</option>
+                    <select name="universe" required>
+                        <option value="">Universe</option>
+                        <?php
+                        while ($universe = $universe_query->fetch(PDO::FETCH_ASSOC)) {
+                            echo "<option value=\"{$universe['id_universe']}\">{$universe['name']}</option>\n";
+                        }
+                        ?>
                     </select><br />
-                    <select name="id_period" required>
+                    <select name="era" required>
+                        <option value="">Era</option>
+                    </select><br />
+                    <select name="period" required>
                         <option value="">Période</option>
-                    <?php
-                    while ($namePeriod = $periods->fetch(PDO::FETCH_ASSOC)) {
-                        $namePeriodFormat = strtolower(str_replace(" ", "_", $namePeriod['name']));
-                        $selected         = ($namePeriodFormat == $lastPeriod) ? "selected" : "";
-
-                        echo "<option value='".$namePeriod['id_period']."' $selected >".$namePeriod['name']."</option>\n";
-                    }
-                    ?>
                     </select>
                 </div>
                 <div class="div_checkbox">
@@ -131,7 +127,7 @@ if (isset($_SESSION['pseudo'])) {
             <textarea class="content" name="contenu" placeholder="Liste des issues de l'arc" required><?= @$_REQUEST['contenu'] ?></textarea><br />
             <div class="isUrban_DCT">
                 <div class="isUrban">
-                    <label for="CBisUrban">Urban</label>
+                    <label for="CBisUrban">VF</label>
                     <input type="checkbox" name="isUrban" id="CBisUrban" <?php if(isset($_REQUEST['urban']) && !empty($_REQUEST['urban'])) echo "checked"; ?>>
                 </div>
                 <div class="isDCT">
@@ -189,3 +185,6 @@ echo "</div>\n";
 echo "</section>";
 
 include($ROOT.'partial/footer.php');
+
+?>
+<script src="/assets/js/add-arcs.js"></script>
