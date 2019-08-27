@@ -179,10 +179,10 @@ function displayChangelog($val) {
     } elseif ($val['cl_type'] == "delete") {
         $type = "supprimé de ".ucfirst($val['name_era']).".";
     }
-    $date_time = explode('_', $val['id']);
-    $date = explode('-', $date_time[0]);
-    $date = implode('/', array_reverse($date));
-    $time = $date_time[1];
+    $date_time = explode(' ', $val['id']);
+    $date      = explode('-', $date_time[0]);
+    $date      = implode('/', array_reverse($date));
+    $time      = $date_time[1];
     echo "<div class='cl_line'>
     <div class='cl_date'>
         <p>Le $date à $time</p>
@@ -268,7 +268,7 @@ function uploadCover($file, $width=150, $path="../assets/img/covers/") {
         $image      = ResizeCover($file['tmp_name'], "W", $width);
         $name       = md5(uniqid(rand(), true));
         $ext_upload = strtolower(  substr(  strrchr($file['name'], '.')  ,1)  );
-        $name_ext   = "{$path}{$name}.{$ext_upload}";
+        $name_ext   = "{$path}{$name}.jpg";
         $resultat   = imagejpeg($image, $name_ext, 70);
         if (!$resultat) {
             return [FALSE, "Transfert échoué.\n"];
@@ -324,9 +324,14 @@ function createSection($section) {
     global $ROOT;
 
     $image  = "";
-    $upload = uploadCover($_FILES['image'], 950, "../assets/img/sections/");
-    if ($upload[0] === TRUE) {
-        $image = str_replace("../", "", $upload[1]);
+    if ($_FILES['image']['error'] == 0) {
+        $path   = "../assets/img/sections/";
+        $upload = uploadCover($_FILES['image'], 950, $path);
+        if ($upload[0] === TRUE) {
+            $image = str_replace($path, "", $upload[1]);
+        } else {
+            d("Une erreur s'est produite lors de l'upload.");
+        }
     }
 
     $name         = $_REQUEST["name_$section"];
@@ -335,56 +340,52 @@ function createSection($section) {
     $last_insert  = false;
 
     if ($section == "universe") {
-        $cols    = "name, clean_name, id_universe";
-        $values  = ":name, :clean_name, :id_universe";
+        $cols    = "id_universe, name, clean_name";
+        $values  = ":id_universe, :name, :clean_name";
         $execute = [
+            'id_universe' => uniqid(),
             'name'        => $name,
             'clean_name'  => $name_clean,
-            'id_universe' => uniqid(),
         ];
     } elseif ($section == "era") {
-        $cols    = "position, name, clean_name, id_era, id_universe, image";
-        $values  = ":position, :name, :clean_name, :id_era, :id_universe, :image";
+        $cols    = "id_era, id_universe, position, name, clean_name, image";
+        $values  = ":id_era, :id_universe, :position, :name, :clean_name, :image";
         $execute = [
+            'id_era'      => uniqid(),
+            'id_universe' => null,
             'position'    => 1,
             'name'        => $name,
             'clean_name'  => $name_clean,
-            'id_era'      => uniqid(),
-            'id_universe' => null,
             'image'       => $image
         ];
     } else {
-        $cols    = "position, name, clean_name, id_era, id_period, id_universe";
-        $values  = ":position, :name, :clean_name, :id_era, :id_period, :id_universe";
+        $cols    = "id_era, id_period, position, name, clean_name";
+        $values  = ":id_era, :id_period, :position, :name, :clean_name";
         $execute = [
+            'id_period'   => uniqid(),
+            'id_era'      => null,
             'position'    => 1,
             'name'        => $name,
             'clean_name'  => $name_clean,
-            'id_era'      => null,
-            'id_period'   => uniqid(),
-            'id_universe' => null
         ];
     }
 
     if (in_array($section, ['era', 'period'])) {
         $where_insert               = $_REQUEST["where_$section"];
-
         if (!empty($_REQUEST['referer']['eraToUniverse'])) {
             $referer                = $_REQUEST['referer']['eraToUniverse'];
             $where_condition        = "id_universe = '$referer'";
             $execute['id_universe'] = $referer;
         } else {
-            $referer_universe       = $_REQUEST['referer']['periodToUniverse'];
             $referer_era            = $_REQUEST['referer']['periodToEra'];
-            $where_condition        = "id_universe = '$referer_universe' AND id_era = '$referer_era'";
-            $execute['id_universe'] = $referer_universe;
+            $where_condition        = "id_era = '$referer_era'";
             $execute['id_era']      = $referer_era;
         }
 
-        $sql    = "SELECT MAX(position) FROM (SELECT position FROM odldc_$section WHERE $where_condition) AS $section";
+        $sql    = "SELECT MAX(position) FROM (SELECT position FROM $section WHERE $where_condition) AS $section";
         $return = $bdd->query($sql)->fetch(PDO::FETCH_ASSOC);
         if ($max_position = $return['MAX(position)']) {
-            $query        = $bdd->query("SELECT id_$section FROM odldc_$section WHERE position = $max_position")->fetch(PDO::FETCH_ASSOC);
+            $query        = $bdd->query("SELECT id_$section FROM $section WHERE position = $max_position")->fetch(PDO::FETCH_ASSOC);
             $last_insert  = $query["id_$section"];
         }
 
@@ -393,7 +394,7 @@ function createSection($section) {
             if ($where_insert == $last_insert) {
                 $execute['position'] = ++$max_position;
             }
-            $query    = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            $query    = $bdd->prepare("INSERT INTO $section($cols)
             VALUES($values)");
 
             $query->execute($execute);
@@ -402,13 +403,13 @@ function createSection($section) {
             // Insert in first position or after $where_insert
             $position = 1;
             if ($where_insert != "first") {
-                $query    = $bdd->query("SELECT position FROM odldc_$section WHERE id_$section = '$where_insert'")->fetch(PDO::FETCH_ASSOC);
+                $query    = $bdd->query("SELECT position FROM $section WHERE id_$section = '$where_insert'")->fetch(PDO::FETCH_ASSOC);
                 $position = ++$query['position'];
             }
 
-            $bdd->exec("UPDATE odldc_$section SET position = position + 1 WHERE position BETWEEN $position AND $max_position");
+            $bdd->exec("UPDATE $section SET position = position + 1 WHERE position BETWEEN $position AND $max_position");
 
-            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            $query = $bdd->prepare("INSERT INTO $section($cols)
             VALUES($values)");
 
             $execute['position'] = $position;
@@ -416,23 +417,10 @@ function createSection($section) {
         }
 
     } elseif ($section == "universe") {
-        $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+        $query = $bdd->prepare("INSERT INTO $section($cols)
         VALUES($values)");
         $query->execute($execute);
-        $bdd->exec("CREATE TABLE IF NOT EXISTS odldc_$name_clean (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
-            `position` int(11) NOT NULL,
-            `id_period` varchar(60) NOT NULL,
-            `id_era` varchar(60) NOT NULL,
-            `arc` text NOT NULL,
-            `cover` text NOT NULL,
-            `contenu` text NOT NULL,
-            `vf` text NOT NULL,
-            `dctrad` text NOT NULL,
-            `isEvent` tinyint(1) NOT NULL,
-            PRIMARY KEY (`id`)
-            )");
-
+        // todo: handle error
     } else {
         die("Error");
     }
@@ -445,8 +433,8 @@ function createSection($section) {
 function whichRole() {
     global $bdd;
 
-    $login    = strtolower($_SESSION['pseudo']);
-    $fetchACL = $bdd->query('SELECT user_acl FROM odldc_users WHERE user_name_clean = \''.$login.'\'')->fetch(PDO::FETCH_ASSOC);
+    $login     = strtolower($_SESSION['pseudo']);
+    $fetch_acl = $bdd->query("SELECT acl FROM usr WHERE pseudo_clean = '$login'")->fetch(PDO::FETCH_ASSOC);
 
-    return $fetchACL['user_acl'];
+    return $fetch_acl['acl'];
 }

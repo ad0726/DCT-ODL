@@ -15,8 +15,8 @@ if (isset($_SESSION['pseudo'])) {
 
         $upload = uploadCover($_FILES['cover']);
 
-        if ($upload[0] === TRUE) {
-            $cover = str_replace("../", "", $upload[1]);
+        if ($upload[0] === true) {
+            $cover = str_replace("../assets/img/covers/", "", $upload[1]);
             $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
             $id    = ++$maxid['id'];
             $req   = $bdd->prepare("INSERT INTO odldc_$era(id, id_period, arc, cover, contenu, urban, dctrad, isEvent)
@@ -44,24 +44,20 @@ if (isset($_SESSION['pseudo'])) {
             }
 
             // Changelog
-            $date = new DateTime();
-
             (!isset($newid)) ? $pos = $id : $pos = $newid;
 
-            $query    = $bdd->query("SELECT name FROM odldc_period WHERE id_period = \"".$_REQUEST['id_period']."\"")->fetch(PDO::FETCH_ASSOC);
+            $query    = $bdd->query("SELECT name FROM period WHERE id_period = \"".$_REQUEST['id_period']."\"")->fetch(PDO::FETCH_ASSOC);
             $period   = $query['name'];
 
             $changelog = array(
-                'id'          => $date->format('Y-m-d_H:i:s'),
                 'name_period' => $period,
                 'position'    => $pos,
                 'title'       => htmlentities($_REQUEST['titre_arc']),
             );
 
-            $query = $bdd->prepare("INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
-                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
+            $query = $bdd->prepare("INSERT INTO changelog(author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+                                VALUES(:author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
             $query->execute(array(
-                'id'           => $changelog['id'],
                 'author'       => $_SESSION['pseudo'],
                 'cl_type'      => 'add',
                 'name_era'     => $_REQUEST["era"],
@@ -77,9 +73,9 @@ if (isset($_SESSION['pseudo'])) {
                 'isEvent'      => $isEvent
             ));
 
-            $count = $bdd->query("SELECT count(*) FROM odldc_changelog")->fetch(PDO::FETCH_ASSOC);
+            $count = $bdd->query("SELECT count(*) FROM changelog")->fetch(PDO::FETCH_ASSOC);
             if ($count['count(*)'] > 100) {
-                $bdd->exec("DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1");
+                $bdd->exec("DELETE FROM changelog ORDER BY id ASC LIMIT 1");
             }
 
             echo ".";

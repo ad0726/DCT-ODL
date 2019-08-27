@@ -81,8 +81,6 @@ if (isset($_SESSION['pseudo'])) {
         }
 
         // Changelog
-        $date  = new DateTime();
-
         $clIsEvent = "0";                                                                           // Isn't event before submit
         if (isset($_REQUEST['isEventReturn']) && ($_REQUEST['isEventReturn'] == "checked")) {       // If is event before submit
             $clIsEvent = "1";
@@ -93,7 +91,6 @@ if (isset($_SESSION['pseudo'])) {
             $clIsEvent = "-1";
         }
         $changelog = [
-            'id'       => $date->format('Y-m-d_H:i:s'),
             'era'      => $_REQUEST['name_era'],
             'position' => ['old' => $id],
             'title'    => ['old' => $info['arc']],
@@ -105,10 +102,9 @@ if (isset($_SESSION['pseudo'])) {
         $changelog['position']['new'] = $_REQUEST['new_id'] ?? "";
         $changelog['title']['new']    = $_REQUEST['new_title'] ?? "";
 
-        $query = $bdd->prepare('INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
-                            VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
+        $query = $bdd->prepare('INSERT INTO changelog(author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+                            VALUES(:author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
         $query->execute([
-        'id'           => $changelog['id'],
         'author'       => $_SESSION['pseudo'],
         'cl_type'      => 'modify',
         'name_era'     => $changelog['era'],
@@ -124,10 +120,10 @@ if (isset($_SESSION['pseudo'])) {
         'isEvent'      => $clIsEvent
         ]);
 
-        $count = $bdd->query('SELECT count(*) FROM odldc_changelog')->fetch(PDO::FETCH_ASSOC);
+        $count = $bdd->query('SELECT count(*) FROM changelog')->fetch(PDO::FETCH_ASSOC);
 
         if ($count['count(*)'] > 100) {
-            $bdd->exec('DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1');
+            $bdd->exec('DELETE FROM changelog ORDER BY id ASC LIMIT 1');
         }
 
         echo "L'ODL a bien été mis à jour.";

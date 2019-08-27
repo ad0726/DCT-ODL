@@ -9,12 +9,12 @@ if (isset($_SESSION['pseudo'])) {
     if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
         $maintaining = (isset($_REQUEST['maintaining']) && $_REQUEST['maintaining'] == "on") ? 1 : 0;
 
-        $bdd->exec("UPDATE odldc_admin SET value = $maintaining WHERE param = 'isMaintaining'");
+        $bdd->exec("UPDATE admin SET value = $maintaining WHERE param = 'isMaintaining'");
 
         header("Location: index.php");
 
     } else {
-        $query = $bdd->query("SELECT value FROM odldc_admin WHERE param = 'isMaintaining'")->fetch(PDO::FETCH_ASSOC);
+        $query = $bdd->query("SELECT value FROM setting WHERE param = 'isMaintaining'")->fetch(PDO::FETCH_ASSOC);
         $checked = ($query['value'] == TRUE) ? "checked" : "";
 
         echo "\t<form action='?' method='POST'>\n";

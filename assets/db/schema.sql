@@ -9,7 +9,7 @@ CREATE TABLE usr (
 );
 
 
-CREATE TABLE admin (
+CREATE TABLE setting (
                 id INT AUTO_INCREMENT NOT NULL,
                 param VARCHAR(60) NOT NULL,
                 value TINYINT NOT NULL,

@@ -18,7 +18,7 @@ if (isset($_SESSION['pseudo'])) {
             echo "</div>";
         }
     } else {
-        $universe     = $bdd->query('SELECT * FROM '.$table_prefix.'universe');
+        $universe     = $bdd->query('SELECT * FROM universe');
         while ($name_universe = $universe->fetch(PDO::FETCH_ASSOC)) {
             $names_universe[] = $name_universe;
         }
@@ -51,10 +51,11 @@ if (isset($_SESSION['pseudo'])) {
         echo "\t\t\t<div id='selectEraForEra' style='display: none;'>\n";
         echo "\t\t\t\t<label name='where_era'>Emplacement</label>\n";
         echo "\t\t\t\t<select id='whereEra' name='where_era'>\n";
+        echo "\t\t\t\t\t<option value='first'>En premier</option>\n";
         echo "\t\t\t\t</select>\n";
         echo "\t\t\t</div>\n";
         echo "\t\t\t<input type='hidden' name='MAX_FILE_SIZE' value='1048576' />";
-        echo "\t\t\t<input type='file' class='file' name='image' accept='image/*' required>";
+        echo "\t\t\t<input type='file' class='file' name='image' accept='image/*'>";
         echo "\t\t</div>";
 
         // Create period
