@@ -5,8 +5,10 @@ include($ROOT.'partial/header.php');
 echo "<section>";
 
 if (isset($_SESSION['pseudo'])) {
-    if (isset($_REQUEST['id_period']) && ($_REQUEST['id_period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        $era = strtolower($_REQUEST['era']);
+    if (isset($_REQUEST['period']) && ($_REQUEST['period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+        // todo: sanitize $_REQUEST
+        $era    = $_REQUEST['era'];
+        $period = $_REQUEST['period'];
 
         $isEvent = 0;
         if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") $isEvent = 1;
@@ -17,40 +19,42 @@ if (isset($_SESSION['pseudo'])) {
 
         if ($upload[0] === true) {
             $cover = str_replace("../assets/img/covers/", "", $upload[1]);
-            $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
-            $id    = ++$maxid['id'];
-            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, id_period, arc, cover, contenu, urban, dctrad, isEvent)
-                                VALUES(:id, :id_period, :arc, :cover, :contenu, :urban, :dctrad, :isEvent)");
+            $sql = "SELECT MAX(position) FROM arc WHERE id_period = '$period'";
+            $maxid = $bdd->query($sql)->fetch(PDO::FETCH_ASSOC);
+            $id    = ++$maxid['MAX(position)'];
+            $req   = $bdd->prepare("INSERT INTO arc(id_period, position, title, cover, content, link_a, link_b, is_event)
+                                VALUES(:id_period, :position, :title, :cover, :content, :link_a, :link_b, :is_event)");
             $req->execute(array(
-                'id'        => $id,
-                'id_period' => $_REQUEST['id_period'],
-                'arc'       => htmlentities($_REQUEST['titre_arc']),
+                'id_period' => $period,
+                'position'  => $id,
+                'title'     => htmlentities($_REQUEST['titre_arc']),
                 'cover'     => $cover,
-                'contenu'   => htmlentities($_REQUEST['contenu']),
-                'urban'     => $_REQUEST['urban'],
-                'dctrad'    => $_REQUEST['dctrad'],
-                'isEvent'   => $isEvent
+                'content'   => htmlentities($_REQUEST['contenu']),
+                'link_a'    => $_REQUEST['urban'],
+                'link_b'    => $_REQUEST['dctrad'],
+                'is_event'  => $isEvent
                 ));
             echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
 
-            if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
+            if (!empty($_REQUEST['id']) && ($_REQUEST['id'] != '0')) {
                 $newid = $_REQUEST['id'];
-                $bdd->query("UPDATE odldc_$era SET id=id + 1 WHERE id>=".$newid);
-                $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
-                $oldid = $maxid['id'];
-                $bdd->exec("UPDATE odldc_$era SET id = $newid WHERE id = $oldid");
-                $bdd->exec("ALTER TABLE odldc_$era ORDER BY id ASC");
+                $sql = "UPDATE arc SET position = position + 1 WHERE id_period = '$period' AND position >= $newid";
+                $bdd->query($sql);
+                $maxid = $bdd->query("SELECT MAX(position) FROM arc WHERE id_period = '$period'")->fetch(PDO::FETCH_COLUMN);
+                $oldid = $maxid;
+                $bdd->exec("UPDATE arc SET position = $newid WHERE position = $oldid");
                 echo " en position $newid";
             }
 
             // Changelog
-            (!isset($newid)) ? $pos = $id : $pos = $newid;
+            $pos = isset($newid) ? $id : $newid;
 
-            $query    = $bdd->query("SELECT name FROM period WHERE id_period = \"".$_REQUEST['id_period']."\"")->fetch(PDO::FETCH_ASSOC);
-            $period   = $query['name'];
+            $period_name = $bdd->query("SELECT name FROM period WHERE id_period = '$period'")->fetch(PDO::FETCH_COLUMN);
+            $era_name    = $bdd->query("SELECT name FROM era WHERE id_era = '$era'")->fetch(PDO::FETCH_COLUMN);
 
             $changelog = array(
-                'name_period' => $period,
+                'era_name'    => $era_name,
+                'period_name' => $period_name,
                 'position'    => $pos,
                 'title'       => htmlentities($_REQUEST['titre_arc']),
             );
@@ -60,7 +64,7 @@ if (isset($_SESSION['pseudo'])) {
             $query->execute(array(
                 'author'       => $_SESSION['pseudo'],
                 'cl_type'      => 'add',
-                'name_era'     => $_REQUEST["era"],
+                'name_era'     => $changelog['era_name'],
                 'name_period'  => $changelog['name_period'],
                 'old_position' => '',
                 'new_position' => $changelog['position'],
@@ -73,8 +77,8 @@ if (isset($_SESSION['pseudo'])) {
                 'isEvent'      => $isEvent
             ));
 
-            $count = $bdd->query("SELECT count(*) FROM changelog")->fetch(PDO::FETCH_ASSOC);
-            if ($count['count(*)'] > 100) {
+            $count = $bdd->query("SELECT count(*) FROM changelog")->fetch(PDO::FETCH_COLUMN);
+            if ($count > 100) {
                 $bdd->exec("DELETE FROM changelog ORDER BY id ASC LIMIT 1");
             }
 

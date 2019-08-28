@@ -33,21 +33,25 @@ if (isset($_REQUEST['era'])) {
 
 
     while ($line = $arcs_query->fetch(PDO::FETCH_ASSOC)) {
-        $arcs[$periods[$line['id_period']]][$line['position']] = [
-            "id"         => $line['position'],
-            "arc"        => $line['title'],
-            "cover"      => $line['cover'],
-            "contenu"    => $line['content'],
-            "urban"      => $line['link_a'],
-            "dctrad"     => $line['link_b'],
-            "isEvent"    => $line['is_event']
+        $arcs[$line['id_period']][$line['position']] = [
+            "id"        => $line['position'],
+            "arc"       => $line['title'],
+            "cover"     => $line['cover'],
+            "contenu"   => $line['content'],
+            "urban"     => $line['link_a'],
+            "dctrad"    => $line['link_b'],
+            "isEvent"   => $line['is_event']
         ];
     }
 
     if (!empty($arcs)) {
         echo "<section class='odl' id='{$era['clean_name']}_page'>";
 
-        foreach ($arcs as $period=>$ARlineID) {
+        foreach ($arcs as $id_period=>$ARlineID) {
+            $period = [
+                "id" => $id_period,
+                "name"=>$periods[$id_period]
+            ];
             displayPeriod($period, $ARlineID);
         }
 

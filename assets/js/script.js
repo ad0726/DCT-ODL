@@ -362,56 +362,6 @@ $(document).ready(function() {
     });
 
     /**
-     * Preview for 'add' form
-     */
-    var name = "";
-    $('input.input').keyup(function() {
-        name = $(this).attr('name');
-        if (name == "titre_arc") {
-            $('td.cel_title span h3').html($(this).val());
-        }
-    });
-    $('input.file').click(function() {
-        name = $(this).attr('name');
-        if (name == "titre_arc") {
-            $('td.cel_title span h3').html($(this).val());
-        }
-    });
-    $('textarea.content').keyup(function() {
-        name = $(this).attr('name');
-        if (name == "contenu") {
-            $('td.cel_content p').html(nl2br($(this).val()));
-        }
-    });
-    $('input#checkboxIsEvent').click(function() {
-        var isChecked = $(this).prop('checked');
-        if (isChecked === true) {
-            $('tr.line').addClass('isEvent');
-        } else {
-            $('tr.line').removeClass('isEvent');
-        }
-    });
-    $('input#CBisUrban').click(function() {
-        var isChecked = $(this).prop('checked');
-        if (isChecked === true) {
-            $('img#logoUrban').removeClass('logo_opacity');
-        } else {
-            $('img#logoUrban').addClass('logo_opacity');
-        }
-    });
-    $('input#CBisDCT').click(function() {
-        var isChecked = $(this).prop('checked');
-        if (isChecked === true) {
-            $('img#logoDCT').removeClass('logo_opacity');
-        } else {
-            $('img#logoDCT').addClass('logo_opacity');
-        }
-    });
-    $("input.file").change(function() {
-        readURL(this);
-    });
-
-    /**
      * Update-in-line
      */
     $('.update_tr').click(function() {
@@ -647,11 +597,8 @@ function resetInput(e) {
 }
 
 function getCovers(object, page) {
-    var sectionODL = $('section.odl').attr('id');
-    var tmp        = new RegExp(/([a-z]+)_page/, "i");
-    var era        = sectionODL.match(tmp)[1];
-    var period     = object.parents('div.period').find('div.content_period').attr('id');
-    var lines      = $('div#'+period+'.content_period').find('table.'+page+' tr');
+    var period     = object.parents('div.period').attr('id');
+    var lines      = $('div.period#'+period).find('table.'+page+' tr');
     var ids        = [];
 
     lines.each(function() {
@@ -662,7 +609,7 @@ function getCovers(object, page) {
         method: 'POST',
         url: '/ajax/get-covers.php',
         data: {
-            era: era,
+            period: period,
             ids: ids
         },
         success: function(ret) {
