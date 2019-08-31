@@ -20,11 +20,7 @@ if (isset($_SESSION['pseudo'])) {
 
         if ($upload[0] === true) {
             // Fetch all periods from era requested
-            $periods       = [];
-            $periods_query = $bdd->query("SELECT id_period, position FROM period WHERE id_era = '$era'");
-            while ($row = $periods_query->fetch(PDO::FETCH_ASSOC)) {
-                $periods[$row['position']] = $row['id_period'];
-            }
+            $periods        = fetchPeriods($era);
             $n              = count($periods);
             $id_last_period = $periods[$n];
             $req            = $bdd->prepare("INSERT INTO arc(id_period, position, title, cover, content, link_a, link_b, is_event)
@@ -68,32 +64,35 @@ if (isset($_SESSION['pseudo'])) {
             echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
 
             // Changelog
-            $period_name = $bdd->query("SELECT name FROM period WHERE id_period = '$period'")->fetch(PDO::FETCH_COLUMN);
-            $era_name    = $bdd->query("SELECT name FROM era WHERE id_era = '$era'")->fetch(PDO::FETCH_COLUMN);
+            $name_period   = $bdd->query("SELECT name FROM period WHERE id_period = '$period'")->fetch(PDO::FETCH_COLUMN);
+            $name_era      = $bdd->query("SELECT name FROM era WHERE id_era = '$era'")->fetch(PDO::FETCH_COLUMN);
+            $name_universe = $bdd->query("SELECT name FROM universe WHERE id_universe = (SELECT id_universe FROM era WHERE id_era = '$era')")->fetch(PDO::FETCH_COLUMN);
 
             $changelog = array(
-                'era_name'    => $era_name,
-                'period_name' => $period_name,
-                'position'    => $id,
-                'title'       => htmlentities($_REQUEST['titre_arc']),
+                'name_universe' => $name_universe,
+                'name_era'      => $name_era,
+                'name_period'   => $name_period,
+                'position'      => $id,
+                'title'         => htmlentities($_REQUEST['titre_arc']),
             );
 
-            $query = $bdd->prepare("INSERT INTO changelog(author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
-                                VALUES(:author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
+            $query = $bdd->prepare("INSERT INTO changelog(author, cl_type, name_universe, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+                                VALUES(:author, :cl_type, :name_universe, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
             $query->execute(array(
-                'author'       => $_SESSION['pseudo'],
-                'cl_type'      => 'add',
-                'name_era'     => $changelog['era_name'],
-                'name_period'  => $changelog['name_period'],
-                'old_position' => '',
-                'new_position' => $changelog['position'],
-                'title'        => $changelog['title'],
-                'new_title'    => '',
-                'cover'        => '',
-                'content'      => '',
-                'urban'        => '',
-                'dctrad'       => '',
-                'isEvent'      => $is_event
+                'author'        => $_SESSION['pseudo'],
+                'cl_type'       => 'add',
+                'name_universe' => $changelog['name_universe'],
+                'name_era'      => $changelog['name_era'],
+                'name_period'   => $changelog['name_period'],
+                'old_position'  => '',
+                'new_position'  => $changelog['position'],
+                'title'         => $changelog['title'],
+                'new_title'     => '',
+                'cover'         => '',
+                'content'       => '',
+                'urban'         => '',
+                'dctrad'        => '',
+                'isEvent'       => $is_event
             ));
 
             $count = $bdd->query("SELECT count(*) FROM changelog")->fetch(PDO::FETCH_COLUMN);
@@ -111,7 +110,13 @@ if (isset($_SESSION['pseudo'])) {
         }
     } else {
         $universes = [];
-        $universe_query = $bdd->query("SELECT * FROM {$table_prefix}universe");
+        $universe_query = $bdd->query("SELECT * FROM universe");
+
+        $current_universe = "";
+        if (!empty($_SESSION['last_era_visited'])) {
+            $current_era      = $_SESSION['last_era_visited'];
+            $current_universe = $bdd->query("SELECT id_universe FROM era WHERE id_era = '$current_era'")->fetch(PDO::FETCH_COLUMN);
+        }
 ?>
     <div class="form">
         <h2>Ajouter un arc</h2>
@@ -123,7 +128,11 @@ if (isset($_SESSION['pseudo'])) {
                         <option value="">Universe</option>
                         <?php
                         while ($universe = $universe_query->fetch(PDO::FETCH_ASSOC)) {
-                            echo "<option value=\"{$universe['id_universe']}\">{$universe['name']}</option>\n";
+                            $isSelected = "";
+                            if ($current_universe == $universe['id_universe']) {
+                                $isSelected = "selected";
+                            }
+                            echo "<option value=\"{$universe['id_universe']}\" $isSelected>{$universe['name']}</option>\n";
                         }
                         ?>
                     </select><br />

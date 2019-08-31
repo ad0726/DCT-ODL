@@ -406,18 +406,10 @@ $(document).ready(function() {
             var newId;
             var cover;
             var era;
-            var sectionODL;
-            var isResultPage;
-            var tmp;
+            var period;
 
-            tmp        = new RegExp(/([a-z]+)_page/, "i");
-            sectionODL = $('section.odl').attr('id');
-            if (sectionODL ===  undefined) {
-                isResultPage = true;
-                era          = $('section.results_page').attr('id');
-            } else {
-                era = sectionODL.match(tmp)[1];
-            }
+            era    = getUrlParameter('era');
+            period = $(this).parents('div.period').attr('id');
 
             $('#updateInLine div input').each(function() {
                 if ($(this).prop('name') == 'title')
@@ -439,13 +431,13 @@ $(document).ready(function() {
             }
 
             var requestData = {
-                formfilled   : 42,
-                id           : id,
+                id_arc       : id,
                 new_title    : newTitle,
                 new_content  : newContent,
                 new_urban    : newUrban,
                 new_dctrad   : newDctrad,
-                name_era     : era,
+                id_era       : era,
+                id_period    : period,
                 isEvent      : isEvent,
                 isEventReturn: isEventReturn,
                 new_id       : newId,
@@ -454,7 +446,7 @@ $(document).ready(function() {
 
             $.ajax({
                 method: "POST",
-                url   : "/admin/modify.php",
+                url   : "/ajax/modify.php",
                 data  : requestData,
                 success: function(data) {
                     if (newId !== undefined) id = newId;
@@ -464,7 +456,7 @@ $(document).ready(function() {
                         data  : {
                             formfilled: 42,
                             id        : id,
-                            name_era  : era,
+                            id_era    : era,
                         },
                         success: function(data) {
                             var tdName;
@@ -525,7 +517,7 @@ $(document).ready(function() {
                 fd.append('cover', cover);
 
                 $.ajax({
-                    url: '/admin/modify.php?id='+id+'&formfilled=42&name_era='+era,
+                    url: '/ajax/modify.php?id='+id+'&id_era='+era,
                     data: fd,
                     processData: false,
                     contentType: false,
@@ -537,7 +529,7 @@ $(document).ready(function() {
                             data  : {
                                 formfilled: 42,
                                 id        : id,
-                                name_era  : era,
+                                id_era  : era,
                             },
                             success: function(data) {
                                 var tdName;
@@ -632,15 +624,36 @@ function fillSelect(name_selected, name_select_to_add) {
 
     if ((universe_selected !== "") && (universe_selected !== undefined)) {
         $.ajax({
-            method: "GET",
-            url: "/ajax/fetch-section.php?type="+name_selected+"&id="+universe_selected,
+            method : "GET",
+            async  : false,
+            url    : "/ajax/fetch-section.php?type="+name_selected+"&id="+universe_selected,
             success: function(data) {
-                options = '<option value="" selected>'+name_select_to_add+'</option>\n';
+                options    = '<option value="" selected>'+name_select_to_add+'</option>\n';
+                n          = data.length;
+                isSelected = '';
                 $(data).each(function(i) {
-                    options += '<option value="'+data[i].id+'">'+data[i].name+'</option>\n';
+                    if (i == (n-1)) {
+                        isSelected = "selected";
+                    }
+                    options += '<option value="'+data[i].id+'" '+isSelected+'>'+data[i].name+'</option>\n';
                 })
                 $('select[name="'+name_select_to_add+'"]').html(options);
             },
         })
+    }
+}
+
+function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
     }
 }

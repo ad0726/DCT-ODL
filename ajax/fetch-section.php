@@ -12,10 +12,10 @@ if (isset($_REQUEST['type']) && isset($_REQUEST['id'])) {
 
     if ($type == "era") {
         $search = "period";
-        $table  = $table_prefix.$search;
+        $table  = $search;
     } else if ($type == "universe") {
         $search = "era";
-        $table = $table_prefix."era";
+        $table = $search;
     }
 
     $where  = "id_$type = '$id'";

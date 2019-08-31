@@ -3,12 +3,14 @@ $ROOT = './';
 include($ROOT.'partial/header.php');
 
 if (isset($_REQUEST['era'])) {
+    $_SESSION['last_era_visited'] = $_REQUEST['era'];
+
     $era_id            = $_REQUEST['era'];       // todo: sanitize
     $periods           = [];
     $arcs              = [];
     $where_clause_arcs = "";
 
-    $era           = $bdd->query("SELECT clean_name FROM era WHERE id_era = '$era_id'")->fetch(PDO::FETCH_ASSOC);
+    $era_name      = $bdd->query("SELECT clean_name FROM era WHERE id_era = '$era_id'")->fetch(PDO::FETCH_COLUMN);
     $periods_query = $bdd->query("SELECT name, id_period FROM period WHERE id_era = '$era_id'");
 
     while ($row = $periods_query->fetch(PDO::FETCH_ASSOC)) {
@@ -34,18 +36,19 @@ if (isset($_REQUEST['era'])) {
 
     while ($line = $arcs_query->fetch(PDO::FETCH_ASSOC)) {
         $arcs[$line['id_period']][$line['position']] = [
-            "id"        => $line['position'],
-            "arc"       => $line['title'],
-            "cover"     => $line['cover'],
-            "contenu"   => $line['content'],
-            "urban"     => $line['link_a'],
-            "dctrad"    => $line['link_b'],
-            "isEvent"   => $line['is_event']
+            "id_arc"  => $line['id_arc'],
+            "id"      => $line['position'],
+            "arc"     => $line['title'],
+            "cover"   => $line['cover'],
+            "contenu" => $line['content'],
+            "urban"   => $line['link_a'],
+            "dctrad"  => $line['link_b'],
+            "isEvent" => $line['is_event']
         ];
     }
 
     if (!empty($arcs)) {
-        echo "<section class='odl' id='{$era['clean_name']}_page'>";
+        echo "<section class='odl' id='{$era_name}_page'>";
 
         foreach ($arcs as $id_period=>$ARlineID) {
             $period = [

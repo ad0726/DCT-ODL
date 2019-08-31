@@ -121,7 +121,8 @@ function displayBTNpagination($i) {
  * @return display
  */
 function displayLine($ARinfo, $p = FALSE, $cover = "") {
-    $id           = $ARinfo['id'];
+    $position     = $ARinfo['id'];
+    $id           = $ARinfo['id_arc'];
     $era_current  = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     $classIsEvent = "";
 
@@ -130,7 +131,7 @@ function displayLine($ARinfo, $p = FALSE, $cover = "") {
     echo "
                     <table class='page_$p'>
                         <tr class='line $classIsEvent' id='".$id."'>
-                            <td class='cel_id'><span>".$id."</span></td>
+                            <td class='cel_id'><span>".$position."</span></td>
                             <td class='cel_img'><img src=\"$cover\" ></td>
                             <td class='cel_title'><h3>".$ARinfo['arc']."</h3></td>
                             <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
@@ -173,11 +174,11 @@ function displayChangelog($val) {
     ];
     if (isset($TranscoIsEvent[$val['isEvent']])) $isEvent = $TranscoIsEvent[$val['isEvent']];
     if ($val['cl_type'] == "add") {
-        $type = "ajouté à ".ucfirst($val['name_era'])." dans ".$val['name_period']." en position ".$val['new_position'].".";
+        $type = "ajouté à {$val['name_universe']} {$val['name_era']} dans ".$val['name_period']." en position ".$val['new_position'].".";
     } elseif ($val['cl_type'] == "modify") {
-        $type = "modifié dans ".ucfirst($val['name_era']).".";
+        $type = "modifié dans {$val['name_universe']} {$val['name_era']}.";
     } elseif ($val['cl_type'] == "delete") {
-        $type = "supprimé de ".ucfirst($val['name_era']).".";
+        $type = "supprimé de {$val['name_universe']} {$val['name_era']}.";
     }
     $date_time = explode(' ', $val['id']);
     $date      = explode('-', $date_time[0]);
@@ -437,4 +438,15 @@ function whichRole() {
     $fetch_acl = $bdd->query("SELECT acl FROM usr WHERE pseudo_clean = '$login'")->fetch(PDO::FETCH_ASSOC);
 
     return $fetch_acl['acl'];
+}
+
+function fetchPeriods($era_id)
+{
+    $periods       = [];
+    $periods_query = $bdd->query("SELECT id_period, position FROM period WHERE id_era = '$era_id'");
+    while ($row = $periods_query->fetch(PDO::FETCH_ASSOC)) {
+        $periods[$row['position']] = $row['id_period'];
+    }
+
+    return $periods;
 }

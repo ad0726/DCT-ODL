@@ -1,6 +1,9 @@
 $(document).ready(function() {
+    fillSelect("universe", "era");
+    fillSelect("era", "period");
     $('select[name="universe"]').click(function() {
         fillSelect("universe", "era")
+        fillSelect("era", "period")
     });
     $('select[name="era"]').click(function() {
         fillSelect("era", "period")
