@@ -14,7 +14,11 @@ echo "<style>
 echo "<section>";
 
 if (isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-    $redirect = $_SESSION['HTTP_REFERER'];
+    if (isset($_SESSION['HTTP_REFERER']) && !empty($_SESSION['HTTP_REFERER'])) {
+        $redirect = $_SESSION['HTTP_REFERER'];
+    } else {
+        $redirect = "/index.php";
+    }
     $login    = htmlentities(strtolower($_REQUEST['login']));
     $password = md5($_REQUEST['password']);
     // Check if the login is set in db

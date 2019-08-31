@@ -367,9 +367,10 @@ $(document).ready(function() {
     $('.update_tr').click(function() {
         var alreadyFormUpdate = $('tr#updateInLine');
         if (alreadyFormUpdate !== undefined) alreadyFormUpdate.remove();
-        var id      = $(this).attr('id').replace("line_", "");
-        var title   = $('tr#'+id+' .cel_title').text();
-        var content = $('tr#'+id+' .cel_content').text();
+        var id       = $(this).attr('id').replace("line_", "");
+        var position = $('tr#'+id+' .cel_id span').text();
+        var title    = $('tr#'+id+' .cel_title').text();
+        var content  = $('tr#'+id+' .cel_content').text();
 
         var dctrad = $('tr#'+id+' .cel_publi div').children('a.urlDctrad').prop('href');
         if (dctrad === undefined) dctrad = "";
@@ -386,6 +387,7 @@ $(document).ready(function() {
             data: {
                 formfilled: 42,
                 id        : id,
+                position  : position,
                 title     : title,
                 content   : content,
                 dctrad    : dctrad,
@@ -449,30 +451,27 @@ $(document).ready(function() {
                 url   : "/ajax/modify.php",
                 data  : requestData,
                 success: function(data) {
-                    if (newId !== undefined) id = newId;
                     $.ajax({
                         method: "POST",
                         url   : "/ajax/refresh-data.php",
                         data  : {
-                            formfilled: 42,
-                            id        : id,
-                            id_era    : era,
+                            id: id,
                         },
                         success: function(data) {
                             var tdName;
                             var tdPubli;
 
-                            if ((data.urban == false) && (data.dctrad == false)) {
+                            if ((data.link_a == false) && (data.link_b == false)) {
                                 tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
-                            } else if ((data.urban != false) && (data.dctrad == false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
-                            } else if ((data.urban == false) && (data.dctrad != false)) {
-                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
-                            } else if ((data.urban != false) && (data.dctrad != false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
+                            } else if ((data.link_a != false) && (data.link_b == false)) {
+                                tdPubli = '<a href="'+data.link_a+'"><img src="/assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
+                            } else if ((data.link_a == false) && (data.link_b != false)) {
+                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><a href="'+data.link_b+'"><img src="/assets/img/logo_dct_mini.png"></a>';
+                            } else if ((data.link_a != false) && (data.link_b != false)) {
+                                tdPubli = '<a href="'+data.link_a+'"><img src="/assets/img/logo_urban_mini.png"></a><a href="'+data.link_b+'"><img src="/assets/img/logo_dct_mini.png"></a>';
                             }
 
-                            if (data.isEvent == 0) {
+                            if (data.is_event == 0) {
                                 $('tr#'+id).attr('class', 'line');
                             } else {
                                 $('tr#'+id).attr('class', 'line isEvent');
@@ -481,9 +480,9 @@ $(document).ready(function() {
                             $('tr#'+id).children('td').each(function() {
                                 tdName = $(this).attr('class');
                                 if (tdName == "cel_title") {
-                                    $(this).html('<h3>'+data.arc+'</h3>');
+                                    $(this).html('<h3>'+data.title+'</h3>');
                                 } else if (tdName == "cel_content") {
-                                    $(this).html('<p>'+nl2br(data.contenu)+'</p>');
+                                    $(this).html('<p>'+nl2br(data.content)+'</p>');
                                 } else if (tdName == "cel_publi") {
                                     $(this).children('div').html(tdPubli);
                                 }
@@ -527,9 +526,7 @@ $(document).ready(function() {
                             method: "POST",
                             url   : "/ajax/refresh-data.php",
                             data  : {
-                                formfilled: 42,
-                                id        : id,
-                                id_era  : era,
+                                id: id,
                             },
                             success: function(data) {
                                 var tdName;

@@ -35,6 +35,7 @@ if (isset($_SESSION['pseudo'])) {
             }
 
             if ($period != $id_last_period) {
+                $where_clause = "";
                 $period_position = array_search($period, $periods);
                 $periods_to_move = array_slice($periods, ($period_position-1));
                 $n = count($periods_to_move);

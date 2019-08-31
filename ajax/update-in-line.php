@@ -11,9 +11,11 @@ if ($_REQUEST['formfilled'] == 42) {
     }
     echo '<tr id="updateInLine" class="line" style="display: none;">
         <td>
+            <input type="hidden" name="id_arc" value="'.$_REQUEST['id'].'">
+            <input type="hidden" name="position" value="'.$_REQUEST['position'].'">
             <div '.$display.'>
                 <label for="new_id">Position</label><br />
-                <input type="number" class="pos" min="0" name="new_id" value="'.$_REQUEST['id'].'">
+                <input type="number" class="pos" min="0" name="new_id" value="'.$_REQUEST['position'].'">
             </div>
             <div>
                 <label for="new_id">Cover</label><br />

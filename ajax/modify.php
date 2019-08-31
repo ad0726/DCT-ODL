@@ -3,13 +3,14 @@ $ROOT = "../";
 include($ROOT.'conf/conf.php');
 
 if (isset($_SESSION['pseudo'])) {
-    if (isset($_REQUEST['id']) && isset($_REQUEST['id_era']) && isset($_REQUEST['id_period'])) {
-        $era     = $_REQUEST['id_era'];
-        $period  = $_REQUEST['id_period'];
-        $id      = $_REQUEST['id_arc'];
-        $periods = fetchPeriods($era);
-        $n       = count($periods);
-        $i       = 0;
+    if (isset($_REQUEST['id_arc']) && isset($_REQUEST['id_era']) && isset($_REQUEST['id_period'])) {
+        $era          = $_REQUEST['id_era'];
+        $period       = $_REQUEST['id_period'];
+        $id           = $_REQUEST['id_arc'];
+        $where_clause = "";
+        $periods      = fetchPeriods($era);
+        $n            = count($periods);
+        $i            = 0;
         foreach ($periods as $period) {
             ++$i;
             $where_clause .= "id_period = '$period'";
@@ -27,23 +28,22 @@ if (isset($_SESSION['pseudo'])) {
         // Update event
         $bdd->exec("UPDATE arc SET is_event = '$isEvent' WHERE id_arc = $id");
 
-        echo "<div class='form'>";
-        if (!isset($_REQUEST['noCover']) && ($_FILES['cover']['error'] == 0))  {
+        $update_img = false;
+        if (!isset($_REQUEST['noCover']) && ($_FILES['cover']['error'] == 0)) {
             // Delete image if new image uploaded
             $old_cover = $bdd->query("SELECT cover FROM arc WHERE id_arc = $id")->fetch(PDO::FETCH_COLUMN);
             unlink("assets/img/covers/".$old_cover);
             // Upload new image
             $upload = uploadCover($_FILES['cover']);
-        }
-        // Update image
-        $update_img = false;
-        if (isset($upload) && ($upload[0] === true)) {
-            if (!empty($upload[1])) {
-                $bdd->exec("UPDATE arc SET cover = '{$upload[1]}' WHERE id_arc = $id");
-                $update_img = true;
+            // Update image
+            if ($upload[0] === true) {
+                if (!empty($upload[1])) {
+                    $bdd->exec("UPDATE arc SET cover = '{$upload[1]}' WHERE id_arc = $id");
+                    $update_img = true;
+                }
+            } else {
+                d($upload[1], false);
             }
-        } else {
-            d($upload[1], false);
         }
         // Update title
         $new_title = "";
@@ -112,7 +112,7 @@ if (isset($_SESSION['pseudo'])) {
         $changelog['title']['new']    = $new_title;
 
         $query = $bdd->prepare('INSERT INTO changelog(author, cl_type, name_universe, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
-                            VALUES(:author, :cl_type, :name_era, :name_universe, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
+                            VALUES(:author, :cl_type, :name_universe, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
         $query->execute([
         'author'        => $_SESSION['pseudo'],
         'cl_type'       => 'modify',
@@ -130,9 +130,9 @@ if (isset($_SESSION['pseudo'])) {
         'isEvent'       => $clIsEvent
         ]);
 
-        $count = $bdd->query('SELECT count(*) FROM changelog')->fetch(PDO::FETCH_ASSOC);
+        $count = $bdd->query('SELECT count(*) FROM changelog')->fetch(PDO::FETCH_COLUMN);
 
-        if ($count['count(*)'] > 100) {
+        if ($count > 100) {
             $bdd->exec('DELETE FROM changelog ORDER BY id ASC LIMIT 1');
         }
     }

@@ -442,6 +442,8 @@ function whichRole() {
 
 function fetchPeriods($era_id)
 {
+    global $bdd;
+
     $periods       = [];
     $periods_query = $bdd->query("SELECT id_period, position FROM period WHERE id_era = '$era_id'");
     while ($row = $periods_query->fetch(PDO::FETCH_ASSOC)) {
