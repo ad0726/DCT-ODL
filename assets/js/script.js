@@ -185,16 +185,11 @@ $(document).ready(function() {
     $('input.prompt').keyup(function() {
         var isODL = $('section').attr('class');
         var tmp   = "";
-        var era   = "";
-        if (isODL === "odl") {
-            tmp = new RegExp(/([a-z]+)_page/, "i");
-            era = $('section.odl').attr('id').match(tmp)[1];
+        var era   = getUrlParameter('era');
+        if ((isODL === "odl") && (era !== undefined)) {
             $('div.autocompletion').css('display', 'block');
-        } else {
-            era = $('section').attr('id');
-            if (era === undefined) {
-                era = "all";
-            }
+        } else if ((isODL !== "results_page") && (era === undefined)) {
+            era = "all";
         }
         var input = $('input.prompt').val();
         var td    = {

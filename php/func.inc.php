@@ -121,30 +121,30 @@ function displayBTNpagination($i) {
  * @return display
  */
 function displayLine($ARinfo, $p = FALSE, $cover = "") {
-    $position     = $ARinfo['id'];
+    $position     = $ARinfo['position'];
     $id           = $ARinfo['id_arc'];
     $era_current  = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     $classIsEvent = "";
 
     if ($era_current == "results") $era_current   = $_REQUEST['era'];
-    if ($ARinfo['isEvent'] == TRUE) $classIsEvent = "isEvent";
+    if ($ARinfo['is_event'] == TRUE) $classIsEvent = "isEvent";
     echo "
                     <table class='page_$p'>
                         <tr class='line $classIsEvent' id='".$id."'>
                             <td class='cel_id'><span>".$position."</span></td>
                             <td class='cel_img'><img src=\"$cover\" ></td>
-                            <td class='cel_title'><h3>".$ARinfo['arc']."</h3></td>
-                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
+                            <td class='cel_title'><h3>".$ARinfo['title']."</h3></td>
+                            <td class='cel_content'><p>".nl2br($ARinfo['content'])."</p></td>
                             <td class='cel_publi'>
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
-    if (!empty($ARinfo['urban'])) {
-        echo "<a class='urlUrban' href='".$ARinfo['urban']."' target='_blank'><img src='/assets/img/logo_urban_mini.png'></a>";
+    if (!empty($ARinfo['link_a'])) {
+        echo "<a class='urlUrban' href='".$ARinfo['link_a']."' target='_blank'><img src='/assets/img/logo_urban_mini.png'></a>";
     } else {
         echo "<img src='/assets/img/logo_urban_mini.png' class='logo_opacity'>";
     }
-    if (!empty($ARinfo['dctrad'])) {
-        echo "<a class='urlDctrad' href='".$ARinfo['dctrad']."' target='_blank'><img src='/assets/img/logo_dct_mini.png'></a>";
+    if (!empty($ARinfo['link_b'])) {
+        echo "<a class='urlDctrad' href='".$ARinfo['link_b']."' target='_blank'><img src='/assets/img/logo_dct_mini.png'></a>";
     } else {
         echo "<img src='/assets/img/logo_dct_mini.png' class='logo_opacity'>";
     }

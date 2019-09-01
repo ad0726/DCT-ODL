@@ -36,14 +36,14 @@ if (isset($_REQUEST['era'])) {
 
     while ($line = $arcs_query->fetch(PDO::FETCH_ASSOC)) {
         $arcs[$line['id_period']][$line['position']] = [
-            "id_arc"  => $line['id_arc'],
-            "id"      => $line['position'],
-            "arc"     => $line['title'],
-            "cover"   => $line['cover'],
-            "contenu" => $line['content'],
-            "urban"   => $line['link_a'],
-            "dctrad"  => $line['link_b'],
-            "isEvent" => $line['is_event']
+            "id_arc"   => $line['id_arc'],
+            "position" => $line['position'],
+            "title"    => $line['title'],
+            "cover"    => $line['cover'],
+            "content"  => $line['content'],
+            "link_a"   => $line['link_a'],
+            "link_b"   => $line['link_b'],
+            "is_event" => $line['is_event']
         ];
     }
 
