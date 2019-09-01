@@ -25,13 +25,13 @@ if (isset($_SESSION['pseudo'])) {
             $id_last_period = $periods[$n];
             $req            = $bdd->prepare("INSERT INTO arc(id_period, position, title, cover, content, link_a, link_b, is_event)
                                 VALUES(:id_period, :position, :title, :cover, :content, :link_a, :link_b, :is_event)");
-            $cover          = str_replace("../assets/img/covers/", "", $upload[1]);
+            $cover          = $upload[1];
             if (!empty($_REQUEST['id']) && ($_REQUEST['id'] != '0')) {
-                $sql            = "SELECT MAX(position) FROM arc WHERE id_period = '$period'";
-                $maxid          = $bdd->query($sql)->fetch(PDO::FETCH_COLUMN);
-                $id             = ++$maxid;
-            } else {
                 $id = $_REQUEST['id'];
+            } else {
+                $sql   = "SELECT MAX(position) FROM arc WHERE id_period = '$period'";
+                $maxid = $bdd->query($sql)->fetch(PDO::FETCH_COLUMN);
+                $id    = ++$maxid;
             }
 
             if ($period != $id_last_period) {

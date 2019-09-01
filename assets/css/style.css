@@ -524,7 +524,8 @@ footer p {
   margin: 0;
 }
 
-.cl_line .cl_date {
+.cl_line .cl_date,
+.cl_line .cl_position {
   font-size: 10px;
   min-height: 50px;
   max-height: 100%;
@@ -534,6 +535,11 @@ footer p {
   justify-content: center;
   width: 5%;
   padding-right: 2px;
+  text-align: center;
+}
+
+.cl_line .cl_position {
+  width: 3%;
 }
 
 .cl_line .cl_content {

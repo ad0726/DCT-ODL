@@ -174,10 +174,13 @@ function displayChangelog($val) {
     ];
     if (isset($TranscoIsEvent[$val['isEvent']])) $isEvent = $TranscoIsEvent[$val['isEvent']];
     if ($val['cl_type'] == "add") {
-        $type = "ajouté à {$val['name_universe']} {$val['name_era']} dans ".$val['name_period']." en position ".$val['new_position'].".";
+        $position = $val['new_position'];
+        $type = "ajouté à {$val['name_universe']} {$val['name_era']} dans ".$val['name_period'].".";
     } elseif ($val['cl_type'] == "modify") {
+        $position = $val['old_position'];
         $type = "modifié dans {$val['name_universe']} {$val['name_era']}.";
     } elseif ($val['cl_type'] == "delete") {
+        $position = $val['old_position'];
         $type = "supprimé de {$val['name_universe']} {$val['name_era']}.";
     }
     $date_time = explode(' ', $val['id']);
@@ -188,8 +191,11 @@ function displayChangelog($val) {
     <div class='cl_date'>
         <p>Le $date à $time</p>
     </div>
+    <div class='cl_position'>
+        <p>Arc<br>n°$position</p>
+    </div>
     <div class='cl_content'>
-    <p><strong>".ucfirst($val['title'])."</strong> a été $type";
+    <p><strong>".$val['title']."</strong> a été $type";
     if ($val['cl_type'] == "modify") {
         echo "<ul class='cl_list'>";
         if (!empty($val['new_title']) && ($val['new_title'] != $val['title'])) {
@@ -249,8 +255,13 @@ function d($msg, $die=TRUE, $pre='<pre>'){
  *
  * @return void : if return TRUE, return root of cover (string). Else return error.
  */
-function uploadCover($file, $width=150, $path="../assets/img/covers/") {
-    // global $name_ext;
+function uploadCover($file, $width=150, $path="") {
+    global $ROOT;
+
+    if (empty($path)) {
+        $path = $ROOT."assets/img/covers/";
+    }
+
     $error = FALSE;
 // VERIF UPLOAD
     if ($file['error'] > 0) $error[1] = "Pas de cover transférée.\n";
@@ -259,7 +270,7 @@ function uploadCover($file, $width=150, $path="../assets/img/covers/") {
     if ($file['size'] > $maxsize) $error[2] = "Le fichier est trop gros.\n";
 // VERIF EXTENSION
     $img_ext_ok = array( 'jpg' , 'jpeg' , 'png' );
-    $ext_upload = strtolower(  substr(  strrchr($file['name'], '.')  ,1)  );
+    $ext_upload = strtolower(  substr(  strrchr($file['type'], '/')  ,1)  );
     if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.\n";
 // AFFICHAGE DE L'ERREUR OU ENVOI
     if (!empty($error)) {
@@ -267,15 +278,14 @@ function uploadCover($file, $width=150, $path="../assets/img/covers/") {
     } else {
 // SAUVEGARDE DE L'IMAGE SUR LE FTP
         $image      = ResizeCover($file['tmp_name'], "W", $width);
-        $name       = md5(uniqid(rand(), true));
-        $ext_upload = strtolower(  substr(  strrchr($file['name'], '.')  ,1)  );
-        $name_ext   = "{$path}{$name}.jpg";
+        $name       = md5(uniqid(rand(), true)).".jpg";
+        $name_ext   = $path.$name;
         $resultat   = imagejpeg($image, $name_ext, 70);
         if (!$resultat) {
             return [FALSE, "Transfert échoué.\n"];
         } else {
             imagedestroy($image);
-            return [TRUE, $name_ext];
+            return [TRUE, $name];
         }
     }
 }
@@ -375,15 +385,15 @@ function createSection($section) {
         $where_insert               = $_REQUEST["where_$section"];
         if (!empty($_REQUEST['referer']['eraToUniverse'])) {
             $referer                = $_REQUEST['referer']['eraToUniverse'];
-            $where_condition        = "id_universe = '$referer'";
+            $where_clause        = "id_universe = '$referer'";
             $execute['id_universe'] = $referer;
         } else {
             $referer_era            = $_REQUEST['referer']['periodToEra'];
-            $where_condition        = "id_era = '$referer_era'";
+            $where_clause        = "id_era = '$referer_era'";
             $execute['id_era']      = $referer_era;
         }
 
-        $sql    = "SELECT MAX(position) FROM (SELECT position FROM $section WHERE $where_condition) AS $section";
+        $sql    = "SELECT MAX(position) FROM (SELECT position FROM $section WHERE $where_clause) AS $section";
         $return = $bdd->query($sql)->fetch(PDO::FETCH_ASSOC);
         if ($max_position = $return['MAX(position)']) {
             $query        = $bdd->query("SELECT id_$section FROM $section WHERE position = $max_position")->fetch(PDO::FETCH_ASSOC);
@@ -434,10 +444,14 @@ function createSection($section) {
 function whichRole() {
     global $bdd;
 
-    $login     = strtolower($_SESSION['pseudo']);
-    $fetch_acl = $bdd->query("SELECT acl FROM usr WHERE pseudo_clean = '$login'")->fetch(PDO::FETCH_ASSOC);
+    if (isset($_SESSION['pseudo'])) {
+        $login     = strtolower($_SESSION['pseudo']);
+        $fetch_acl = $bdd->query("SELECT acl FROM usr WHERE pseudo_clean = '$login'")->fetch(PDO::FETCH_ASSOC);
 
-    return $fetch_acl['acl'];
+        return $fetch_acl['acl'];
+    } else {
+        return false;
+    }
 }
 
 function fetchPeriods($era_id)

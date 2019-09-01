@@ -146,27 +146,29 @@ $(document).ready(function() {
      * Trash button
      */
     $('.btn_trash').click(function() {
-        var id         = $(this).parents('tr').attr('id');
-        var sectionODL = $('section.odl').attr('id');
-        var isResultPage;
-        var era;
-        if (sectionODL ===  undefined) {
-            isResultPage = true;
-            era          = $('section.results_page').attr('id');
-        } else {
-            var tmp = new RegExp(/([a-z]+)_page/, "i");
-                era = sectionODL.match(tmp)[1];
-        }
-        var answer = confirm('Voulez-vous vraiment supprimer la ligne '+id+' ?');
+        var id       = $(this).parents('tr').attr('id');
+        var position = $('tr#'+id+' .cel_id span').text();
+        var era      = getUrlParameter('era');
+        // var sectionODL = $('section.odl').attr('id');
+        // var isResultPage;
+
+        // if (sectionODL ===  undefined) {
+        //     isResultPage = true;
+        //     era          = $('section.results_page').attr('id');
+        // } else {
+        //     var tmp = new RegExp(/([a-z]+)_page/, "i");
+        //         era = sectionODL.match(tmp)[1];
+        // }
+        var answer = confirm("Voulez-vous vraiment supprimer l'arc "+position+" ?");
         if (answer === true) {
             $.ajax({
                 method: "GET",
                 url   : '/ajax/delete.php?rm='+id+'&from='+era,
-                success: function(code) {
-                    if (code == "200") {
+                statusCode: {
+                    200: function() {
                         $('tr#'+id).parent('tbody').parent('table').remove();
-                        if (isResultPage !== true)
-                            location.reload();
+                        // if (isResultPage !== true)
+                        //     location.reload();
                     }
                 }
             })
@@ -516,7 +518,7 @@ $(document).ready(function() {
                 fd.append('cover', cover);
 
                 $.ajax({
-                    url: '/ajax/modify.php?id='+id+'&id_era='+era,
+                    url: '/ajax/modify.php?id_arc='+id+'&id_era='+era+'&id_period='+period,
                     data: fd,
                     processData: false,
                     contentType: false,

@@ -2,15 +2,14 @@
 $ROOT = "../";
 include($ROOT.'conf/conf.php');
 
-if (isset($_GET['rm'])) {
+if (isset($_GET['rm']) && isset($_GET['from'])) {
     // Infos
     $id          = $_GET['rm'];
     $id_era      = $_GET['from'];
-    $query       = $bdd->query("SELECT name, id_universe FROM era WHERE id_era = '$era'")->fetch(PDO::FETCH_ASSOC);
+    $query       = $bdd->query("SELECT name, id_universe FROM era WHERE id_era = '$id_era'")->fetch(PDO::FETCH_ASSOC);
     $id_universe = $query['id_universe'];
     $era         = $query['name'];
-    $query       = $bdd->query("SELECT name FROM universe WHERE id_universe = '$id_universe'")->fetch(PDO::FETCH_COLUMN);
-    $universe    = $query['name'];
+    $universe    = $bdd->query("SELECT name FROM universe WHERE id_universe = '$id_universe'")->fetch(PDO::FETCH_COLUMN);
 
     $where_clause = "";
     $periods      = fetchPeriods($id_era);
@@ -24,7 +23,7 @@ if (isset($_GET['rm'])) {
         }
     }
 
-    $maxID       = $bdd->query("SELECT MAX(id) FROM arc")->fetch(PDO::FETCH_COLUMN);
+    $maxID       = $bdd->query("SELECT MAX(position) FROM arc WHERE $where_clause")->fetch(PDO::FETCH_COLUMN);
     $lineDeleted = $bdd->query("SELECT * FROM arc WHERE id_arc = $id")->fetch(PDO::FETCH_ASSOC);
     $period      = $bdd->query('SELECT name FROM period WHERE id_period = "'.$lineDeleted['id_period'].'"')->fetch(PDO::FETCH_COLUMN);
 
@@ -33,7 +32,7 @@ if (isset($_GET['rm'])) {
     $bdd->exec("DELETE FROM arc WHERE id_arc = $id");
     $bdd->exec("UPDATE arc SET position = position - 1 WHERE $where_clause AND position BETWEEN ".($position+1)." AND $maxID");
 
-    unlink("assets/img/covers/".$lineDeleted['cover']);
+    unlink($ROOT."assets/img/covers/".$lineDeleted['cover']);
 
     // Changelog
     $changelog = array(

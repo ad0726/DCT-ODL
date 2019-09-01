@@ -32,7 +32,7 @@ if (isset($_SESSION['pseudo'])) {
         if (!isset($_REQUEST['noCover']) && ($_FILES['cover']['error'] == 0)) {
             // Delete image if new image uploaded
             $old_cover = $bdd->query("SELECT cover FROM arc WHERE id_arc = $id")->fetch(PDO::FETCH_COLUMN);
-            unlink("assets/img/covers/".$old_cover);
+            unlink($ROOT."assets/img/covers/".$old_cover);
             // Upload new image
             $upload = uploadCover($_FILES['cover']);
             // Update image
@@ -60,14 +60,14 @@ if (isset($_SESSION['pseudo'])) {
         }
         // Update Urban's link
         $update_urban = false;
-        if (isset($_REQUEST['new_urban']) && ($_REQUEST['new_urban'] != $info['urban'])) {
+        if (isset($_REQUEST['new_urban']) && ($_REQUEST['new_urban'] != $info['link_a'])) {
             $link_a = $_REQUEST['new_urban'];
             $bdd->exec("UPDATE arc SET link_a = '$link_a' WHERE id_arc = $id");
             $update_urban = true;
         }
         // Update DCTrad's link
         $update_dct = false;
-        if (isset($_REQUEST['new_dctrad']) && ($_REQUEST['new_dctrad'] != $info['dctrad'])) {
+        if (isset($_REQUEST['new_dctrad']) && ($_REQUEST['new_dctrad'] != $info['link_b'])) {
             $link_b = $_REQUEST['new_dctrad'];
             $bdd->exec("UPDATE arc SET link_b = '$link_b' WHERE id_arc = $id");
             $update_dct = true;
