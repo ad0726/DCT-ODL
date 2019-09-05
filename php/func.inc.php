@@ -54,11 +54,11 @@ function logout() {
  * @return display
  */
 function displayPeriod($period, $ARlineID) {
-    $period_format = strtolower(str_replace(" ", "_", $period));
+    $period_format = strtolower(str_replace(" ", "_", $period['name']));
     $arc_count = count($ARlineID);
     echo "
-            <div class='period'>
-                <h2 class='title_period btn_$period_format'>".$period."</h2>
+            <div class='period' id='{$period['id']}'>
+                <h2 class='title_period btn_$period_format'>{$period['name']}</h2>
                 <span class='arc_count'>$arc_count arcs</span>
                 <div class='content_period' id='$period_format'>";
                 $i = 1;
@@ -121,29 +121,30 @@ function displayBTNpagination($i) {
  * @return display
  */
 function displayLine($ARinfo, $p = FALSE, $cover = "") {
-    $id           = $ARinfo['id'];
+    $position     = $ARinfo['position'];
+    $id           = $ARinfo['id_arc'];
     $era_current  = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     $classIsEvent = "";
 
     if ($era_current == "results") $era_current   = $_REQUEST['era'];
-    if ($ARinfo['isEvent'] == TRUE) $classIsEvent = "isEvent";
+    if ($ARinfo['is_event'] == TRUE) $classIsEvent = "isEvent";
     echo "
                     <table class='page_$p'>
                         <tr class='line $classIsEvent' id='".$id."'>
-                            <td class='cel_id'><span>".$id."</span></td>
+                            <td class='cel_id'><span>".$position."</span></td>
                             <td class='cel_img'><img src=\"$cover\" ></td>
-                            <td class='cel_title'><h3>".$ARinfo['arc']."</h3></td>
-                            <td class='cel_content'><p>".nl2br($ARinfo['contenu'])."</p></td>
+                            <td class='cel_title'><h3>".$ARinfo['title']."</h3></td>
+                            <td class='cel_content'><p>".nl2br($ARinfo['content'])."</p></td>
                             <td class='cel_publi'>
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
-    if (!empty($ARinfo['urban'])) {
-        echo "<a class='urlUrban' href='".$ARinfo['urban']."' target='_blank'><img src='/assets/img/logo_urban_mini.png'></a>";
+    if (!empty($ARinfo['link_a'])) {
+        echo "<a class='urlUrban' href='".$ARinfo['link_a']."' target='_blank'><img src='/assets/img/logo_urban_mini.png'></a>";
     } else {
         echo "<img src='/assets/img/logo_urban_mini.png' class='logo_opacity'>";
     }
-    if (!empty($ARinfo['dctrad'])) {
-        echo "<a class='urlDctrad' href='".$ARinfo['dctrad']."' target='_blank'><img src='/assets/img/logo_dct_mini.png'></a>";
+    if (!empty($ARinfo['link_b'])) {
+        echo "<a class='urlDctrad' href='".$ARinfo['link_b']."' target='_blank'><img src='/assets/img/logo_dct_mini.png'></a>";
     } else {
         echo "<img src='/assets/img/logo_dct_mini.png' class='logo_opacity'>";
     }
@@ -160,10 +161,6 @@ function displayLine($ARinfo, $p = FALSE, $cover = "") {
                     </table>";
 }
 
-// <a href='modify.php?era=$era_current&period=$period_format&id=$id' title='Modifier'>
-// <button type='button' id='line_$id' class='btn_head update_tr'><i class='fas fa-pen-fancy'></i></button>
-// </a>
-
 /**
  * Display changelog page
  *
@@ -177,22 +174,28 @@ function displayChangelog($val) {
     ];
     if (isset($TranscoIsEvent[$val['isEvent']])) $isEvent = $TranscoIsEvent[$val['isEvent']];
     if ($val['cl_type'] == "add") {
-        $type = "ajouté à ".ucfirst($val['name_era'])." dans ".$val['name_period']." en position ".$val['new_position'].".";
+        $position = $val['new_position'];
+        $type = "ajouté à {$val['name_universe']} {$val['name_era']} dans ".$val['name_period'].".";
     } elseif ($val['cl_type'] == "modify") {
-        $type = "modifié dans ".ucfirst($val['name_era']).".";
+        $position = $val['old_position'];
+        $type = "modifié dans {$val['name_universe']} {$val['name_era']}.";
     } elseif ($val['cl_type'] == "delete") {
-        $type = "supprimé de ".ucfirst($val['name_era']).".";
+        $position = $val['old_position'];
+        $type = "supprimé de {$val['name_universe']} {$val['name_era']}.";
     }
-    $date_time = explode('_', $val['id']);
-    $date = explode('-', $date_time[0]);
-    $date = implode('/', array_reverse($date));
-    $time = $date_time[1];
+    $date_time = explode(' ', $val['id']);
+    $date      = explode('-', $date_time[0]);
+    $date      = implode('/', array_reverse($date));
+    $time      = $date_time[1];
     echo "<div class='cl_line'>
     <div class='cl_date'>
         <p>Le $date à $time</p>
     </div>
+    <div class='cl_position'>
+        <p>Arc<br>n°$position</p>
+    </div>
     <div class='cl_content'>
-    <p><strong>".ucfirst($val['title'])."</strong> a été $type";
+    <p><strong>".$val['title']."</strong> a été $type";
     if ($val['cl_type'] == "modify") {
         echo "<ul class='cl_list'>";
         if (!empty($val['new_title']) && ($val['new_title'] != $val['title'])) {
@@ -252,33 +255,37 @@ function d($msg, $die=TRUE, $pre='<pre>'){
  *
  * @return void : if return TRUE, return root of cover (string). Else return error.
  */
-function uploadCover() {
-    // global $name_ext;
+function uploadCover($file, $width=150, $path="") {
+    global $ROOT;
+
+    if (empty($path)) {
+        $path = $ROOT."assets/img/covers/";
+    }
+
     $error = FALSE;
 // VERIF UPLOAD
-    if ($_FILES['cover']['error'] > 0) $error[1] = "Pas de cover transférée.\n";
+    if ($file['error'] > 0) $error[1] = "Pas de cover transférée.\n";
 // VERIF WEIGHT
     $maxsize = 1048576;
-    if ($_FILES['cover']['size'] > $maxsize) $error[2] = "Le fichier est trop gros.\n";
+    if ($file['size'] > $maxsize) $error[2] = "Le fichier est trop gros.\n";
 // VERIF EXTENSION
     $img_ext_ok = array( 'jpg' , 'jpeg' , 'png' );
-    $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
+    $ext_upload = strtolower(  substr(  strrchr($file['type'], '/')  ,1)  );
     if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.\n";
 // AFFICHAGE DE L'ERREUR OU ENVOI
     if (!empty($error)) {
         return (isset($error[1])) ? [FALSE, $error[1]] : [FALSE, @$error];
     } else {
 // SAUVEGARDE DE L'IMAGE SUR LE FTP
-        $image      = ResizeCover($_FILES['cover']['tmp_name'], "W", 150);
-        $name       = md5(uniqid(rand(), true));
-        $ext_upload = strtolower(  substr(  strrchr($_FILES['cover']['name'], '.')  ,1)  );
-        $name_ext   = "../assets/img/covers/{$name}.{$ext_upload}";
+        $image      = ResizeCover($file['tmp_name'], "W", $width);
+        $name       = md5(uniqid(rand(), true)).".jpg";
+        $name_ext   = $path.$name;
         $resultat   = imagejpeg($image, $name_ext, 70);
         if (!$resultat) {
             return [FALSE, "Transfert échoué.\n"];
         } else {
             imagedestroy($image);
-            return [TRUE, $name_ext];
+            return [TRUE, $name];
         }
     }
 }
@@ -325,75 +332,108 @@ function ResizeCover($source, $type_value = "W", $new_value) {
 
 function createSection($section) {
     global $bdd;
-    $name      = htmlentities($_REQUEST["name_$section"]);
-    $nameClean = strtolower(str_replace(" ", "_", htmlentities($_REQUEST["name_$section"])));
-    $maxID     = $bdd->query("SELECT MAX(id) FROM odldc_$section")->fetch(PDO::FETCH_ASSOC);
-    $maxID     = $maxID['MAX(id)'];
+    global $ROOT;
 
-    if ($section == "era") {
-        $cols    = "id, name, clean_name, id_era";
-        $values  = ":id, :name, :clean_name, :id_era";
+    $image  = "";
+    if ($_FILES['image']['error'] == 0) {
+        $path   = "../assets/img/sections/";
+        $upload = uploadCover($_FILES['image'], 950, $path);
+        if ($upload[0] === TRUE) {
+            $image = str_replace($path, "", $upload[1]);
+        } else {
+            d("Une erreur s'est produite lors de l'upload.");
+        }
+    }
+
+    $name         = $_REQUEST["name_$section"];
+    $name_clean    = strtolower(str_replace(" ", "_", $name));
+    $max_position = 0;
+    $last_insert  = false;
+
+    if ($section == "universe") {
+        $cols    = "id_universe, name, clean_name";
+        $values  = ":id_universe, :name, :clean_name";
         $execute = [
-            'id'         => 1,
-            'name'       => $name,
-            'clean_name' => $nameClean,
-            'id_era'     => uniqid(),
+            'id_universe' => uniqid(),
+            'name'        => $name,
+            'clean_name'  => $name_clean,
+        ];
+    } elseif ($section == "era") {
+        $cols    = "id_era, id_universe, position, name, clean_name, image";
+        $values  = ":id_era, :id_universe, :position, :name, :clean_name, :image";
+        $execute = [
+            'id_era'      => uniqid(),
+            'id_universe' => null,
+            'position'    => 1,
+            'name'        => $name,
+            'clean_name'  => $name_clean,
+            'image'       => $image
         ];
     } else {
-        $cols    = "id, name, clean_name, id_era, id_period";
-        $values  = ":id, :name, :clean_name, :id_era, :id_period";
-        $nameEra = $_REQUEST['periodToEra'];
-        $query   = $bdd->query("SELECT id_era FROM odldc_era WHERE clean_name = '$nameEra'")->fetch(PDO::FETCH_ASSOC);
-        $eraID   = $query['id_era'];
+        $cols    = "id_era, id_period, position, name, clean_name";
+        $values  = ":id_era, :id_period, :position, :name, :clean_name";
         $execute = [
-            'id'         => 1,
-            'name'       => $name,
-            'clean_name' => $nameClean,
-            'id_era'     => $eraID,
-            'id_period'  => uniqid()
+            'id_period'   => uniqid(),
+            'id_era'      => null,
+            'position'    => 1,
+            'name'        => $name,
+            'clean_name'  => $name_clean,
         ];
     }
 
-    if ($_REQUEST["where_$section"] == "first") {
-        // Insert into first place
-        $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN 1 AND $maxID");
+    if (in_array($section, ['era', 'period'])) {
+        $where_insert               = $_REQUEST["where_$section"];
+        if (!empty($_REQUEST['referer']['eraToUniverse'])) {
+            $referer                = $_REQUEST['referer']['eraToUniverse'];
+            $where_clause        = "id_universe = '$referer'";
+            $execute['id_universe'] = $referer;
+        } else {
+            $referer_era            = $_REQUEST['referer']['periodToEra'];
+            $where_clause        = "id_era = '$referer_era'";
+            $execute['id_era']      = $referer_era;
+        }
 
-        $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+        $sql    = "SELECT MAX(position) FROM (SELECT position FROM $section WHERE $where_clause) AS $section";
+        $return = $bdd->query($sql)->fetch(PDO::FETCH_ASSOC);
+        if ($max_position = $return['MAX(position)']) {
+            $query        = $bdd->query("SELECT id_$section FROM $section WHERE position = $max_position")->fetch(PDO::FETCH_ASSOC);
+            $last_insert  = $query["id_$section"];
+        }
+
+        if (!$last_insert) {
+            // Insert in last position
+            if ($where_insert == $last_insert) {
+                $execute['position'] = ++$max_position;
+            }
+            $query    = $bdd->prepare("INSERT INTO $section($cols)
             VALUES($values)");
 
-        $query->execute($execute);
-
-    } else {
-        $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
-        $query    = $bdd->query("SELECT clean_name FROM odldc_$section WHERE id = $maxID")->fetch(PDO::FETCH_ASSOC);
-        $lastEra  = $query['clean_name'];
-
-        if ($whereEra == $lastEra) {
-            // Insert into last place
-            $id = ++$maxID;
-
-            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
-            VALUES($values)");
-
-            $execute['id'] = $id;
             $query->execute($execute);
 
         } else {
-            // Other insert
-            $whereEra = str_replace("after_", "", $_REQUEST["where_$section"]);
-            $query    = $bdd->query("SELECT id FROM odldc_$section WHERE clean_name = '$whereEra'")->fetch(PDO::FETCH_ASSOC);
-            $id       = ++$query['id'];
+            // Insert in first position or after $where_insert
+            $position = 1;
+            if ($where_insert != "first") {
+                $query    = $bdd->query("SELECT position FROM $section WHERE id_$section = '$where_insert'")->fetch(PDO::FETCH_ASSOC);
+                $position = ++$query['position'];
+            }
 
-            $bdd->exec("UPDATE odldc_$section SET id = id + 1 WHERE id BETWEEN $id AND $maxID");
+            $bdd->exec("UPDATE $section SET position = position + 1 WHERE position BETWEEN $position AND $max_position");
 
-            $query = $bdd->prepare("INSERT INTO odldc_$section($cols)
+            $query = $bdd->prepare("INSERT INTO $section($cols)
             VALUES($values)");
 
-            $execute['id'] = $id;
+            $execute['position'] = $position;
             $query->execute($execute);
-            $bdd->exec("ALTER TABLE odldc_$section ORDER BY id ASC");
-
         }
+
+    } elseif ($section == "universe") {
+        $query = $bdd->prepare("INSERT INTO $section($cols)
+        VALUES($values)");
+        $query->execute($execute);
+        // todo: handle error
+    } else {
+        die("Error");
     }
     echo "$name a bien été créé.";
     echo "<a href='/admin/create-section.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
@@ -404,9 +444,25 @@ function createSection($section) {
 function whichRole() {
     global $bdd;
 
-    $login    = strtolower($_SESSION['pseudo']);
-    $fetchACL = $bdd->query('SELECT user_acl FROM odldc_users WHERE user_name_clean = \''.$login.'\'')->fetch(PDO::FETCH_ASSOC);
+    if (isset($_SESSION['pseudo'])) {
+        $login     = strtolower($_SESSION['pseudo']);
+        $fetch_acl = $bdd->query("SELECT acl FROM usr WHERE pseudo_clean = '$login'")->fetch(PDO::FETCH_ASSOC);
 
-    return $fetchACL['user_acl'];
+        return $fetch_acl['acl'];
+    } else {
+        return false;
+    }
 }
-?>
+
+function fetchPeriods($era_id)
+{
+    global $bdd;
+
+    $periods       = [];
+    $periods_query = $bdd->query("SELECT id_period, position FROM period WHERE id_era = '$era_id'");
+    while ($row = $periods_query->fetch(PDO::FETCH_ASSOC)) {
+        $periods[$row['position']] = $row['id_period'];
+    }
+
+    return $periods;
+}

@@ -12,6 +12,14 @@ $(document).ready(function() {
         border: 'none'
     };
 
+
+    $('.title_universe').click(function() {
+        var classThis   = $(this).attr('class');
+        var tmp         = new RegExp(/btn_([a-z1-9]+)/, "i");
+        var id_universe = classThis.match(tmp)[1];
+        $('#'+id_universe).toggle();
+    })
+
     /**
      * Toggle content_period
      */
@@ -138,27 +146,29 @@ $(document).ready(function() {
      * Trash button
      */
     $('.btn_trash').click(function() {
-        var id         = $(this).parents('tr').attr('id');
-        var sectionODL = $('section.odl').attr('id');
-        var isResultPage;
-        var era;
-        if (sectionODL ===  undefined) {
-            isResultPage = true;
-            era          = $('section.results_page').attr('id');
-        } else {
-            var tmp = new RegExp(/([a-z]+)_page/, "i");
-                era = sectionODL.match(tmp)[1];
-        }
-        var answer = confirm('Voulez-vous vraiment supprimer la ligne '+id+' ?');
+        var id       = $(this).parents('tr').attr('id');
+        var position = $('tr#'+id+' .cel_id span').text();
+        var era      = getUrlParameter('era');
+        // var sectionODL = $('section.odl').attr('id');
+        // var isResultPage;
+
+        // if (sectionODL ===  undefined) {
+        //     isResultPage = true;
+        //     era          = $('section.results_page').attr('id');
+        // } else {
+        //     var tmp = new RegExp(/([a-z]+)_page/, "i");
+        //         era = sectionODL.match(tmp)[1];
+        // }
+        var answer = confirm("Voulez-vous vraiment supprimer l'arc "+position+" ?");
         if (answer === true) {
             $.ajax({
                 method: "GET",
                 url   : '/ajax/delete.php?rm='+id+'&from='+era,
-                success: function(code) {
-                    if (code == "200") {
+                statusCode: {
+                    200: function() {
                         $('tr#'+id).parent('tbody').parent('table').remove();
-                        if (isResultPage !== true)
-                            location.reload();
+                        // if (isResultPage !== true)
+                        //     location.reload();
                     }
                 }
             })
@@ -175,16 +185,11 @@ $(document).ready(function() {
     $('input.prompt').keyup(function() {
         var isODL = $('section').attr('class');
         var tmp   = "";
-        var era   = "";
-        if (isODL === "odl") {
-            tmp = new RegExp(/([a-z]+)_page/, "i");
-            era = $('section.odl').attr('id').match(tmp)[1];
+        var era   = getUrlParameter('era');
+        if ((isODL === "odl") && (era !== undefined)) {
             $('div.autocompletion').css('display', 'block');
-        } else {
-            era = $('section').attr('id');
-            if (era === undefined) {
-                era = "all";
-            }
+        } else if ((isODL !== "results_page") && (era === undefined)) {
+            era = "all";
         }
         var input = $('input.prompt').val();
         var td    = {
@@ -236,7 +241,8 @@ $(document).ready(function() {
             $('#LinkUrban').attr('value', "");
             $('#LinkUrban').prop('required', false);
         }
-    })
+    });
+
     $('#CBisDCT').click(function() {
         var isChecked = $('#CBisDCT').prop('checked');
         if (isChecked === true) {
@@ -247,22 +253,71 @@ $(document).ready(function() {
             $('#LinkDCT').attr('value', "");
             $('#LinkDCT').prop('required', false);
         }
-    })
+    });
 
     $('#selectCreate').click(function() {
         var ChoiceCreate = $('.optionCreate:selected').attr('value');
-        if (ChoiceCreate === "era") {
+        if (ChoiceCreate === "universe") {
+            $('#create_universe').css('display', 'block');
+            $('#create_era').css('display', 'none');
+            $('#create_period').css('display', 'none');
+            $('.btn_send').css('display', 'block');
+        } else if (ChoiceCreate === "era") {
+            $('#create_universe').css('display', 'none');
             $('#create_era').css('display', 'block');
             $('#create_period').css('display', 'none');
             $('.btn_send').css('display', 'block');
         } else if (ChoiceCreate === "period") {
+            $('#create_universe').css('display', 'none');
             $('#create_era').css('display', 'none');
             $('#create_period').css('display', 'block');
             $('.btn_send').css('display', 'block');
         } else if (ChoiceCreate === "") {
+            $('#create_universe').css('display', 'none');
             $('#create_era').css('display', 'none');
             $('#create_period').css('display', 'none');
             $('.btn_send').css('display', 'none');
+        }
+    });
+
+    $('#whichUniverseForEra').click(function() {
+        var universeSelected = $('.selectUniverseForEra:selected').attr('value');
+        var selectEra;
+
+        if ((universeSelected !== "") && (universeSelected !== undefined)) {
+            $.ajax({
+                method: "GET",
+                url: "/ajax/fetch-section.php?type=universe&id="+universeSelected,
+                success: function(data) {
+                    selectEra    = '<option value="" selected>Cliquez</option>\n';
+                    selectEra   += '<option value="first">En premier</option>\n';
+                    $(data).each(function(i) {
+                        selectEra += '<option value="'+data[i].id+'">Après '+data[i].name+'</option>\n';
+                    })
+                    $('#selectEraForEra').toggle();
+                    $('#whereEra').html(selectEra);
+                },
+            })
+        }
+    });
+
+    $('#whichUniverseForPeriod').click(function() {
+        var universeSelected = $('.selectUniverseForPeriod:selected').attr('value');
+        var selectEra;
+
+        if ((universeSelected !== "") && (universeSelected !== undefined)) {
+            $.ajax({
+                method: "GET",
+                url: "/ajax/fetch-section.php?type=universe&id="+universeSelected,
+                success: function(data) {
+                    selectEra  = '<option value="" selected>Cliquez</option>\n';
+                    $(data).each(function(i) {
+                        selectEra += '<option class="selectEra" value="'+data[i].id+'">'+data[i].name+'</option>\n';
+                    })
+                    $('#selectEraForPeriod').toggle();
+                    $('#whichEra').html(selectEra);
+                }
+            })
         }
     })
 
@@ -270,21 +325,21 @@ $(document).ready(function() {
         var eraSelected = $('.selectEra:selected').attr('value');
         var selectPeriod;
 
-        if (eraSelected !== "") {
+        if ((eraSelected !== "") && (eraSelected !== undefined)) {
             $.ajax({
                 method: "GET",
-                url: "/ajax/fetch-periods.php?formfilled=42&era="+eraSelected,
+                url: "/ajax/fetch-section.php?type=era&id="+eraSelected,
                 success: function(data) {
-                    selectPeriod = '<option value="">En premier</option>\n'
+                    selectPeriod = '<option value="first">En premier</option>\n';
                     $(data).each(function(i) {
-                        selectPeriod += '<option value="after_'+data[i].clean_name+'">Après '+data[i].name+'</option>\n';
+                        selectPeriod += '<option value="'+data[i].id+'">Après '+data[i].name+'</option>\n';
                     })
                     $('#selectPeriod').toggle();
                     $('#wherePeriod').html(selectPeriod);
                 }
             })
         }
-    })
+    });
 
     /**
      * Back to top button
@@ -304,64 +359,15 @@ $(document).ready(function() {
     });
 
     /**
-     * Preview for 'add' form
-     */
-    var name = "";
-    $('input.input').keyup(function() {
-        name = $(this).attr('name');
-        if (name == "titre_arc") {
-            $('td.cel_title span h3').html($(this).val());
-        }
-    });
-    $('input.file').click(function() {
-        name = $(this).attr('name');
-        if (name == "titre_arc") {
-            $('td.cel_title span h3').html($(this).val());
-        }
-    });
-    $('textarea.content').keyup(function() {
-        name = $(this).attr('name');
-        if (name == "contenu") {
-            $('td.cel_content p').html(nl2br($(this).val()));
-        }
-    });
-    $('input#checkboxIsEvent').click(function() {
-        var isChecked = $(this).prop('checked');
-        if (isChecked === true) {
-            $('tr.line').addClass('isEvent');
-        } else {
-            $('tr.line').removeClass('isEvent');
-        }
-    });
-    $('input#CBisUrban').click(function() {
-        var isChecked = $(this).prop('checked');
-        if (isChecked === true) {
-            $('img#logoUrban').removeClass('logo_opacity');
-        } else {
-            $('img#logoUrban').addClass('logo_opacity');
-        }
-    });
-    $('input#CBisDCT').click(function() {
-        var isChecked = $(this).prop('checked');
-        if (isChecked === true) {
-            $('img#logoDCT').removeClass('logo_opacity');
-        } else {
-            $('img#logoDCT').addClass('logo_opacity');
-        }
-    });
-    $("input.file").change(function() {
-        readURL(this);
-    });
-
-    /**
      * Update-in-line
      */
     $('.update_tr').click(function() {
         var alreadyFormUpdate = $('tr#updateInLine');
         if (alreadyFormUpdate !== undefined) alreadyFormUpdate.remove();
-        var id      = $(this).attr('id').replace("line_", "");
-        var title   = $('tr#'+id+' .cel_title').text();
-        var content = $('tr#'+id+' .cel_content').text();
+        var id       = $(this).attr('id').replace("line_", "");
+        var position = $('tr#'+id+' .cel_id span').text();
+        var title    = $('tr#'+id+' .cel_title').text();
+        var content  = $('tr#'+id+' .cel_content').text();
 
         var dctrad = $('tr#'+id+' .cel_publi div').children('a.urlDctrad').prop('href');
         if (dctrad === undefined) dctrad = "";
@@ -378,6 +384,7 @@ $(document).ready(function() {
             data: {
                 formfilled: 42,
                 id        : id,
+                position  : position,
                 title     : title,
                 content   : content,
                 dctrad    : dctrad,
@@ -398,18 +405,10 @@ $(document).ready(function() {
             var newId;
             var cover;
             var era;
-            var sectionODL;
-            var isResultPage;
-            var tmp;
+            var period;
 
-            tmp        = new RegExp(/([a-z]+)_page/, "i");
-            sectionODL = $('section.odl').attr('id');
-            if (sectionODL ===  undefined) {
-                isResultPage = true;
-                era          = $('section.results_page').attr('id');
-            } else {
-                era = sectionODL.match(tmp)[1];
-            }
+            era    = getUrlParameter('era');
+            period = $(this).parents('div.period').attr('id');
 
             $('#updateInLine div input').each(function() {
                 if ($(this).prop('name') == 'title')
@@ -419,7 +418,7 @@ $(document).ready(function() {
                 if ($(this).prop('name') == 'dctrad')
                     newDctrad = checkUpdateEqual($(this).val(), dctrad);
                 if ($(this).prop('name') == 'new_id')
-                    newId = checkUpdateEqual($(this).val(), id);
+                    newId = checkUpdateEqual($(this).val(), position);
                 if ($(this).prop('name') == 'cover')
                     cover = $(this);
             });
@@ -431,13 +430,13 @@ $(document).ready(function() {
             }
 
             var requestData = {
-                formfilled   : 42,
-                id           : id,
+                id_arc       : id,
                 new_title    : newTitle,
                 new_content  : newContent,
                 new_urban    : newUrban,
                 new_dctrad   : newDctrad,
-                name_era     : era,
+                id_era       : era,
+                id_period    : period,
                 isEvent      : isEvent,
                 isEventReturn: isEventReturn,
                 new_id       : newId,
@@ -446,33 +445,30 @@ $(document).ready(function() {
 
             $.ajax({
                 method: "POST",
-                url   : "/admin/modify.php",
+                url   : "/ajax/update-arc.php",
                 data  : requestData,
                 success: function(data) {
-                    if (newId !== undefined) id = newId;
                     $.ajax({
                         method: "POST",
                         url   : "/ajax/refresh-data.php",
                         data  : {
-                            formfilled: 42,
-                            id        : id,
-                            name_era  : era,
+                            id: id,
                         },
                         success: function(data) {
                             var tdName;
                             var tdPubli;
 
-                            if ((data.urban == false) && (data.dctrad == false)) {
+                            if ((data.link_a == false) && (data.link_b == false)) {
                                 tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
-                            } else if ((data.urban != false) && (data.dctrad == false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
-                            } else if ((data.urban == false) && (data.dctrad != false)) {
-                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
-                            } else if ((data.urban != false) && (data.dctrad != false)) {
-                                tdPubli = '<a href="'+data.urban+'"><img src="/assets/img/logo_urban_mini.png"></a><a href="'+data.dctrad+'"><img src="/assets/img/logo_dct_mini.png"></a>';
+                            } else if ((data.link_a != false) && (data.link_b == false)) {
+                                tdPubli = '<a href="'+data.link_a+'"><img src="/assets/img/logo_urban_mini.png"></a><img class="logo_opacity" src="/assets/img/logo_dct_mini.png">';
+                            } else if ((data.link_a == false) && (data.link_b != false)) {
+                                tdPubli = '<img class="logo_opacity" src="/assets/img/logo_urban_mini.png"><a href="'+data.link_b+'"><img src="/assets/img/logo_dct_mini.png"></a>';
+                            } else if ((data.link_a != false) && (data.link_b != false)) {
+                                tdPubli = '<a href="'+data.link_a+'"><img src="/assets/img/logo_urban_mini.png"></a><a href="'+data.link_b+'"><img src="/assets/img/logo_dct_mini.png"></a>';
                             }
 
-                            if (data.isEvent == 0) {
+                            if (data.is_event == 0) {
                                 $('tr#'+id).attr('class', 'line');
                             } else {
                                 $('tr#'+id).attr('class', 'line isEvent');
@@ -481,9 +477,9 @@ $(document).ready(function() {
                             $('tr#'+id).children('td').each(function() {
                                 tdName = $(this).attr('class');
                                 if (tdName == "cel_title") {
-                                    $(this).html('<h3>'+data.arc+'</h3>');
+                                    $(this).html('<h3>'+data.title+'</h3>');
                                 } else if (tdName == "cel_content") {
-                                    $(this).html('<p>'+nl2br(data.contenu)+'</p>');
+                                    $(this).html('<p>'+nl2br(data.content)+'</p>');
                                 } else if (tdName == "cel_publi") {
                                     $(this).children('div').html(tdPubli);
                                 }
@@ -517,7 +513,7 @@ $(document).ready(function() {
                 fd.append('cover', cover);
 
                 $.ajax({
-                    url: '/admin/modify.php?id='+id+'&formfilled=42&name_era='+era,
+                    url: '/ajax/update-arc.php?id_arc='+id+'&id_era='+era+'&id_period='+period,
                     data: fd,
                     processData: false,
                     contentType: false,
@@ -527,9 +523,7 @@ $(document).ready(function() {
                             method: "POST",
                             url   : "/ajax/refresh-data.php",
                             data  : {
-                                formfilled: 42,
-                                id        : id,
-                                name_era  : era,
+                                id: id,
                             },
                             success: function(data) {
                                 var tdName;
@@ -589,22 +583,19 @@ function resetInput(e) {
 }
 
 function getCovers(object, page) {
-    var sectionODL = $('section.odl').attr('id');
-    var tmp        = new RegExp(/([a-z]+)_page/, "i");
-    var era        = sectionODL.match(tmp)[1];
-    var period     = object.parents('div.period').find('div.content_period').attr('id');
-    var lines      = $('div#'+period+'.content_period').find('table.'+page+' tr');
+    var period     = object.parents('div.period').attr('id');
+    var lines      = $('div.period#'+period).find('table.'+page+' tr');
     var ids        = [];
 
     lines.each(function() {
-        ids.push($(this).attr('id'));
+        ids.push($(this).find('.cel_id span').text());
     });
 
     $.ajax({
         method: 'POST',
         url: '/ajax/get-covers.php',
         data: {
-            era: era,
+            period: period,
             ids: ids
         },
         success: function(ret) {
@@ -619,4 +610,44 @@ function getCovers(object, page) {
             });
         }
     })
+}
+
+function fillSelect(name_selected, name_select_to_add) {
+    var universe_selected = $('select[name="'+name_selected+'"] > option:selected').attr('value');
+    var options;
+
+    if ((universe_selected !== "") && (universe_selected !== undefined)) {
+        $.ajax({
+            method : "GET",
+            async  : false,
+            url    : "/ajax/fetch-section.php?type="+name_selected+"&id="+universe_selected,
+            success: function(data) {
+                options    = '<option value="" selected>'+name_select_to_add+'</option>\n';
+                n          = data.length;
+                isSelected = '';
+                $(data).each(function(i) {
+                    if (i == (n-1)) {
+                        isSelected = "selected";
+                    }
+                    options += '<option value="'+data[i].id+'" '+isSelected+'>'+data[i].name+'</option>\n';
+                })
+                $('select[name="'+name_select_to_add+'"]').html(options);
+            },
+        })
+    }
+}
+
+function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
 }

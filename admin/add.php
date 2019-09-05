@@ -1,85 +1,111 @@
 <?php
+// todo: handle errors
 $ROOT = "../";
 include($ROOT.'partial/header.php');
 
 echo "<section>";
 
 if (isset($_SESSION['pseudo'])) {
-    if (isset($_REQUEST['id_period']) && ($_REQUEST['id_period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
-        $era = strtolower($_REQUEST['name_era']);
+    if (isset($_REQUEST['period']) && ($_REQUEST['period'] != "") && !empty($_REQUEST['titre_arc']) && !empty($_REQUEST['contenu']) && isset($_REQUEST['formfilled']) && $_REQUEST['formfilled'] == 42) {
+        // todo: sanitize $_REQUEST
+        $era    = $_REQUEST['era'];
+        $period = $_REQUEST['period'];
 
-        $isEvent = 0;
-        if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") $isEvent = 1;
+        $is_event = 0;
+        if (isset($_REQUEST['isEvent']) && $_REQUEST['isEvent'] == "on") $is_event = 1;
 
         echo "<div class='form'>";
 
-        $upload = uploadCover();
+        $upload = uploadCover($_FILES['cover']);
 
-        if ($upload[0] === TRUE) {
-            $cover = str_replace("../", "", $upload[1]);
-            $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
-            $id    = ++$maxid['id'];
-            $req   = $bdd->prepare("INSERT INTO odldc_$era(id, id_period, arc, cover, contenu, urban, dctrad, isEvent)
-                                VALUES(:id, :id_period, :arc, :cover, :contenu, :urban, :dctrad, :isEvent)");
-            $req->execute(array(
-                'id'        => $id,
-                'id_period' => $_REQUEST['id_period'],
-                'arc'       => htmlentities($_REQUEST['titre_arc']),
-                'cover'     => $cover,
-                'contenu'   => htmlentities($_REQUEST['contenu']),
-                'urban'     => $_REQUEST['urban'],
-                'dctrad'    => $_REQUEST['dctrad'],
-                'isEvent'   => $isEvent
-                ));
-            echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
-
-            if (($_REQUEST['id'] != '0') && ($_REQUEST['id'] != NULL)) { // isset ?
-                $newid = $_REQUEST['id'];
-                $bdd->query("UPDATE odldc_$era SET id=id + 1 WHERE id>=".$newid);
-                $maxid = $bdd->query("SELECT id FROM odldc_$era WHERE id = (SELECT MAX(id) FROM odldc_$era)")->fetch(PDO::FETCH_ASSOC);
-                $oldid = $maxid['id'];
-                $bdd->exec("UPDATE odldc_$era SET id = $newid WHERE id = $oldid");
-                $bdd->exec("ALTER TABLE odldc_$era ORDER BY id ASC");
-                echo " en position $newid";
+        if ($upload[0] === true) {
+            // Fetch all periods from era requested
+            $periods        = fetchPeriods($era);
+            $n              = count($periods);
+            $id_last_period = $periods[$n];
+            $req            = $bdd->prepare("INSERT INTO arc(id_period, position, title, cover, content, link_a, link_b, is_event)
+                                VALUES(:id_period, :position, :title, :cover, :content, :link_a, :link_b, :is_event)");
+            $cover          = $upload[1];
+            if (!empty($_REQUEST['id']) && ($_REQUEST['id'] != '0')) {
+                $position        = $_REQUEST['id'];
+                $where_clause    = "";
+                $period_position = array_search($period, $periods);
+                $periods_to_move = array_slice($periods, ($period_position-1));
+                $n               = count($periods_to_move);
+                $i               = 0;
+                foreach ($periods_to_move as $period_to_move) {
+                    ++$i;
+                    $where_clause .= "id_period = '$period_to_move'";
+                    if ($i < $n) {
+                        $where_clause .= " OR ";
+                    }
+                }
+                $sql   = "UPDATE arc SET position = position + 1 WHERE position >= $position AND $where_clause";
+                $bdd->query($sql);
+            } else {
+                $where_clause    = "";
+                $n               = count($periods);
+                $i               = 0;
+                foreach ($periods as $period) {
+                    ++$i;
+                    $where_clause .= "id_period = '$period'";
+                    if ($i < $n) {
+                        $where_clause .= " OR ";
+                    }
+                }
+                $sql      = "SELECT MAX(position) FROM arc WHERE $where_clause";
+                $maxid    = $bdd->query($sql)->fetch(PDO::FETCH_COLUMN);
+                $position = ++$maxid;
             }
 
+            $req->execute([
+                'id_period' => $period,
+                'position'  => $position,
+                'title'     => htmlentities($_REQUEST['titre_arc']),
+                'cover'     => $cover,
+                'content'   => htmlentities($_REQUEST['contenu']),
+                'link_a'    => $_REQUEST['urban'],
+                'link_b'    => $_REQUEST['dctrad'],
+                'is_event'  => $is_event
+            ]);
+
+            echo $_REQUEST['titre_arc']." a bien été ajouté à l'ODL";
+
             // Changelog
-            $date = new DateTime();
-
-            (!isset($newid)) ? $pos = $id : $pos = $newid;
-
-            $query    = $bdd->query("SELECT name FROM odldc_period WHERE id_period = \"".$_REQUEST['id_period']."\"")->fetch(PDO::FETCH_ASSOC);
-            $period   = $query['name'];
+            $name_period   = $bdd->query("SELECT name FROM period WHERE id_period = '$period'")->fetch(PDO::FETCH_COLUMN);
+            $name_era      = $bdd->query("SELECT name FROM era WHERE id_era = '$era'")->fetch(PDO::FETCH_COLUMN);
+            $name_universe = $bdd->query("SELECT name FROM universe WHERE id_universe = (SELECT id_universe FROM era WHERE id_era = '$era')")->fetch(PDO::FETCH_COLUMN);
 
             $changelog = array(
-                'id'          => $date->format('Y-m-d_H:i:s'),
-                'name_period' => $period,
-                'position'    => $pos,
-                'title'       => htmlentities($_REQUEST['titre_arc']),
+                'name_universe' => $name_universe,
+                'name_era'      => $name_era,
+                'name_period'   => $name_period,
+                'position'      => $position,
+                'title'         => htmlentities($_REQUEST['titre_arc']),
             );
 
-            $query = $bdd->prepare("INSERT INTO odldc_changelog(id, author, cl_type, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
-                                VALUES(:id, :author, :cl_type, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
+            $query = $bdd->prepare("INSERT INTO changelog(author, cl_type, name_universe, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+                                VALUES(:author, :cl_type, :name_universe, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
             $query->execute(array(
-                'id'           => $changelog['id'],
-                'author'       => $_SESSION['pseudo'],
-                'cl_type'      => 'add',
-                'name_era'     => $_REQUEST["name_era"],
-                'name_period'  => $changelog['name_period'],
-                'old_position' => '',
-                'new_position' => $changelog['position'],
-                'title'        => $changelog['title'],
-                'new_title'    => '',
-                'cover'        => '',
-                'content'      => '',
-                'urban'        => '',
-                'dctrad'       => '',
-                'isEvent'      => $isEvent
+                'author'        => $_SESSION['pseudo'],
+                'cl_type'       => 'add',
+                'name_universe' => $changelog['name_universe'],
+                'name_era'      => $changelog['name_era'],
+                'name_period'   => $changelog['name_period'],
+                'old_position'  => '',
+                'new_position'  => $changelog['position'],
+                'title'         => $changelog['title'],
+                'new_title'     => '',
+                'cover'         => '',
+                'content'       => '',
+                'urban'         => '',
+                'dctrad'        => '',
+                'isEvent'       => $is_event
             ));
 
-            $count = $bdd->query("SELECT count(*) FROM odldc_changelog")->fetch(PDO::FETCH_ASSOC);
-            if ($count['count(*)'] > 100) {
-                $bdd->exec("DELETE FROM odldc_changelog ORDER BY id ASC LIMIT 1");
+            $count = $bdd->query("SELECT count(*) FROM changelog")->fetch(PDO::FETCH_COLUMN);
+            if ($count > 100) {
+                $bdd->exec("DELETE FROM changelog ORDER BY id ASC LIMIT 1");
             }
 
             echo ".";
@@ -91,12 +117,14 @@ if (isset($_SESSION['pseudo'])) {
             echo "<a href='/admin/add.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
         }
     } else {
-        $eras       = $bdd->query('SELECT * FROM odldc_era');
-        $periods    = $bdd->query('SELECT * FROM odldc_period');
-        $lastPeriod = $bdd->query('SELECT clean_name FROM odldc_period WHERE id_period IN
-                                    (SELECT id_period FROM odldc_rebirth WHERE id IN
-                                        (SELECT MAX(id) FROM odldc_rebirth))'
-                            )->fetch(PDO::FETCH_ASSOC)['clean_name'];
+        $universes = [];
+        $universe_query = $bdd->query("SELECT * FROM universe");
+
+        $current_universe = "";
+        if (!empty($_SESSION['last_era_visited'])) {
+            $current_era      = $_SESSION['last_era_visited'];
+            $current_universe = $bdd->query("SELECT id_universe FROM era WHERE id_era = '$current_era'")->fetch(PDO::FETCH_COLUMN);
+        }
 ?>
     <div class="form">
         <h2>Ajouter un arc</h2>
@@ -104,19 +132,23 @@ if (isset($_SESSION['pseudo'])) {
             <div class="head_form">
                 <div class="info_sections">
                     <input type="hidden" name="formfilled" value="42" />
-                    <select name="name_era" required>
-                        <option value="Rebirth">Rebirth</option>
+                    <select name="universe" required>
+                        <option value="">Universe</option>
+                        <?php
+                        while ($universe = $universe_query->fetch(PDO::FETCH_ASSOC)) {
+                            $isSelected = "";
+                            if ($current_universe == $universe['id_universe']) {
+                                $isSelected = "selected";
+                            }
+                            echo "<option value=\"{$universe['id_universe']}\" $isSelected>{$universe['name']}</option>\n";
+                        }
+                        ?>
                     </select><br />
-                    <select name="id_period" required>
+                    <select name="era" required>
+                        <option value="">Era</option>
+                    </select><br />
+                    <select name="period" required>
                         <option value="">Période</option>
-                    <?php
-                    while ($namePeriod = $periods->fetch(PDO::FETCH_ASSOC)) {
-                        $namePeriodFormat = strtolower(str_replace(" ", "_", $namePeriod['name']));
-                        $selected         = ($namePeriodFormat == $lastPeriod) ? "selected" : "";
-
-                        echo "<option value='".$namePeriod['id_period']."' $selected >".$namePeriod['name']."</option>\n";
-                    }
-                    ?>
                     </select>
                 </div>
                 <div class="div_checkbox">
@@ -131,7 +163,7 @@ if (isset($_SESSION['pseudo'])) {
             <textarea class="content" name="contenu" placeholder="Liste des issues de l'arc" required><?= @$_REQUEST['contenu'] ?></textarea><br />
             <div class="isUrban_DCT">
                 <div class="isUrban">
-                    <label for="CBisUrban">Urban</label>
+                    <label for="CBisUrban">VF</label>
                     <input type="checkbox" name="isUrban" id="CBisUrban" <?php if(isset($_REQUEST['urban']) && !empty($_REQUEST['urban'])) echo "checked"; ?>>
                 </div>
                 <div class="isDCT">
@@ -189,3 +221,6 @@ echo "</div>\n";
 echo "</section>";
 
 include($ROOT.'partial/footer.php');
+
+?>
+<script src="/assets/js/add-arcs.js"></script>

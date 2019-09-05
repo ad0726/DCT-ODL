@@ -1,7 +1,7 @@
 <?php
 include($ROOT.'conf/conf.php');
 
-$query = $bdd->query("SELECT value FROM odldc_admin WHERE param = 'isMaintaining'")->fetch(PDO::FETCH_ASSOC);
+$query = $bdd->query("SELECT value FROM setting WHERE param = 'isMaintaining'")->fetch(PDO::FETCH_ASSOC);
 if (($query['value'] == TRUE) && ($_SERVER['SCRIPT_NAME'] !== "/manage.php")) {
     echo "<img src='/assets/img/maintaining.jpg' style='width: 100%;'>";
     die();
