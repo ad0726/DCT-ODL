@@ -27,19 +27,12 @@ if (isset($_SESSION['pseudo'])) {
                                 VALUES(:id_period, :position, :title, :cover, :content, :link_a, :link_b, :is_event)");
             $cover          = $upload[1];
             if (!empty($_REQUEST['id']) && ($_REQUEST['id'] != '0')) {
-                $id = $_REQUEST['id'];
-            } else {
-                $sql   = "SELECT MAX(position) FROM arc WHERE id_period = '$period'";
-                $maxid = $bdd->query($sql)->fetch(PDO::FETCH_COLUMN);
-                $id    = ++$maxid;
-            }
-
-            if ($period != $id_last_period) {
-                $where_clause = "";
+                $position        = $_REQUEST['id'];
+                $where_clause    = "";
                 $period_position = array_search($period, $periods);
                 $periods_to_move = array_slice($periods, ($period_position-1));
-                $n = count($periods_to_move);
-                $i = 0;
+                $n               = count($periods_to_move);
+                $i               = 0;
                 foreach ($periods_to_move as $period_to_move) {
                     ++$i;
                     $where_clause .= "id_period = '$period_to_move'";
@@ -47,13 +40,27 @@ if (isset($_SESSION['pseudo'])) {
                         $where_clause .= " OR ";
                     }
                 }
-                $sql   = "UPDATE arc SET position = position + 1 WHERE position >= $id AND $where_clause";
+                $sql   = "UPDATE arc SET position = position + 1 WHERE position >= $position AND $where_clause";
                 $bdd->query($sql);
+            } else {
+                $where_clause    = "";
+                $n               = count($periods);
+                $i               = 0;
+                foreach ($periods as $period) {
+                    ++$i;
+                    $where_clause .= "id_period = '$period'";
+                    if ($i < $n) {
+                        $where_clause .= " OR ";
+                    }
+                }
+                $sql      = "SELECT MAX(position) FROM arc WHERE $where_clause";
+                $maxid    = $bdd->query($sql)->fetch(PDO::FETCH_COLUMN);
+                $position = ++$maxid;
             }
 
             $req->execute([
                 'id_period' => $period,
-                'position'  => $id,
+                'position'  => $position,
                 'title'     => htmlentities($_REQUEST['titre_arc']),
                 'cover'     => $cover,
                 'content'   => htmlentities($_REQUEST['contenu']),
@@ -73,7 +80,7 @@ if (isset($_SESSION['pseudo'])) {
                 'name_universe' => $name_universe,
                 'name_era'      => $name_era,
                 'name_period'   => $name_period,
-                'position'      => $id,
+                'position'      => $position,
                 'title'         => htmlentities($_REQUEST['titre_arc']),
             );
 

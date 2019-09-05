@@ -3,7 +3,7 @@ $ROOT = "../";
 include($ROOT.'conf/conf.php');
 
 if (isset($_REQUEST['ids']) && isset($_REQUEST['period'])) {
-    $period     = $_REQUEST['period'];
+    $period  = $_REQUEST['period'];
     $firstId = $_REQUEST['ids'][0];
     $lastId  = end($_REQUEST['ids']);
     $query   = $bdd->query("SELECT cover FROM arc WHERE id_period = '$period' AND position BETWEEN $firstId AND $lastId ORDER BY position ASC");

@@ -30,7 +30,7 @@ if (isset($_GET['rm']) && isset($_GET['from'])) {
     // Delete
     $position = $lineDeleted['position'];
     $bdd->exec("DELETE FROM arc WHERE id_arc = $id");
-    $bdd->exec("UPDATE arc SET position = position - 1 WHERE $where_clause AND position BETWEEN ".($position+1)." AND $maxID");
+    $bdd->exec("UPDATE arc SET position = position - 1 WHERE (position BETWEEN ".($position+1)." AND $maxID) AND $where_clause");
 
     unlink($ROOT."assets/img/covers/".$lineDeleted['cover']);
 

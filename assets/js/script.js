@@ -418,7 +418,7 @@ $(document).ready(function() {
                 if ($(this).prop('name') == 'dctrad')
                     newDctrad = checkUpdateEqual($(this).val(), dctrad);
                 if ($(this).prop('name') == 'new_id')
-                    newId = checkUpdateEqual($(this).val(), id);
+                    newId = checkUpdateEqual($(this).val(), position);
                 if ($(this).prop('name') == 'cover')
                     cover = $(this);
             });
@@ -588,7 +588,7 @@ function getCovers(object, page) {
     var ids        = [];
 
     lines.each(function() {
-        ids.push($(this).attr('id'));
+        ids.push($(this).find('.cel_id span').text());
     });
 
     $.ajax({
