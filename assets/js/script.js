@@ -445,7 +445,7 @@ $(document).ready(function() {
 
             $.ajax({
                 method: "POST",
-                url   : "/ajax/modify.php",
+                url   : "/ajax/update-arc.php",
                 data  : requestData,
                 success: function(data) {
                     $.ajax({
@@ -513,7 +513,7 @@ $(document).ready(function() {
                 fd.append('cover', cover);
 
                 $.ajax({
-                    url: '/ajax/modify.php?id_arc='+id+'&id_era='+era+'&id_period='+period,
+                    url: '/ajax/update-arc.php?id_arc='+id+'&id_era='+era+'&id_period='+period,
                     data: fd,
                     processData: false,
                     contentType: false,
