@@ -128,7 +128,7 @@ if (isset($_SESSION['pseudo'])) {
 ?>
     <div class="form">
         <h2>Ajouter un arc</h2>
-        <form action="?" method="post" enctype="multipart/form-data">
+        <form action="?" method="POST" enctype="multipart/form-data">
             <div class="head_form">
                 <div class="info_sections">
                     <input type="hidden" name="formfilled" value="42" />

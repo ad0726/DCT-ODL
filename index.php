@@ -41,7 +41,7 @@ foreach ($rows as $universe) {
     echo "<a href='/odl.php?era={$era['id']}'>
                     <table class='{$universe['id']}' style='display: table;'>
                         <tr class='line' id='{$era['id']}'>
-                            <td class='cel_img'><img src='assets/img/sections/{$era['image']}' ></td>
+                            <td class='cel_img'><img src='/assets/img/sections/{$era['image']}' ></td>
                             <td class='cel_title'><h3>{$era['name']}</h3></td>
                         </tr>
                     </table>
