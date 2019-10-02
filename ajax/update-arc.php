@@ -30,14 +30,15 @@ if (isset($_SESSION['pseudo'])) {
 
         $update_img = false;
         if (!isset($_REQUEST['noCover']) && ($_FILES['cover']['error'] == 0)) {
-            // Delete image if new image uploaded
+            // Fetch old image
             $old_cover = $bdd->query("SELECT cover FROM arc WHERE id_arc = $id")->fetch(PDO::FETCH_COLUMN);
-            unlink($ROOT."assets/img/covers/".$old_cover);
             // Upload new image
             $upload = uploadCover($_FILES['cover']);
             // Update image
             if ($upload[0] === true) {
                 if (!empty($upload[1])) {
+                    // Delete image if new image uploaded
+                    unlink($ROOT."assets/img/covers/".$old_cover);
                     $bdd->exec("UPDATE arc SET cover = '{$upload[1]}' WHERE id_arc = $id");
                     $update_img = true;
                 }

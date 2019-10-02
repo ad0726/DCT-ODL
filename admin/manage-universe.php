@@ -2,7 +2,7 @@
 $ROOT = "../";
 include($ROOT.'partial/header.php');
 
-echo "<section>";
+echo "<section id='manage_universe_page'>";
 
 if (isset($_SESSION['pseudo'])) {
     if (isset($_REQUEST['universe']) && ($_REQUEST['universe'] != "")) {
@@ -18,13 +18,15 @@ if (isset($_SESSION['pseudo'])) {
         echo "\t\t<form action='?' method='POST' enctype='multipart/form-data'>\n";
         echo "\t\t\t<input type='hidden' name='formfilled' value='true'><br>\n";
         foreach ($eras as $id=>$era) {
-            echo "\t\t\t<p>".$era['name']."</p>\n";
-            echo "\t\t\t<input type='text' name='$id' placeholder='Modifier titre'><br>\n";
-            echo "\t\t\t<img src='/assets/img/sections/{$era['image']}' ><br>\n";
-            echo "\t\t\t<input type='hidden' name='MAX_FILE_SIZE' value='1048576' />";
-            echo "\t\t\t<input type='file' class='file' name='$id' accept='image/*'>";
+            echo "\t\t\t<div class='era'>\n";
+            echo "\t\t\t\t<p>".$era['name']."</p>\n";
+            echo "\t\t\t\t<input type='text' name='$id' placeholder='Modifier titre'><br>\n";
+            echo "\t\t\t\t<img src='/assets/img/sections/{$era['image']}' ><br>\n";
+            echo "\t\t\t\t<input type='hidden' name='MAX_FILE_SIZE' value='1048576' />";
+            echo "\t\t\t\t<input type='file' class='file' name='$id' accept='image/*'>";
+            echo "\t\t\t</div>\n";
         }
-        echo "\t\t\t<br><input type='submit' placeholder='Submit'>\n";
+        echo "\t\t\t<br><input type='submit' value='Enregistrer'>\n";
         echo "\t\t</form>";
         echo "\t</div>";
         echo "</div>";
@@ -51,13 +53,17 @@ if (isset($_SESSION['pseudo'])) {
         $update_image = $bdd->prepare("UPDATE era SET image = :image WHERE id_era = :id_era");
 
         foreach($image_to_update as $key=>$value) {
-            $path   = "../assets/img/sections/";
-            $upload = uploadCover($value, 950, $path);
+            // Fetch old image
+            $old_image = $bdd->query("SELECT image FROM era WHERE id_era = '$key'")->fetch(PDO::FETCH_COLUMN);
+            $path      = $ROOT."assets/img/sections/";
+            $upload    = uploadCover($value, 950, $path);
             if ($upload[0] !== false) {
                 $update_image->execute([
                     'image'  => $upload[1],
                     'id_era' => $key
                 ]);
+                // Delete image if new image uploaded
+                unlink($ROOT."assets/img/sections/".$old_image);
             }
         }
 
