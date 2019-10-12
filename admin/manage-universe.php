@@ -32,6 +32,7 @@ if (isset($_SESSION['pseudo'])) {
         echo "</div>";
 
     } else if (isset($_REQUEST['formfilled'])) {
+        echo "<div class='form'>";
         $name_to_update  = $_REQUEST;
         $image_to_update = $_FILES;
 
@@ -64,8 +65,13 @@ if (isset($_SESSION['pseudo'])) {
                 ]);
                 // Delete image if new image uploaded
                 unlink($ROOT."assets/img/sections/".$old_image);
+
             }
         }
+
+        echo "<a href='/admin/manage-universe.php'><button type='button' class='btn_head'>Retour au formulaire</button></a>";
+        echo "<a href='/index.php'><button type='button' class='btn_head'>Retour à l'accueil</button></a>";
+        echo "</div>";
 
     } else {
         $universes = [];
