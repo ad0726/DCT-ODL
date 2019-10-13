@@ -43,11 +43,15 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
     }
     if (!empty($results)) {
         array_multisort($results, SORT_ASC);
-        $n = count($results);
+        $n           = count($results);
+        $id_universe = $bdd->query("SELECT id_universe FROM era WHERE id_era = '$era'")->fetch(PDO::FETCH_COLUMN);
+        $links_info  = $bdd->query("SELECT * FROM links WHERE id_universe = '$id_universe'")->fetch(PDO::FETCH_ASSOC);
+
         echo "<section class='results_page' id='$era'>";
         echo "<p class='text-result'>$n résultat(s) $title.</p>";
         echo "<div class='content_period content_result'>";
         foreach ($results as $k=>$line) {
+            $line['logo'] = $links_info;
             displayLine($line, false, "/assets/img/covers/".$line['cover']);
         }
         echo "</div>";

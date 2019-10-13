@@ -706,6 +706,10 @@ div.last_element.forbidden .btn_admin:hover {
   text-align: center;
 }
 
+#manage_universe_page h4 {
+  margin: 0;
+}
+
 #manage_universe_page form div.era {
   border-top   : 1px solid lightblue;
   border-bottom: 1px solid lightblue;
@@ -717,4 +721,13 @@ div.last_element.forbidden .btn_admin:hover {
 #manage_universe_page input[type="submit"] {
   display: block;
   margin : 5px auto;
+}
+
+#manage_universe_page .era .columns {
+  display: flex;
+  justify-content: space-around;
+}
+
+#manage_universe_page .era .two.columns > div {
+  width: 50%;
 }

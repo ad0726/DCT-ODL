@@ -10,8 +10,10 @@ if (isset($_REQUEST['era'])) {
     $arcs              = [];
     $where_clause_arcs = "";
 
-    $era_name      = $bdd->query("SELECT clean_name FROM era WHERE id_era = '$era_id'")->fetch(PDO::FETCH_COLUMN);
+    $era           = $bdd->query("SELECT id_universe, clean_name FROM era WHERE id_era = '$era_id'")->fetch(PDO::FETCH_ASSOC);
+    $era_name      = $era['clean_name'];
     $periods_query = $bdd->query("SELECT name, id_period FROM period WHERE id_era = '$era_id'");
+    $links_info    = $bdd->query("SELECT * FROM links WHERE id_universe = '{$era['id_universe']}'")->fetch(PDO::FETCH_ASSOC);
 
     while ($row = $periods_query->fetch(PDO::FETCH_ASSOC)) {
         $periods[$row['id_period']] = $row['name'];
@@ -55,7 +57,7 @@ if (isset($_REQUEST['era'])) {
                 "id" => $id_period,
                 "name"=>$periods[$id_period]
             ];
-            displayPeriod($period, $ARlineID);
+            displayPeriod($period, $ARlineID, $links_info);
         }
 
         displayBtnUp();
