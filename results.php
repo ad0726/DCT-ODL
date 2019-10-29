@@ -44,13 +44,39 @@ if (isset($_REQUEST['search']) && !empty($_REQUEST['search']) && isset($_REQUEST
     if (!empty($results)) {
         array_multisort($results, SORT_ASC);
         $n           = count($results);
-        $id_universe = $bdd->query("SELECT id_universe FROM era WHERE id_era = '$era'")->fetch(PDO::FETCH_COLUMN);
-        $links_info  = $bdd->query("SELECT * FROM links WHERE id_universe = '$id_universe'")->fetch(PDO::FETCH_ASSOC);
+        $links_info_prepare  = $bdd->prepare("SELECT * FROM links WHERE id_universe = :id_universe");
+        if ($era != "all") {
+            $id_universe_prepare = $bdd->prepare("SELECT id_universe FROM era WHERE id_era = :id_era");
+
+            $id_universe_prepare->execute([
+                'id_era' => $era
+                ]);
+            $id_universe = $id_universe_prepare->fetchColumn();
+
+            $links_info_prepare->execute([
+                'id_universe' => $id_universe
+                ]);
+            $links_info = $links_info_prepare->fetch();
+        } else {
+            $id_universe_prepare = $bdd->prepare("SELECT id_universe FROM era WHERE id_era = (SELECT id_era FROM period WHERE id_period = :id_period)");
+        }
 
         echo "<section class='results_page' id='$era'>";
         echo "<p class='text-result'>$n résultat(s) $title.</p>";
         echo "<div class='content_period content_result'>";
         foreach ($results as $k=>$line) {
+            if ($era == "all") {
+                $id_universe_prepare->execute([
+                    'id_period' => $line['id_period']
+                    ]);
+                $id_universe = $id_universe_prepare->fetchColumn();
+
+                $links_info_prepare->execute([
+                    'id_universe' => $id_universe
+                    ]);
+                $links_info = $links_info_prepare->fetch();
+            }
+
             $line['logo'] = $links_info;
             displayLine($line, false, "/assets/img/covers/".$line['cover']);
         }
