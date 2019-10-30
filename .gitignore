@@ -2,4 +2,5 @@ conf.php
 changelog/*
 assets/img/covers/*
 assets/img/sections/*
+assets/img/logos/*
 !.gitkeep

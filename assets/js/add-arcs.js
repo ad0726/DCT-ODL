@@ -1,9 +1,11 @@
 $(document).ready(function() {
     fillSelect("universe", "era");
+    updatePreview();
     fillSelect("era", "period");
     $('select[name="universe"]').click(function() {
-        fillSelect("universe", "era")
-        fillSelect("era", "period")
+        fillSelect("universe", "era");
+        updatePreview();
+        fillSelect("era", "period");
     });
     $('select[name="era"]').click(function() {
         fillSelect("era", "period")
@@ -60,3 +62,19 @@ $(document).ready(function() {
     });
 
 })
+
+function updatePreview() {
+    var universe_selected = $('select[name="universe"] > option:selected').attr('value');
+
+    if ((universe_selected !== "") && (universe_selected !== undefined)) {
+        $.ajax({
+            method : "GET",
+            async  : false,
+            url    : "/ajax/fetch-universe.php?id="+universe_selected+"&links=1",
+            success: function(data) {
+                $('img#logo_a').attr('src', '/assets/img/logos/'+data.logo_a);
+                $('img#logo_b').attr('src', '/assets/img/logos/'+data.logo_b);
+            },
+        })
+    }
+}

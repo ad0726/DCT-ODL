@@ -53,7 +53,7 @@ function logout() {
  * @param array $ARlineID
  * @return display
  */
-function displayPeriod($period, $ARlineID) {
+function displayPeriod($period, $ARlineID, $links_info) {
     $period_format = strtolower(str_replace(" ", "_", $period['name']));
     $arc_count = count($ARlineID);
     echo "
@@ -73,6 +73,7 @@ function displayPeriod($period, $ARlineID) {
                             </div>";
                 }
                 foreach ($ARlineID as $lineID=>$ARinfo) {
+                    $ARinfo['logo'] = $links_info;
                     if ($i % 20 == 0) {
                         displayLine($ARinfo, $p);
                         $i++;
@@ -125,6 +126,16 @@ function displayLine($ARinfo, $p = FALSE, $cover = "") {
     $id           = $ARinfo['id_arc'];
     $era_current  = str_replace('/', '', str_replace('.php', '', $_SERVER['SCRIPT_NAME']));
     $classIsEvent = "";
+    $logo_a = [                             // todo: handle default
+        "name" => $ARinfo['logo']['name_a'],
+        "url"  => $ARinfo['logo']['url_a'],
+        "logo" => $ARinfo['logo']['logo_a'],
+    ];
+    $logo_b = [
+        "name" => $ARinfo['logo']['name_b'],
+        "url"  => $ARinfo['logo']['url_b'],
+        "logo" => $ARinfo['logo']['logo_b'],
+    ];
 
     if ($era_current == "results") $era_current   = $_REQUEST['era'];
     if ($ARinfo['is_event'] == TRUE) $classIsEvent = "isEvent";
@@ -139,14 +150,14 @@ function displayLine($ARinfo, $p = FALSE, $cover = "") {
                                 <h4>Disponible chez</h4>
                                 <div class='img_publi'>";
     if (!empty($ARinfo['link_a'])) {
-        echo "<a class='urlUrban' href='".$ARinfo['link_a']."' target='_blank'><img src='/assets/img/logo_urban_mini.png'></a>";
+        echo "<a class='urlUrban' href='".$ARinfo['link_a']."' target='_blank'><img src='/assets/img/logos/{$logo_a['logo']}'></a>";
     } else {
-        echo "<img src='/assets/img/logo_urban_mini.png' class='logo_opacity'>";
+        echo "<img src='/assets/img/logos/{$logo_a['logo']}' class='logo_opacity'>";
     }
     if (!empty($ARinfo['link_b'])) {
-        echo "<a class='urlDctrad' href='".$ARinfo['link_b']."' target='_blank'><img src='/assets/img/logo_dct_mini.png'></a>";
+        echo "<a class='urlDctrad' href='".$ARinfo['link_b']."' target='_blank'><img src='/assets/img/logos/{$logo_b['logo']}'></a>";
     } else {
-        echo "<img src='/assets/img/logo_dct_mini.png' class='logo_opacity'>";
+        echo "<img src='/assets/img/logos/{$logo_b['logo']}' class='logo_opacity'>";
     }
     echo "
                                 </div>
@@ -262,7 +273,7 @@ function uploadCover($file, $width=150, $path="") {
         $path = $ROOT."assets/img/covers/";
     }
 
-    $error = FALSE;
+    $error = false;
 // VERIF UPLOAD
     if ($file['error'] > 0) $error[1] = "Pas de cover transférée.\n";
 // VERIF WEIGHT
@@ -270,22 +281,26 @@ function uploadCover($file, $width=150, $path="") {
     if ($file['size'] > $maxsize) $error[2] = "Le fichier est trop gros.\n";
 // VERIF EXTENSION
     $img_ext_ok = array( 'jpg' , 'jpeg' , 'png' );
-    $ext_upload = strtolower(  substr(  strrchr($file['type'], '/')  ,1)  );
-    if ( !in_array($ext_upload,$img_ext_ok) ) $error[3] = "Extension incorrecte.\n";
+    $ext_upload = strtolower(substr(strrchr($file['type'], '/'), 1));
+    if (!in_array($ext_upload,$img_ext_ok)) $error[3] = "Extension incorrecte.\n";
 // AFFICHAGE DE L'ERREUR OU ENVOI
     if (!empty($error)) {
-        return (isset($error[1])) ? [FALSE, $error[1]] : [FALSE, @$error];
+        return (isset($error[1])) ? [false, $error[1]] : [false, @$error];
     } else {
 // SAUVEGARDE DE L'IMAGE SUR LE FTP
         $image      = ResizeCover($file['tmp_name'], "W", $width);
-        $name       = md5(uniqid(rand(), true)).".jpg";
+        $name       = md5(uniqid(rand(), true)).".".$ext_upload;
         $name_ext   = $path.$name;
-        $resultat   = imagejpeg($image, $name_ext, 70);
+        if ($ext_upload == "png") {
+            $resultat = imagepng($image, $name_ext, 7);
+        } else {
+            $resultat = imagejpeg($image, $name_ext, 70);
+        }
         if (!$resultat) {
-            return [FALSE, "Transfert échoué.\n"];
+            return [false, "Transfert échoué.\n"];
         } else {
             imagedestroy($image);
-            return [TRUE, $name];
+            return [true, $name];
         }
     }
 }
@@ -317,6 +332,8 @@ function ResizeCover($source, $type_value = "W", $new_value) {
 
 // Création du conteneur.
     $image = imagecreatetruecolor($nouv_largeur, $nouv_hauteur);
+    imagealphablending($image, false);
+    imagesavealpha($image, true);
 
 // Importation de l'image source.
     $source_image = imagecreatefromstring(file_get_contents($source));

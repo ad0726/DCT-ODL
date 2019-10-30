@@ -25,6 +25,11 @@ if (isset($_SESSION['pseudo'])) {
         echo "\t\t\t\t<a href='/admin/changelog.php' title='Changelog'><button type='button' class='btn_admin' ><i class='fas fa-clipboard'></i><br />Changelog</button></a>\n";
         echo "\t\t\t</div>\n";
         echo "\t\t</div>\n";
+        echo "\t\t<div class='flex row'>\n";
+        echo "\t\t\t<div class='last_element'>\n";
+        echo "\t\t\t\t<a href='/admin/manage-universe.php' title='Manage Universe'><button type='button' class='btn_admin' ><i class='fas fa-globe'></i><br />Manage Universe</button></a>\n";
+        echo "\t\t\t</div>\n";
+        echo "\t\t</div>\n";
         echo "\t</div>\n";
     } elseif ($role == "editor") {
         echo "\t<div class='form'>\n";

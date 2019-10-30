@@ -17,21 +17,25 @@ $sql = "SELECT
 
 $query = $bdd->query($sql);
 $rows  = [];
+$universes = [];
 while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-    $rows[] = [
-        "id"   => $row['id_universe'],
-        "name" => $row['name_universe'],
-        "era"  => [[
+    if (!isset($universes[$row['id_universe']])) {
+        $universes[$row['id_universe']] = [
+            "id"   => $row['id_universe'],
+            "name" => $row['name_universe'],
+            "era"  => []
+        ];
+    }
+    $universes[$row['id_universe']]['era'][] = [
             "id"         => $row['id_era'],
             "name"       => $row['name_era'],
             "name_clean" => $row['name_clean_era'],
             "image"      => $row['image']
-        ]]
     ];
 }
 
 echo "<section class='odl' id='home_page'>";
-foreach ($rows as $universe) {
+foreach ($universes as $universe) {
     echo "
             <div class='universe'>
                 <h2 class='title_universe btn_{$universe['id']}'>{$universe['name']}</h2>
@@ -41,7 +45,7 @@ foreach ($rows as $universe) {
     echo "<a href='/odl.php?era={$era['id']}'>
                     <table class='{$universe['id']}' style='display: table;'>
                         <tr class='line' id='{$era['id']}'>
-                            <td class='cel_img'><img src='assets/img/sections/{$era['image']}' ></td>
+                            <td class='cel_img'><img src='/assets/img/sections/{$era['image']}' ></td>
                             <td class='cel_title'><h3>{$era['name']}</h3></td>
                         </tr>
                     </table>
