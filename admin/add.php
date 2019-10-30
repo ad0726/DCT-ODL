@@ -40,7 +40,7 @@ if (isset($_SESSION['pseudo'])) {
                         $where_clause .= " OR ";
                     }
                 }
-                $sql   = "UPDATE arc SET position = position + 1 WHERE position >= $position AND $where_clause";
+                $sql   = "UPDATE arc SET position = position + 1 WHERE position >= $position AND ($where_clause)";
                 $bdd->query($sql);
             } else {
                 $where_clause    = "";
@@ -84,7 +84,7 @@ if (isset($_SESSION['pseudo'])) {
                 'title'         => htmlentities($_REQUEST['titre_arc']),
             );
 
-            $query = $bdd->prepare("INSERT INTO changelog(author, cl_type, name_universe, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+            $query = $bdd->prepare("INSERT INTO changelog(author, cl_type, name_universe, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent)
                                 VALUES(:author, :cl_type, :name_universe, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)");
             $query->execute(array(
                 'author'        => $_SESSION['pseudo'],
@@ -207,8 +207,8 @@ echo "\t\t\t<td class='cel_content'><p></p></td>\n";
 echo "\t\t\t<td class='cel_publi'>\n";
 echo "\t\t\t\t<h4>Disponible chez</h4>\n";
 echo "\t\t\t\t<div class='img_publi'>\n";
-echo "\t\t\t\t\t<img src='/assets/img/logo_urban_mini.png' id='logoUrban' class='logo_opacity'>\n";
-echo "\t\t\t\t\t<img src='/assets/img/logo_dct_mini.png' id='logoDCT' class='logo_opacity'>\n";
+echo "\t\t\t\t\t<img src='/assets/img/logo_urban_mini.png' id='logo_a' class='logo_opacity'>\n";
+echo "\t\t\t\t\t<img src='/assets/img/logo_dct_mini.png' id='logo_b' class='logo_opacity'>\n";
 echo "\t\t\t\t</div>\n";
 echo "\t\t\t</td>\n";
 echo "\t\t</tr>\n";
