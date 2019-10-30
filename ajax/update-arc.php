@@ -78,11 +78,11 @@ if (isset($_SESSION['pseudo'])) {
             $new_id = $_REQUEST['new_id'];
             if ($new_id > $position) {
                 $bdd->exec("UPDATE arc SET position = -1 WHERE id_arc = $id");
-                $bdd->exec("UPDATE arc SET position = position - 1 WHERE $where_clause AND position BETWEEN $position AND $new_id");
+                $bdd->exec("UPDATE arc SET position = position - 1 WHERE position BETWEEN $position AND $new_id AND ($where_clause)");
                 $bdd->exec("UPDATE arc SET position = $new_id WHERE id_arc = $id");
             } elseif ($new_id < $position) {
                 $bdd->exec("UPDATE arc SET position = -1 WHERE id_arc = $id");
-                $bdd->exec("UPDATE arc SET position = position + 1 WHERE $where_clause AND position BETWEEN $new_id AND $position");
+                $bdd->exec("UPDATE arc SET position = position + 1 WHERE position BETWEEN $new_id AND $position AND ($where_clause)");
                 $bdd->exec("UPDATE arc SET position = $new_id WHERE id_arc = $id");
             }
         }
@@ -112,7 +112,7 @@ if (isset($_SESSION['pseudo'])) {
         $changelog['position']['new'] = $new_id ?? "";
         $changelog['title']['new']    = $new_title;
 
-        $query = $bdd->prepare('INSERT INTO changelog(author, cl_type, name_universe, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent) 
+        $query = $bdd->prepare('INSERT INTO changelog(author, cl_type, name_universe, name_era, name_period, old_position, new_position, title, new_title, cover, content, urban, dctrad, isEvent)
                             VALUES(:author, :cl_type, :name_universe, :name_era, :name_period, :old_position, :new_position, :title, :new_title, :cover, :content, :urban, :dctrad, :isEvent)');
         $query->execute([
         'author'        => $_SESSION['pseudo'],
