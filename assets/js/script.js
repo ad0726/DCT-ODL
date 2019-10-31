@@ -15,7 +15,7 @@ $(document).ready(function() {
 
     $('.title_universe').click(function() {
         var classThis   = $(this).attr('class');
-        var tmp         = new RegExp(/btn_([a-z1-9]+)/, "i");
+        var tmp         = new RegExp(/btn_([a-z0-9]+)/, "i");
         var id_universe = classThis.match(tmp)[1];
         $('#'+id_universe).toggle();
     })

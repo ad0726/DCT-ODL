@@ -61,7 +61,7 @@ if (isset($_SESSION['pseudo'])) {
         // Create period
         echo "\t\t<div id='create_period' style='display: none;'>";
         echo "\t\t\t<input type='text' class='input' name='name_period' placeholder='Nom de la période'><br />";
-        echo "\t\t\t<label>Dans l'universe :</label>\n";
+        echo "\t\t\t<label>Dans l'univers :</label>\n";
         echo "\t\t\t<select id='whichUniverseForPeriod' name='referer[periodToUniverse]'>\n";
         echo "\t\t\t\t<option class='selectUniverseForPeriod' value=''>Cliquez</option>\n";
         foreach ($names_universe as $name_universe) {
