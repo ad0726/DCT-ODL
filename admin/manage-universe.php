@@ -109,8 +109,10 @@ if (isset($_SESSION['pseudo'])) {
                 $$update->execute([
                     'logo'   => $upload[1]
                 ]);
-                // Delete image if new image uploaded
-                unlink($path.$logo_to_remove);
+                if (!empty($logo_to_remove)) {
+                    // Delete image if new image uploaded
+                    unlink($path.$logo_to_remove);
+                }
             }
         }
 
@@ -156,9 +158,10 @@ if (isset($_SESSION['pseudo'])) {
                     'image'  => $upload[1],
                     'id_era' => $key
                 ]);
-                // Delete image if new image uploaded
-                unlink($path.$image_to_remove);
-
+                if (!empty($image_to_remove)) {
+                    // Delete image if new image uploaded
+                    unlink($path.$image_to_remove);
+                }
             }
         }
 
